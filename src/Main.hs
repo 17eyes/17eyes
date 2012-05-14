@@ -3,4 +3,8 @@
 import Lang.Php.Ast
 
 main :: IO ()
-main = interact $ show . (runParser parse () "<stdin>" :: String -> Either ParseError Ast)
+main = do
+    input <- getContents
+    case runParser parse () "<stdin>" input :: Either ParseError Ast of
+        (Left err) -> error (show err ++ "\n")
+        (Right ast) -> putStrLn (show ast)
