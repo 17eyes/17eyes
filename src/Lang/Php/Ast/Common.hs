@@ -13,8 +13,8 @@ module Lang.Php.Ast.Common (
   module Data.DeriveTH,
   module Data.List,
   module Data.Maybe,
-  module FUtil,
   WS, WS2, WSElem(..), WSCap(..), WSCap2, capify, wsNoNLParser, w2With,
+  rePairLeft, rePairRight, swap, uncons,
   upToCharsOrEndParser) where
 
 import Common
@@ -27,7 +27,6 @@ import Data.Data hiding (Prefix, Infix)
 import Data.DeriveTH
 import Data.List
 import Data.Maybe
-import FUtil
 import qualified Data.Intercal as IC
 
 type WS = [WSElem]
@@ -121,3 +120,17 @@ type WSCap2 a = WSCap (WSCap a)
 $(derive makeBinary ''WSElem)
 $(derive makeBinary ''WSCap)
 
+-- Following definitions are from FUtil (https://github.com/facebook/futil):
+
+rePairRight :: ((a, b), c) -> (a, (b, c))
+rePairRight ((a, b), c) = (a, (b, c))
+
+rePairLeft :: (a, (b, c)) -> ((a, b), c)
+rePairLeft (a, (b, c)) = ((a, b), c)
+
+swap :: (t, t1) -> (t1, t)
+swap (x, y) = (y, x)
+
+uncons :: [a] -> (a, [a])
+uncons (x:xs) = (x, xs)
+uncons [] = error "uncons: empty list"

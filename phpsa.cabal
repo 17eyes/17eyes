@@ -6,7 +6,7 @@ cabal-version:  >= 1.6
 executable phpsa
   hs-source-dirs: src
   main-is:        Main.hs
-  build-depends:  FUtil, HSH >= 2, MissingH, base >= 4, binary, bytestring,
+  build-depends:  HSH >= 2, MissingH, base >= 4, binary, bytestring,
                   containers, derive, directory, filepath, mtl, parsec == 3.*,
                   process, syb
   ghc-options:    -threaded
