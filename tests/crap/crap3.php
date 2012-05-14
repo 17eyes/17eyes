@@ -10,7 +10,7 @@ function htmlspecialcharsex($str)
 		$str = str_replace("&quot;", "&amp;quot;", $str);
 		$str = str_replace("<", "&lt;", $str);
 		$str = str_replace(">", "&gt;", $str);
-		$str = str_replace(""", "&quot;", $str);
+		$str = str_replace("\"", "&quot;", $str);
 	}
 	return $str;
 }

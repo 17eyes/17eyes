@@ -55,7 +55,7 @@
 	if (isset($_POST['i']))
 	{
 		// Only a string
-		$i = typecast(mysql_real_escape_string(typecast($_POST['i']), 'integer');
+		$i = typecast(mysql_real_escape_string(typecast($_POST['i']), 'integer'));
 		echo "<h2>Result for [$i]<h2>\n";
 		$result = mysql_query("SELECT * FROM books WHERE BookID = $i");
 		print_db($result);
