@@ -1,0 +1,9 @@
+<?php
+    include($GET_['x']);
+    include_once($GET_['x']);
+    php_check_syntax($GET_['x']);
+    require($GET_['x']);
+    require_once($GET_['x']);
+    runkit_import($GET_['x']);
+    set_include_path($GET_['x']);
+    virtual($GET_['x']);

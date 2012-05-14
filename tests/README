@@ -1,0 +1,12 @@
+To jest testospecyfikacja określająca co chcemy wykrywać i w jakim stopniu
+szczegółowości. Całość jest podzielona tematycznie na katalogi:
+
+bare_strings: niezadeklarowane stałe (które domyślnie są traktowane jako napisy)
+control_flow: odpowiednie wykrywanie przepływu sterowania (funkcje, include, ...)
+eof_junk: śmieci po "?>" (proste)
+lossy_coercion: niejawne stratne konwersje typów (np. "7 days" --> 7)
+stdlib: sprawdzanie wywołań funkcji bibliotecznych (niebezpieczne funkcje, liczba parametrów, ...)
+undefined: niezdefinowane zmienne, funkcje, metody
+
+Pliki warn_*.php powinny spowodować wyemitowanie ostrzeżenia. Pliki good_*.php
+są OK i nie powinnny raczej powodować fałszywych pozytywów.
