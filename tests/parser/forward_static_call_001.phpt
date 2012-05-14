@@ -1,6 +1,6 @@
 --TEST--
 forward_static_call() called from outside of a method.
---FILE--
+?>
 <?php
 
 class A
@@ -57,8 +57,8 @@ echo "-\n";
 C::test3();
 
 ?>
-===DONE===
---EXPECTF--
+=?>=
+?>
 A
 -
 B
@@ -80,4 +80,4 @@ C
 -
 B
 C
-===DONE===
+=?>=

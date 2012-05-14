@@ -1,6 +1,6 @@
 --TEST--
 Bug #46304 (defining namespaced constant using define())
---FILE--
+?>
 <?php
 
 define('NS1\ns2\const1','value1');
@@ -39,7 +39,7 @@ print ns1\ns2\coNSt6 . "\n";
 
 print NS1\ns2\coNSt1 . "\n";
 ?>
---EXPECTF--
+?>
 value1
 value1
 value1

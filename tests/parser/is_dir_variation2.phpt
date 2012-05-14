@@ -5,7 +5,7 @@ Test is_dir() function: usage variations - links
 if (substr(PHP_OS, 0, 3) == 'WIN') {
     die('skip Do not run on Windows');
 }
---FILE--
+?>
 <?php
 /* Prototype: bool is_dir ( string $dirname );
    Description: Tells whether the dirname is a directory
@@ -75,7 +75,7 @@ if(file_exists($file_path."/is_dir_variation2")) {
   rmdir($file_path."/is_dir_variation2");
 }
 ?>
---EXPECTF--
+?>
 *** Testing is_dir() with dir and links to dir ***
 -- With dir --
 bool(true)

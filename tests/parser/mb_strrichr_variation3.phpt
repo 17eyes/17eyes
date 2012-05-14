@@ -5,7 +5,7 @@ Test mb_strrichr() function : usage variation - different values for part
 extension_loaded('mbstring') or die('skip');
 function_exists('mb_strrichr') or die("skip mb_strrichr() is not available in this build");
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : string mb_strrichr(string haystack, string needle[, bool part[, string encoding]])
  * Description: Finds the last occurrence of a character in a string within another, case insensitive 
@@ -129,8 +129,8 @@ foreach($inputs as $key =>$value) {
 fclose($fp);
 
 ?>
-===DONE===
---EXPECTF--
+=?>=
+?>
 *** Testing mb_strrichr() : usage variation ***
 
 --int 0--
@@ -229,4 +229,4 @@ string(8) "5f76616c"
 --resource--
 Error: 2 - mb_strrichr() expects parameter 3 to be boolean, resource given, %s(%d)
 bool(false)
-===DONE===
+=?>=

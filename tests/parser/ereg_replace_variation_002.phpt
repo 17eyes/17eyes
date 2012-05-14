@@ -1,6 +1,6 @@
 --TEST--
 Test ereg_replace() function : usage variations  - unexpected type arg 2
---FILE--
+?>
 <?php
 /* Prototype  : proto string ereg_replace(string pattern, string replacement, string string)
  * Description: Replace regular expression 
@@ -79,7 +79,7 @@ foreach($values as $value) {
 
 echo "Done";
 ?>
---EXPECTF--
+?>
 *** Testing ereg_replace() : usage variations ***
 Error: 8 - Undefined variable: undefined_var, %s(64)
 Error: 8 - Undefined variable: unset_var, %s(67)

@@ -5,7 +5,7 @@ Eric Lee Stewart <ericleestewart@gmail.com>
 # TestFest Atlanta 2009-05-24
 --SKIPIF--
 <?php require_once('skipif.inc'); ?>
---FILE--
+?>
 <?php
 $document = new DOMDocument;
 $root = $document->createElement('root');
@@ -17,6 +17,6 @@ $root->appendChild($fragment);
 
 print $document->saveXML();
 ?>
---EXPECT--
-<?xml version="1.0"?>
+?>
+XML version="1.0"?>
 <root><foo id="baz">bar</foo></root>

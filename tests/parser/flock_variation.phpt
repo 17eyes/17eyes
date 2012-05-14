@@ -1,6 +1,6 @@
 --TEST--
 Test flock() function: Variations
---FILE--
+?>
 <?php
 /* 
 Prototype: bool flock(resource $handle, int $operation [, int &$wouldblock]);
@@ -64,7 +64,7 @@ fclose($fp);
 
 echo "\n*** Done ***\n";
 ?>
---EXPECTF--	
+?>	
 *** Testing flock() fun with the various operation and 
             wouldblock values                                ***
 --- Outer iteration 0 ---

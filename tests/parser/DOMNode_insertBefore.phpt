@@ -5,7 +5,7 @@ Michael Stillwell <mjs@beebo.org>
 # TestFest 2008
 --SKIPIF--
 <?php require_once('skipif.inc'); ?>
---FILE--
+?>
 <?php
 
 $dom = new DOMDocument();
@@ -23,12 +23,12 @@ $e2->parentNode->insertBefore($e1, $e2);
 echo $dom->saveXML();
 
 ?>
---EXPECTF--
-<?xml version="1.0"?>
+?>
+XML version="1.0"?>
 <root/>
 Add new node B
-<?xml version="1.0"?>
+XML version="1.0"?>
 <root><B/></root>
 Add new node A before B
-<?xml version="1.0"?>
+XML version="1.0"?>
 <root><A/><B/></root>

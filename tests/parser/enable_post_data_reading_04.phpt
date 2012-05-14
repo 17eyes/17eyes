@@ -1,6 +1,6 @@
 --TEST--
 enable_post_data_reading: always_populate_raw_post_data has no effect (2)
---INI--
+?>
 enable_post_data_reading=0
 always_populate_raw_post_data=1
 --POST_RAW--
@@ -12,7 +12,7 @@ var_dump($_FILES);
 var_dump($_POST);
 var_dump($HTTP_RAW_POST_DATA);
 var_dump(file_get_contents("php://input"));
---EXPECTF--
+?>
 array(0) {
 }
 array(0) {

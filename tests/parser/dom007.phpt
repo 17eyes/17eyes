@@ -78,7 +78,7 @@ $node = $ents->getNamedItem('xxx');
 var_dump($node);
 
 
---EXPECT--
+?>
 Length: 1
 Key GIF: GIF (image/gif) (-)
 

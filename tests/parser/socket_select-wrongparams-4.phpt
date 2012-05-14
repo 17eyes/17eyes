@@ -7,7 +7,7 @@ usec > 999999
 if (!extension_loaded('sockets')) {
     die('SKIP The sockets extension is not loaded.');
 }
---FILE--
+?>
 <?php
 $sockets = array();
 if (strtolower(substr(PHP_OS, 0, 3)) == 'win') {
@@ -22,7 +22,7 @@ $except = null;
 $time   = 0;
 $usec   = 2000000;
 var_dump(socket_select($sockets, $write, $except, $time, $usec));
---EXPECT--
+?>
 int(0)
 --CREDITS--
 Till Klampaeckel, till@php.net

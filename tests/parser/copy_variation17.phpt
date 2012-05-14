@@ -1,6 +1,6 @@
 --TEST--
 Test copy() function: usage variations - wildcard chars in source
---FILE--
+?>
 <?php
 /* Prototype: bool copy ( string $source, string $dest );
    Description: Makes a copy of the file source to dest.
@@ -46,13 +46,13 @@ foreach($src_file_names as $src_file_name) {
 echo "*** Done ***\n";
 ?>
 
---CLEAN--
+?>
 <?php
 unlink(dirname(__FILE__)."/copy_variation17.tmp");
 rmdir(dirname(__FILE__)."/copy_variation17");
 ?>
 
---EXPECTF--
+?>
 *** Test copy() function: With source file names containing wild-card chars ***
 bool(true)
 bool(true)

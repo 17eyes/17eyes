@@ -1,6 +1,6 @@
 --TEST--
 Closure 021: Throwing exception inside lambda
---FILE--
+?>
 <?php
 
 $foo = function() {
@@ -18,5 +18,5 @@ try {
 }
 
 ?>
---EXPECT--
+?>
 string(5) "test!"

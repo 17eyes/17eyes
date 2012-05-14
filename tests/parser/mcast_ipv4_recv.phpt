@@ -17,7 +17,7 @@ if ($so === false) {
 if (!defined("MCAST_BLOCK_SOURCE")) {
     die('skip source operations are unavailable');
 }
---FILE--
+?>
 <?php
 include __DIR__."/mcast_helpers.php.inc";
 $domain = AF_INET;
@@ -151,7 +151,7 @@ if ($i == 8) {
 }
 
 }
---EXPECTF--
+?>
 creating send socket bound to 127.0.0.1
 bool(true)
 creating unbound socket and hoping the routing table causes an interface other than lo to be used for sending messages to 224.0.0.23

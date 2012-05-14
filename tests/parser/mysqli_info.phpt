@@ -6,7 +6,7 @@ require_once('skipif.inc');
 require_once('skipifemb.inc');
 require_once('skipifconnectfailure.inc');
 ?>
---FILE--
+?>
 <?php
 	require_once("connect.inc");
 
@@ -93,9 +93,9 @@ require_once('skipifconnectfailure.inc');
 
 	print "done!";
 ?>
---CLEAN--
+?>
 <?php
 	require_once("clean_table.inc");
 ?>
---EXPECTF--
+?>
 done!

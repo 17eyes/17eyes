@@ -6,7 +6,7 @@ if (substr(PHP_OS, 0, 3) == 'WIN') {
     die('skip no link()/symlink() on Windows');
 }
 ?>
---FILE--
+?>
 <?php
 /* 
 Prototype: int fileinode ( string $filename );
@@ -86,7 +86,7 @@ rmdir("$file_path/dir");
 
 echo "\n*** Done ***";
 
---EXPECTF--
+?>
 *** Testing fileinode() with files, links and directories ***
 -- Testing with files --
 %d

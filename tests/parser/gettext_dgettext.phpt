@@ -8,7 +8,7 @@ if (!extension_loaded("gettext")) {
 if (!setlocale(LC_ALL, 'en_US.UTF-8')) {
     die("SKIP en_US.UTF-8 locale not supported.");
 }
---FILE--
+?>
 <?php
 chdir(dirname(__FILE__));
 setlocale(LC_MESSAGES, 'en_US.UTF-8');
@@ -21,7 +21,7 @@ var_dump(gettext('item'));
 var_dump(dgettext('dgettextTest_switch', 'item'));
 var_dump(gettext('item'));
 ?>
---EXPECT--
+?>
 string(7) "Produkt"
 string(16) "Produkt_switched"
 string(7) "Produkt"

@@ -96,7 +96,7 @@ function andi($i, $j)
 }
 
 andi (3,10);
---EXPECT--
+?>
 hey
 blah
 hey

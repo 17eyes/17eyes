@@ -19,7 +19,7 @@ Class Foo2
 
 $rc = new ReflectionClass('Foo2');
 print_r($rc->getConstant('B'));
---EXPECT--
+?>
 Array
 (
     [A] => 1

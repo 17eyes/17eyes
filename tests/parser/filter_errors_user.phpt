@@ -1,6 +1,6 @@
 --TEST--
 Filter errors: user filter
---FILE--
+?>
 <?php
 require 'filter_errors.inc';
 
@@ -86,7 +86,7 @@ stream_get_contents($stream);
 fclose($stream);
 
 ?>
---EXPECTF--
+?>
 test_filter0
 bool(true)
 test filtering of buffered data

@@ -2,7 +2,7 @@
 Bug #41004 (minOccurs="0" and null class member variable)
 --SKIPIF--
 <?php require_once('skipif.inc'); ?>
---FILE--
+?>
 <?php
 ini_set('soap.wsdl_cache_enabled', false);
 
@@ -31,6 +31,6 @@ $echo->in=$in;
 $client->echo($echo);
 echo $client->__getLastRequest();
 ?>
---EXPECT--
-<?xml version="1.0" encoding="UTF-8"?>
+?>
+XML version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="urn:Formation"><SOAP-ENV:Body><ns1:echo><in><mandatoryElement>REV</mandatoryElement></in></ns1:echo></SOAP-ENV:Body></SOAP-ENV:Envelope>

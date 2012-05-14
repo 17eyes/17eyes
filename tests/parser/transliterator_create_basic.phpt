@@ -13,7 +13,7 @@ echo $t->id,"\n";
 
 echo "Done.\n";
 
---EXPECT--
+?>
 any-latin
 any-latin
 Done.

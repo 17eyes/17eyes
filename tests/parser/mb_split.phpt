@@ -5,9 +5,9 @@ mb_split()
 extension_loaded('mbstring') or die('skip mbstring not available');
 function_exists('mb_split') or die("skip mb_split() is not available in this build");
 ?>
---INI--
+?>
 mbstring.func_overload=0
---FILE--
+?>
 <?php
 	mb_regex_set_options( '' );
 	mb_regex_encoding( 'EUC-JP' );
@@ -35,7 +35,7 @@ mbstring.func_overload=0
 	}
 ?>
 
---EXPECTF--
+?>
 bool(true)
 
 Deprecated: Function split() is deprecated in %s on line %d

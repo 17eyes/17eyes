@@ -2,11 +2,11 @@
 Phar::setStub()/getStub() from file
 --SKIPIF--
 <?php if (!extension_loaded("phar")) die("skip"); ?>
---INI--
+?>
 phar.require_hash=0
 phar.readonly=0
 allow_url_fopen=1
---FILE--
+?>
 <?php
 $fname = dirname(__FILE__) . '/' . basename(__FILE__, '.php') . '.phar.php';
 $pname = 'phar://' . $fname;
@@ -42,13 +42,13 @@ var_dump($phar->getStub() == $stub);
 var_dump($phar->getStub() == $sexp);
 
 ?>
-===DONE===
---CLEAN--
+=?>=
+?>
 <?php 
 unlink(dirname(__FILE__) . '/' . basename(__FILE__, '.clean.php') . '.phar.php');
 __HALT_COMPILER();
 ?>
---EXPECT--
+?>
 string(48) "<?php echo "first stub\n"; __HALT_COMPILER(); ?>"
 string(48) "<?php echo "first stub\n"; __HALT_COMPILER(); ?>"
 bool(true)
@@ -62,4 +62,4 @@ bool(false)
 bool(true)
 bool(false)
 bool(true)
-===DONE===
+=?>=

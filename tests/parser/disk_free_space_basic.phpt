@@ -1,8 +1,8 @@
 --TEST--
 Test disk_free_space and its alias diskfreespace() functions : basic functionality
---INI--
+?>
 memory_limit=32M
---FILE--
+?>
 <?php
 /*
  *  Prototype: float disk_free_space( string directory )
@@ -44,14 +44,14 @@ var_dump( disk_free_space(b"$file_path") );
 echo"\n--- Done ---";
 ?>
 
---CLEAN--
+?>
 <?php
 $file_path = dirname(__FILE__);
 unlink($file_path."/disk_free_space/disk_free_space.tmp");
 rmdir($file_path."/disk_free_space");
 ?>
 
---EXPECTF--
+?>
 *** Testing with existing directory ***
 float(%d)
 float(%d)

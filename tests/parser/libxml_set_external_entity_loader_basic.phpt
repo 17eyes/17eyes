@@ -2,7 +2,7 @@
 libxml_set_external_entity_loader() basic test
 --SKIPIF--
 <?php if (!extension_loaded('dom')) die('skip'); ?>
---FILE--
+?>
 <?php
 $xml = <<<XML
 <!DOCTYPE foo PUBLIC "-//FOO/BAR" "http://example.com/foobar">
@@ -31,7 +31,7 @@ var_dump($dd->validate());
 
 echo "Done.\n";
 
---EXPECT--
+?>
 string(10) "-//FOO/BAR"
 string(25) "http://example.com/foobar"
 array(4) {

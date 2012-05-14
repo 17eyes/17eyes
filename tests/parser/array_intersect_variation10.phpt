@@ -1,6 +1,6 @@
 --TEST--
 Test array_intersect() function : usage variations - binary safe checking 
---FILE--
+?>
 <?php
 /* Prototype  : array array_intersect(array $arr1, array $arr2 [, array $...])
  * Description: Returns the entries of arr1 that have values which are present in all the other arguments 
@@ -30,7 +30,7 @@ var_dump( array_intersect($arr_binary, $arr_binary) );
 
 echo "Done";
 ?>
---EXPECTF--
+?>
 *** Testing array_intersect() : binary safe checking ***
 array(2) {
   [0]=>

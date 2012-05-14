@@ -1,6 +1,6 @@
 --TEST--
 Bug #42937 (__call() method not invoked when methods are called on parent from child class)
---FILE--
+?>
 <?php
 class A {
 	function __call($strMethod, $arrArgs) {
@@ -31,7 +31,7 @@ $a->test();
 $b = new B();
 $b->test();
 ?>
---EXPECTF--
+?>
 test
 test1
 test2

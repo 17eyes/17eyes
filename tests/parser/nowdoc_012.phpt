@@ -1,6 +1,6 @@
 --TEST--
 Test false labels
---FILE--
+?>
 <?php
 
 require_once 'nowdoc.inc';
@@ -16,7 +16,7 @@ ENDOFNOWDOC;
 print "{$x}\n";
 
 ?>
---EXPECT--
+?>
 This is a nowdoc test.
 NOTREALLYEND;
 Another line

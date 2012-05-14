@@ -5,7 +5,7 @@ Test mb_strtoupper() function : basic functionality
 extension_loaded('mbstring') or die('skip');
 function_exists('mb_strtoupper') or die("skip mb_strtoupper() is not available in this build");
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : string mb_strtoupper(string $sourcestring [, string $encoding]
  * Description: Returns a uppercased version of $sourcestring
@@ -47,7 +47,7 @@ if ($mb == $greek_upper) {
 echo "Done";
 ?>
 
---EXPECT--
+?>
 *** Testing mb_strtoupper() : basic functionality ***
 
 -- ASCII String --

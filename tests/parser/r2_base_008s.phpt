@@ -2,7 +2,7 @@
 SOAP Interop Round2 base 008 (soap/direct): echoStringArray(empty)
 --SKIPIF--
 <?php require_once('skipif.inc'); ?>
---FILE--
+?>
 <?php
 $param =  new SoapParam(new SoapVar(array(
   ), SOAP_ENC_ARRAY, "ArrayOfstring","http://soapinterop.org/xsd"), "inputStringArray");
@@ -13,9 +13,9 @@ $HTTP_RAW_POST_DATA = $client->__getlastrequest();
 include("round2_base.inc");
 echo "ok\n";
 ?>
---EXPECT--
-<?xml version="1.0" encoding="UTF-8"?>
+?>
+XML version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://soapinterop.org/" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns2="http://soapinterop.org/xsd" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"><SOAP-ENV:Body><ns1:echoStringArray><inputStringArray SOAP-ENC:arrayType="xsd:ur-type[0]" xsi:type="ns2:ArrayOfstring"/></ns1:echoStringArray></SOAP-ENV:Body></SOAP-ENV:Envelope>
-<?xml version="1.0" encoding="UTF-8"?>
+XML version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://soapinterop.org/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns2="http://soapinterop.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"><SOAP-ENV:Body><ns1:echoStringArrayResponse><outputStringArray SOAP-ENC:arrayType="xsd:string[0]" xsi:type="ns2:ArrayOfstring"/></ns1:echoStringArrayResponse></SOAP-ENV:Body></SOAP-ENV:Envelope>
 ok

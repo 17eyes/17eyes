@@ -1,6 +1,6 @@
 --TEST--
 Test array_walk_recursive() function : usage variations - 'input' array with different values
---FILE--
+?>
 <?php
 /* Prototype  : bool array_walk_recursive(array $input, string $funcname [, mixed $userdata])
  * Description: Apply a user function to every member of an array 
@@ -61,7 +61,7 @@ for($count = 0; $count < count($input_values); $count++) {
 }  
 echo "Done"
 ?>
---EXPECTF--
+?>
 *** Testing array_walk_recursive() : 'input' array with different values***
 
 -- Iteration 1 --

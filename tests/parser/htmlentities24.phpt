@@ -1,6 +1,6 @@
 --TEST--
 Test htmlentities() function
---FILE--
+?>
 <?php
 /* Prototype: string htmlentities ( string $string [, int $quote_style [, string $charset]] );
    Description: Convert all applicable characters to HTML entities
@@ -44,7 +44,7 @@ var_dump( htmlentities("\x84\x91",ENT_QUOTES, 'cp1252', "test1") );
 echo "Done\n";
 ?>
 
---EXPECTF--
+?>
 *** Retrieving htmlentities for 256 characters ***
 string(12) "636872283029"
 string(12) "636872283129"

@@ -4,7 +4,7 @@ Testing several callbacks using PDO::FETCH_FUNC
 <?php
 if (!extension_loaded('pdo_sqlite')) print 'skip not loaded';
 ?>
---FILE--
+?>
 <?php
 
 $db = new PDO('sqlite::memory:');
@@ -72,7 +72,7 @@ $st = $db->query('SELECT * FROM testing');
 var_dump($st->fetchAll(PDO::FETCH_FUNC, array('bar', 'inexistent')));
 
 ?>
---EXPECTF--
+?>
 object(PDOStatement)#%d (1) {
   [%u|b%"queryString"]=>
   %string|unicode%(21) "SELECT * FROM testing"

@@ -1,6 +1,6 @@
 --TEST--
 Bug #54039 (use() of static variables in lambda functions can break staticness)
---FILE--
+?>
 <?php
 function test_1() {
 	static $v = 0;
@@ -41,7 +41,7 @@ function test_3() {
 }
 $f = test_3(); $f();
 $f = test_3(); $f();
---EXPECT--
+?>
 Outer function increments $v to 1
 Inner function reckons $v is 1
 Outer function increments $v to 2

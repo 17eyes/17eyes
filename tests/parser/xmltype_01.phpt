@@ -5,7 +5,7 @@ Basic XMLType test
 if (!extension_loaded("simplexml")) die("skip no simplexml extension");
 $target_dbs = array('oracledb' => true, 'timesten' => false);  // test runs on these DBs
 require(dirname(__FILE__).'/skipif.inc');
---FILE--
+?>
 <?php
 
 require(dirname(__FILE__)."/connect.inc");
@@ -19,7 +19,7 @@ $stmtarray = array(
 		   xmltype xt_spec store as clob",
 	"insert into xtt (xt_id, xt_spec) values
 	  (1,
-	   xmltype('<?xml version=\"1.0\"?>
+	   xmltype('XML version=\"1.0\"?>
 		<Xt>
 		  <XtId>1</XtId>
 		  <Size>Big</Size>
@@ -80,9 +80,9 @@ oci8_test_sql_execute($c, $stmtarray);
 echo "Done\n";
 
 ?>
---EXPECT--
+?>
 Initial Data
-string(250) "<?xml version="1.0"?>
+string(250) "XML version="1.0"?>
 		<Xt>
 		  <XtId>1</XtId>
 		  <Size>Big</Size>
@@ -95,7 +95,7 @@ string(250) "<?xml version="1.0"?>
 		  <Material>Steel</Material>
 		</Xt>"
 Verify
-string(249) "<?xml version="1.0"?>
+string(249) "XML version="1.0"?>
 <Xt>
 		  <XtId>1</XtId>
 		  <Size>Big</Size>

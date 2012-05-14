@@ -4,7 +4,7 @@ Bug #60159	(Router returns false, but POST is not passed to requested resource)
 <?php
 include "skipif.inc"; 
 ?>
---FILE--
+?>
 <?php
 include "php_cli_server.inc";
 php_cli_server_start('print_r($_REQUEST); $_REQUEST["foo"] = "bar"; return FALSE;');
@@ -37,7 +37,7 @@ fclose($fp);
 @unlink($doc_root . '/request.php');
 
 ?>
---EXPECTF--
+?>
 HTTP/1.1 200 OK
 Host: %s
 Connection: close

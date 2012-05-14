@@ -23,5 +23,5 @@ ob_start();
 $server->handle($req);
 ob_end_clean();
 echo "ok\n";
---EXPECT--
+?>
 ok

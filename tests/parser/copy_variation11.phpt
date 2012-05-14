@@ -1,6 +1,6 @@
 --TEST--
 Test copy() function: usage variations - existing dir as destination
---FILE--
+?>
 <?php
 /* Prototype: bool copy ( string $source, string $dest );
    Description: Makes a copy of the file source to dest.
@@ -45,13 +45,13 @@ var_dump( filesize($dir) );   //size of destination after copy
 echo "*** Done ***\n";
 ?>
 
---CLEAN--
+?>
 <?php
 unlink(dirname(__FILE__)."/copy_variation11.tmp");
 rmdir(dirname(__FILE__)."/copy_variation11");
 ?>
 
---EXPECTF--
+?>
 *** Test copy() function: Trying to create a copy of source file as a dir ***
 Size of source before copy operation => int(300)
 Size of destination before copy operation => int(%d)

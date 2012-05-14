@@ -17,7 +17,7 @@ if ($msg = check_local_infile_support($link, $engine))
 
 mysqli_close($link);
 ?>
---FILE--
+?>
 <?php
 	require_once("connect.inc");
 
@@ -59,7 +59,7 @@ mysqli_close($link);
 	unlink($filename);
 	print "done!";
 ?>
---CLEAN--
+?>
 <?php
 require_once("connect.inc");
 if (!$link = my_mysqli_connect($host, $user, $passwd, $db, $port, $socket))
@@ -70,7 +70,7 @@ if (!mysqli_query($link, "DROP TABLE IF EXISTS t_061"))
 
 mysqli_close($link);
 ?>
---EXPECTF--
+?>
 foo-bar
 %unicode|string%-%unicode|string%
 rab-oof

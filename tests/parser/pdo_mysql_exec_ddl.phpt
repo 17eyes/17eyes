@@ -6,7 +6,7 @@ require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'skipif.inc');
 require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'mysql_pdo_test.inc');
 MySQLPDOTest::skip();
 ?>
---FILE--
+?>
 <?php
 	function exec_and_count($offset, &$db, $sql, $exp, $suppress_warning = false) {
 
@@ -77,7 +77,7 @@ MySQLPDOTest::skip();
 	}
 
 	print "done!";
---CLEAN--
+?>
 <?php
 require dirname(__FILE__) . '/mysql_pdo_test.inc';
 $db = MySQLPDOTest::factory();
@@ -88,5 +88,5 @@ MySQLPDOTest::dropTestTable($db);
 @$db->exec('DROP DATABASE IF EXISTS pdo_exec_ddl');
 @$db->exec('DROP DATABASE IF EXISTS pdo_exec_ddl2');
 ?>
---EXPECTF--
+?>
 done!

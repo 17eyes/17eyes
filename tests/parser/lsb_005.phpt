@@ -1,6 +1,6 @@
 --TEST--
 ZE2 Late Static Binding stacking static calleds
---FILE--
+?>
 <?php
 
 class TestA {
@@ -35,8 +35,8 @@ class TestBB extends TestB {
 TestA::test();
 
 ?>
-==DONE==
---EXPECTF--
+?>
+?>
 TestA
 TestB
 TestC
@@ -48,4 +48,4 @@ TestBB
 TestC
 TestBB
 TestA
-==DONE==
+?>

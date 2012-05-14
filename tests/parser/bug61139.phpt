@@ -10,5 +10,5 @@ if (!extension_loaded('zlib')) {
 <?php
 
 gzopen('someFile', 'c');
---EXPECTF--
+?>
 Warning: gzopen(): gzopen failed in %s on line %d

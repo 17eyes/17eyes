@@ -2,7 +2,7 @@
 SOAP Server 13: array handling
 --SKIPIF--
 <?php require_once('skipif.inc'); ?>
---FILE--
+?>
 <?php
 function Sum($a) {
   $sum = 0;
@@ -18,7 +18,7 @@ $server = new soapserver(null,array('uri'=>"http://testuri.org"));
 $server->addfunction("Sum");
 
 $HTTP_RAW_POST_DATA = <<<EOF
-<?xml version="1.0" encoding="UTF-8"?>
+XML version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope
   xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
   SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
@@ -38,7 +38,7 @@ EOF;
 $server->handle($HTTP_RAW_POST_DATA);
 echo "ok\n";
 ?>
---EXPECT--
-<?xml version="1.0" encoding="UTF-8"?>
+?>
+XML version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://testuri.org" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"><SOAP-ENV:Body><ns1:sumResponse><return xsi:type="xsd:int">8</return></ns1:sumResponse></SOAP-ENV:Body></SOAP-ENV:Envelope>
 ok

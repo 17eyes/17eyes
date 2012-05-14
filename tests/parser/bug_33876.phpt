@@ -91,7 +91,7 @@ if (!$res->execute(array(false))) {
 
 
 
---EXPECT--
+?>
 Array
 (
     [0] => Array

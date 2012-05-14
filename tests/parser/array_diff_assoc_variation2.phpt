@@ -1,6 +1,6 @@
 --TEST--
 Test array_diff_assoc() function : usage variations  - unexpected values for 'arr1' argument
---FILE--
+?>
 <?php
 /* Prototype  : array array_diff_assoc(array $arr1, array $arr2 [, array ...])
  * Description: Returns the entries of arr1 that have values which are not present 
@@ -99,7 +99,7 @@ fclose($fp);
 echo "Done";
 ?>
 
---EXPECTF--
+?>
 
 *** Testing array_diff_assoc() : usage variations ***
 

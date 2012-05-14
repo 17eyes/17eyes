@@ -1,6 +1,6 @@
 --TEST--
 Test spliti() function : usage variations  - unexpected type for arg 3
---FILE--
+?>
 <?php
 /* Prototype  : proto array spliti(string pattern, string string [, int limit])
  * Description: spliti string into array by regular expression 
@@ -78,7 +78,7 @@ foreach($values as $value) {
 
 echo "Done";
 ?>
---EXPECTF--
+?>
 *** Testing spliti() : usage variations ***
 
 Arg value 10.5 

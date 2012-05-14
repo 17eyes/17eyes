@@ -1,6 +1,6 @@
 --TEST--
 Bug #27508 (userspace wrappers have bogus eof indicator)
---FILE--
+?>
 <?php # vim:ft=php
 class FileStream {
     public $fp;
@@ -71,7 +71,7 @@ fclose($fp);
 
 unlink($tn);
 ?>
---EXPECT--
+?>
 bool(false) refcount(1)
 0
 bool(false) refcount(1)

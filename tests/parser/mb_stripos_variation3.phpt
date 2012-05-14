@@ -5,7 +5,7 @@ Test mb_stripos() function : usage variations - pass different data types as $of
 extension_loaded('mbstring') or die('skip');
 function_exists('mb_stripos') or die("skip mb_stripos() is not available in this build");
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : int mb_stripos(string haystack, string needle [, int offset [, string encoding]])
  * Description: Finds position of first occurrence of a string within another, case insensitive 
@@ -104,7 +104,7 @@ fclose($fp);
 
 echo "Done";
 ?>
---EXPECTF--
+?>
 *** Testing mb_stripos() : usage variations ***
 
 -- Iteration 1 --

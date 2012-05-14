@@ -1,6 +1,6 @@
 --TEST--
 Test array_diff_assoc() function : usage variations - arrays with different data types as keys
---FILE--
+?>
 
 <?php
 /* Prototype  : array array_diff_assoc(array $arr1, array $arr2 [, array ...])
@@ -101,7 +101,7 @@ foreach($inputs as $key => $input) {
 echo "Done";
 ?>
 
---EXPECTF--
+?>
 
 *** Testing array_diff_assoc() : usage variations ***
 

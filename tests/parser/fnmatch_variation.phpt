@@ -5,7 +5,7 @@ Test fnmatch() function: Variations
 if (!function_exists('fnmatch'))
     die("skip fnmatch() function is not available");
 ?>
---FILE--
+?>
 <?php
 /* Prototype: bool fnmatch ( string $pattern, string $string [, int $flags] )
    Description: fnmatch() checks if the passed string would match 
@@ -134,7 +134,7 @@ match($null_arr, $null_arr);
 
 echo "\n*** Done ***\n";
 ?>
---EXPECTF--
+?>
 *** Testing fnmatch() with file and various patterns ***
 -- Iteration 0 --
 bool(true)

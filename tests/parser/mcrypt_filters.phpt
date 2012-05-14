@@ -34,7 +34,7 @@ echo $data."\n";
 
 @unlink($secretfile);
 
---EXPECTF--
+?>
 FOUND
 FOUND
 32e14bd3c31f2bd666e4290ebdb166a7

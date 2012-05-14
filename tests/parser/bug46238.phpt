@@ -1,6 +1,6 @@
 --TEST--
 Bug #46238 (Segmentation fault on static call with empty string method)
---FILE--
+?>
 <?php
 
 class a {
@@ -29,7 +29,7 @@ $a::$b(1);
 $a::$b();
 
 ?>
---EXPECT--
+?>
 array(2) {
   [0]=>
   string(0) ""

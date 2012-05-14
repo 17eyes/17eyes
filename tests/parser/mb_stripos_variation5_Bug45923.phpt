@@ -5,7 +5,7 @@ Test mb_stripos() function : usage variations - Pass different integers as $offs
 extension_loaded('mbstring') or die('skip');
 function_exists('mb_stripos') or die("skip mb_stripos() is not available in this build");
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : int mb_stripos(string haystack, string needle [, int offset [, string encoding]])
  * Description: Finds position of first occurrence of a string within another, case insensitive 
@@ -45,7 +45,7 @@ for ($i = -10; $i <= 60; $i += 10) {
 echo "Done";
 ?>
 
---EXPECTF--
+?>
 *** Testing mb_stripos() : usage variations ***
 
 **-- Offset is: -10 --**

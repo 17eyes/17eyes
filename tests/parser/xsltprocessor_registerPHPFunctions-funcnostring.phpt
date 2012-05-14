@@ -21,7 +21,7 @@ if(!$phpfuncxsl) {
 $proc->importStylesheet($phpfuncxsl);
 var_dump($proc->registerPHPFunctions());
 var_dump($proc->transformToXml($dom));
---EXPECTF--
+?>
 NULL
 
 Warning: XSLTProcessor::transformToXml(): Handler name must be a string in %s on line %d

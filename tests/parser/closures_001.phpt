@@ -1,6 +1,6 @@
 --TEST--
 Reflection on closures
---FILE-- 
+?> 
 <?php
 
 $closure = function($a, $b = 0) { };
@@ -47,8 +47,8 @@ $rp = new ReflectionParameter($closure, 'b');
 var_dump($rp->isOptional());
 
 ?>
-===DONE===
---EXPECTF--
+=?>=
+?>
 int(2)
 int(1)
 int(2)
@@ -67,4 +67,4 @@ bool(false)
 bool(true)
 bool(false)
 bool(true)
-===DONE===
+=?>=

@@ -16,7 +16,7 @@ $rs = $db->query('select blah from a_table_that_doesnt_exist');
 var_dump($rs);
 var_dump($db->errorInfo());
 
---EXPECTF--
+?>
 bool(false)
 array(3) {
   [0]=>

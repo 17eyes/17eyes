@@ -4,7 +4,7 @@ Test function readgzfile() reading a gzip relative file
 <?php
 if (!extension_loaded('zlib')) die ('skip zlib extension not available in this build');
 ?>
---FILE--
+?>
 <?php
 $plaintxt = b<<<EOT
 hello world
@@ -25,10 +25,10 @@ var_dump(readgzfile( $filename ) );
 unlink($filename);
 rmdir($dirname);
 ?>
-===DONE===
---EXPECT--
+=?>=
+?>
 hello world
 is a very common test
 for all languages
 int(52)
-===DONE===
+=?>=

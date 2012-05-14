@@ -1,6 +1,6 @@
 --TEST--
 local user streams must not be able to open() url's
---INI--
+?>
 allow_url_fopen=1
 allow_url_include=0
 --FILE--
@@ -93,7 +93,7 @@ echo @file_get_contents("test1://hello"),"\n";
 @include "test1://hello";
 echo @file_get_contents("test2://hello"),"\n";
 include "test2://hello";
---EXPECTF--
+?>
 <?php echo "Hello World\n";?>
 <?php echo "Hello World\n";?>
 

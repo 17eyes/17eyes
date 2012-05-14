@@ -1,6 +1,6 @@
 --TEST--
 Test session_set_save_handler() : incorrect arguments for existing handler close
---INI--
+?>
 session.save_handler=files
 session.name=PHPSESSID
 --SKIPIF--
@@ -42,7 +42,7 @@ session_start();
 
 var_dump(session_id(), $oldHandler, ini_get('session.save_handler'), $handler->i, $_SESSION);
 
---EXPECTF--
+?>
 *** Testing session_set_save_handler() : incorrect arguments for existing handler close ***
 Open 
 Read %s

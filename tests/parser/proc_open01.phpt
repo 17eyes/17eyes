@@ -1,6 +1,6 @@
 --TEST--
 proc_open() regression test 1 (proc_open() leak)
---FILE--
+?>
 <?php
 $pipes = array(1, 2, 3);
 $orig_pipes = $pipes;
@@ -50,7 +50,7 @@ fclose($pipes[1]);
 proc_close($proc);
 var_dump($orig_pipes);
 ?>
---EXPECTF--
+?>
 array(2) {
   [0]=>
   resource(%d) of type (stream)

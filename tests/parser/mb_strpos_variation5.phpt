@@ -5,7 +5,7 @@ Test mb_strpos() function : usage variations - Pass different integers as $offse
 extension_loaded('mbstring') or die('skip');
 function_exists('mb_strpos') or die("skip mb_strpos() is not available in this build");
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : int mb_strpos(string $haystack, string $needle [, int $offset [, string $encoding]])
  * Description: Find position of first occurrence of a string within another 
@@ -44,7 +44,7 @@ for ($i = -10; $i <= 60; $i += 10) {
 echo "Done";
 ?>
 
---EXPECTF--
+?>
 *** Testing mb_strpos() : usage variations ***
 
 **-- Offset is: -10 --**

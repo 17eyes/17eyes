@@ -2,7 +2,7 @@
 Bug #42736 (xmlrpc_server_call_method() crashes)
 --SKIPIF--
 <?php if (!extension_loaded("xmlrpc")) print "skip"; ?>
---FILE--
+?>
 <?php
 
 class SOAP_Array {
@@ -13,7 +13,7 @@ class SOAP_Array {
 
 $xml = xmlrpc_server_create();
 
-$Myrequest = '<?xml version="1.0" encoding="UTF-8"?><methodCall><methodName>GetProducts</methodName><params><param><value><dateTime.iso8601>20060922T14:26:19</dateTime.iso8601></value></param></params></methodCall>';
+$Myrequest = 'XML version="1.0" encoding="UTF-8"?><methodCall><methodName>GetProducts</methodName><params><param><value><dateTime.iso8601>20060922T14:26:19</dateTime.iso8601></value></param></params></methodCall>';
 
 class MyClass {
 	function GetProducts($dummy, $time){
@@ -28,8 +28,8 @@ var_dump($response);
 
 echo "Done\n";
 ?>
---EXPECTF--	
-string(402) "<?xml version="1.0" encoding="iso-8859-1"?>
+?>	
+string(402) "XML version="1.0" encoding="iso-8859-1"?>
 <methodResponse>
 <params>
  <param>

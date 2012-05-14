@@ -1,6 +1,6 @@
 --TEST--
 ZE2 Late Static Binding in an instance function
---FILE--
+?>
 <?php
 
 class TestClass {
@@ -52,8 +52,8 @@ echo $childClass2->testStaticVar() . "\n";
 echo $childClass2->testClassConst() . "\n";
 echo $childClass2->testStaticFunction() . "\n";
 ?>
-==DONE==
---EXPECTF--
+?>
+?>
 TestClassStatic
 TestClassConst
 TestClassFunction
@@ -63,4 +63,4 @@ ChildClassFunction
 TestClassStatic
 TestClassConst
 TestClassFunction
-==DONE==
+?>

@@ -20,7 +20,7 @@ Content-Type: text/plain
 
 abcdef123456789
 --AaB03x--
---FILE--
+?>
 <?php
 
 echo "Valid move\n";
@@ -55,7 +55,7 @@ var_dump(move_uploaded_file(1, 2, 3));
 
 
 ?>
---EXPECTF--
+?>
 Valid move
 bool(true)
 bool(true)

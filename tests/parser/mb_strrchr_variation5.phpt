@@ -5,7 +5,7 @@ Test mb_strrchr() function : variation - multiple needles
 extension_loaded('mbstring') or die('skip');
 function_exists('mb_strrchr') or die("skip mb_strrchr() is not available in this build");
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : string mb_strrchr(string haystack, string needle[, bool part[, string encoding]])
  * Description: Finds the last occurrence of a character in a string within another 
@@ -47,8 +47,8 @@ else {
 
 
 ?>
-===DONE===
---EXPECT--
+=?>=
+?>
 *** Testing mb_strrchr() : variation ***
 -- Ascii data --
 string(10) "6263647978"
@@ -56,4 +56,4 @@ string(16) "616263646566207a"
 -- mb data in utf-8 --
 string(30) "e8aa9ee38386e382ade382b9e38388"
 string(70) "e697a5e69cace8aa9ee38386e382ade382b9e383883334efbc95efbc96e697a5e69cac"
-===DONE===
+=?>=

@@ -5,7 +5,7 @@ Test mb_stristr() function : usage variation - different values for part
 extension_loaded('mbstring') or die('skip');
 function_exists('mb_stristr') or die("skip mb_stristr() is not available in this build");
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : string mb_stristr(string haystack, string needle[, bool part[, string encoding]])
  * Description: Finds first occurrence of a string within another, case insensitive 
@@ -129,8 +129,8 @@ foreach($inputs as $key =>$value) {
 fclose($fp);
 
 ?>
-===DONE===
---EXPECTF--
+=?>=
+?>
 *** Testing mb_stristr() : usage variation ***
 
 --int 0--
@@ -229,4 +229,4 @@ string(8) "5f76616c"
 --resource--
 Error: 2 - mb_stristr() expects parameter 3 to be boolean, resource given, %s(%d)
 bool(false)
-===DONE===
+=?>=

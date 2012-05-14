@@ -1,6 +1,6 @@
 --TEST--
 SPL: MultipleIterator
---FILE--
+?>
 <?php
 
 $iter1 = new ArrayIterator(array(1,2,3));
@@ -103,7 +103,7 @@ foreach($m as $value) {
 }
 
 ?>
---EXPECTF--
+?>
 -- Default flags, no iterators --
 bool(false)
 -- Default flags, MultipleIterator::MIT_NEED_ALL | MultipleIterator::MIT_KEYS_NUMERIC --

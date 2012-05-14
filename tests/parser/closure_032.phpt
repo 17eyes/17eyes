@@ -1,6 +1,6 @@
 --TEST--
 Closure 032: Testing Closure and debug_backtrace
---FILE--
+?>
 <?php
 
 function test(closure $a) {
@@ -13,7 +13,7 @@ $c = function($param) { print_r(debug_backtrace()); debug_print_backtrace(); };
 $c(23);
 test($c);
 ?>
---EXPECTF--
+?>
 Array
 (
     [0] => Array

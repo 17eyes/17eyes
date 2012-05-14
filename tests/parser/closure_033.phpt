@@ -1,6 +1,6 @@
 --TEST--
 Closure 033: Dynamic closure property and private function
---FILE--
+?>
 <?php
 
 class Test {
@@ -21,8 +21,8 @@ $f();
 $o->func();
 
 ?>
-===DONE===
---EXPECTF--
+=?>=
+?>
 Test::{closure}()
 
 Fatal error: Call to private method Test::func() from context '' in %sclosure_033.php on line %d

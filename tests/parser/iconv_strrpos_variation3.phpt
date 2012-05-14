@@ -5,7 +5,7 @@ Test iconv_strrpos() function : usage variations - pass different data types as 
 extension_loaded('iconv') or die('skip');
 function_exists('iconv_strrpos') or die("skip iconv_strrpos() is not available in this build");
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : proto int iconv_strrpos(string haystack, string needle [, string charset])
  * Description: Find position of last occurrence of a string within another 
@@ -104,7 +104,7 @@ fclose($fp);
 echo "Done";
 ?>
 
---EXPECTF--
+?>
 *** Testing iconv_strrpos() : usage variations ***
 
 -- Iteration 1 --

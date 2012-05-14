@@ -14,5 +14,5 @@ $cls->{true}();
 $cls->{false}();
 $cls->{null}();
 echo "ok\n";
---EXPECTF--
+?>
 Fatal error: Method name must be a string in %sbug60613.php on line %d

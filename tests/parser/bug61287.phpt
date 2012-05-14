@@ -2,7 +2,7 @@
 bug #61287 - inflate needs the terminating null byte
 --SKIPIF--
 <?php extension_loaded("zlib") or die("SKIP need zlib");
---FILE--
+?>
 <?php
 $array = array(
     'region_id' => 1,
@@ -19,6 +19,6 @@ $inflated = gzinflate($deflated);
 echo strlen($inflated),"\n";
 ?>
 Done
---EXPECT--
+?>
 92
 Done

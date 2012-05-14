@@ -1,6 +1,6 @@
 --TEST--
 Bug #52193 (converting closure to array yields empty array)
---FILE--
+?>
 <?php
 
 var_dump((array) 1);
@@ -24,7 +24,7 @@ array_splice($items, 0 , 4, $func);
 var_dump($items);
 
 ?>
---EXPECTF--
+?>
 array(1) {
   [0]=>
   int(1)

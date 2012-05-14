@@ -5,7 +5,7 @@ XML parser test, object tuple callbacks
 require_once("skipif.inc");
 XML_SAX_IMPL == 'libxml' && die('skip this test is not intended for libxml SAX parser');
 ?>
---FILE--
+?>
 <?php
 chdir(dirname(__FILE__));
 
@@ -74,8 +74,8 @@ print "parse complete\n";
 xml_parser_free($xml_parser);
 
 ?>
---EXPECT--
-{?[<?xml version="1.0" encoding="ISO-8859-1"?>]}{?[
+?>
+{?[XML version="1.0" encoding="ISO-8859-1"?>]}{?[
 ]}{?[<!DOCTYPE]}{?[ ]}{?[phptest]}{?[ ]}{?[SYSTEM]}{?[ ]}{?["notfound.dtd"]}{?[ ]}{?[[]}{?[
 ]}{?[<!ENTITY]}{?[ ]}{?[%]}{?[ ]}{?[incent]}{?[ ]}{?[SYSTEM]}{?[ ]}{?["inc.ent"]}{?[>]}{?[
 ]}{?[%incent;]}{?[

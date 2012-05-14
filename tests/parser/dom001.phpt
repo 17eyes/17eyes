@@ -2,7 +2,7 @@
 Test 1: Accessing single node
 --SKIPIF--
 <?php require_once('skipif.inc'); ?>
---FILE--
+?>
 <?php
 require_once("dom_test.inc");
 
@@ -97,7 +97,7 @@ echo "--------- Check various node_name return values\n";
 print ("Not needed\n");
 
 ?>
---EXPECT--
+?>
 Test 1: accessing single nodes from php
 --------- root
 Node Name: chapter
@@ -188,7 +188,7 @@ Node Type: 1
 Num Children: 1
 Node Content: Symphony
 
-<?xml version="1.0" standalone="yes"?>
+XML version="1.0" standalone="yes"?>
 <!DOCTYPE chapter SYSTEM "/share/sgml/Norman_Walsh/db3xml10/db3xml10.dtd" [
 <!ENTITY sp "spanish">
 ]>
@@ -249,7 +249,7 @@ Num Children: 0
 Node Content: 
 
 
-<?xml version="1.0" standalone="yes"?>
+XML version="1.0" standalone="yes"?>
 <!DOCTYPE chapter SYSTEM "/share/sgml/Norman_Walsh/db3xml10/db3xml10.dtd" [
 <!ENTITY sp "spanish">
 ]>

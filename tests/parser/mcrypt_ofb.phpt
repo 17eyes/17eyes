@@ -17,5 +17,5 @@ echo trim(mcrypt_ofb($cipher, $key, $enc_data, MCRYPT_DECRYPT, $iv)) . "\n";
 // a warning must be issued if we don't use a IV on a AES cipher, that usually requires an IV
 mcrypt_ofb($cipher, $key, $enc_data, MCRYPT_DECRYPT, $iv);
 
---EXPECT--
+?>
 PHP Testfest 2008

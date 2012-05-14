@@ -1,6 +1,6 @@
 --TEST--
 Closure 016: closures and is_callable()
---FILE--
+?>
 <?php
 class Foo {
 	function __invoke() {
@@ -32,7 +32,7 @@ echo $name."\n";
 var_dump(is_callable(array($test,"__invoke"), false, $name));
 echo $name."\n";
 ?>
---EXPECT--
+?>
 bool(true)
 Foo::__invoke
 bool(true)

@@ -4,7 +4,7 @@ Bug #60477: Segfault after two multipart/form-data POST requestes
 <?php
 include "skipif.inc"; 
 ?>
---FILE--
+?>
 <?php
 include "php_cli_server.inc";
 php_cli_server_start('echo done, "\n";', TRUE);
@@ -57,7 +57,7 @@ echo preg_replace("/<style type=\"text\/css\">(.*?)<\/style>/s", "<style type=\"
 fclose($fp);
 
 ?>
---EXPECTF--
+?>
 
 HTTP/1.1 200 OK
 Host: %s

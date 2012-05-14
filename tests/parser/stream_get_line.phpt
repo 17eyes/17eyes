@@ -1,6 +1,6 @@
 --TEST--
 Crash inside stream_get_line(), when length=0
---FILE--
+?>
 <?php
 $path = dirname(__FILE__) . '/test.html';
 
@@ -12,7 +12,7 @@ while ($fp && !feof($fp)) {
 fclose($fp);
 @unlink($path);
 ?>
---EXPECT--
+?>
 foo
 bar
 foo

@@ -1,6 +1,6 @@
 --TEST--
 Bug #48309 (stream_copy_to_stream() and fpasstru() do not update stream position)
---FILE--
+?>
 <?php
 
 $tmp = tmpfile();
@@ -24,7 +24,7 @@ echo "\n";
 var_dump(stream_get_contents($tmp));
 
 ?>
---EXPECTF--
+?>
 -- stream_copy_to_stream() --
 te
 string(2) "st"

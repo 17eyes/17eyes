@@ -2,7 +2,7 @@
 PDO_sqlite: Testing sqliteCreateCollation()
 --SKIPIF--
 <?php if (!extension_loaded('pdo_sqlite')) print 'skip not loaded'; ?>
---FILE--
+?>
 <?php
 
 $db = new pdo('sqlite::memory:');
@@ -29,7 +29,7 @@ foreach ($result as $row) {
 $db->query('DROP TABLE foobar');
 
 ?>
---EXPECTF--
+?>
 1
 2
 10

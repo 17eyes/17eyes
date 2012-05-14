@@ -6,7 +6,7 @@ if (!extension_loaded("mcrypt")) {
 	print "skip - mcrypt extension not loaded"; 
 }	 
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : string mcrypt_encrypt(string cipher, string key, string data, string mode, string iv)
  * Description: OFB crypt/decrypt data using key key with cipher cipher starting with iv 
@@ -119,8 +119,8 @@ foreach($inputs as $valueType =>$value) {
 fclose($fp);
 
 ?>
-===DONE===
---EXPECTF--
+=?>=
+?>
 *** Testing mcrypt_encrypt() : usage variation ***
 
 --int 0--
@@ -206,5 +206,5 @@ string(32) "bfa2cb7240c8d2f6abeb34960c04f6d3"
 --resource--
 Error: 2 - mcrypt_encrypt() expects parameter 2 to be string, resource given, %s(%d)
 string(0) ""
-===DONE===
+=?>=
 

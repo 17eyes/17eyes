@@ -1,6 +1,6 @@
 --TEST--
 Bug #38450 (constructor is not called for classes used in userspace stream wrappers)
---FILE--
+?>
 <?php
 
 class VariableStream {
@@ -101,7 +101,7 @@ var_dump($myvar);
 
 echo "Done\n";
 ?>
---EXPECTF--	
+?>	
 Warning: Missing argument 1 for VariableStream::VariableStream() in %s on line %d
 string(12) "constructor!"
 line1

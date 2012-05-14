@@ -6,7 +6,7 @@ if (!extension_loaded("zlib")) {
 	print "skip - ZLIB extension not loaded"; 
 }
 ?>
---FILE--
+?>
 <?php
 $f = "temp2.txt.gz";
 $h = gzopen($f, 'w');
@@ -21,8 +21,8 @@ gzclose($h);
 unlink($f);
 echo "\n";
 ?>
-===DONE===
---EXPECT--
+=?>=
+?>
 bool(false)
 The first string.The second string.
-===DONE===
+=?>=

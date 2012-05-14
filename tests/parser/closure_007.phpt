@@ -1,6 +1,6 @@
 --TEST--
 Closure 007: Nested lambdas in classes
---FILE--
+?>
 <?php
 
 class A {
@@ -30,7 +30,7 @@ $a->printX();
 
 echo "Done\n";
 ?>
---EXPECT--
+?>
 0
 0
 0

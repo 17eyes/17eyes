@@ -5,7 +5,7 @@ Mike Sullivan <mike@regexia.com>
 #TestFest 2008 (London)
 --SKIPIF--
 <?php require_once('skipif.inc'); ?>
---FILE--
+?>
 <?php
 
 $document = new DOMDocument;
@@ -28,10 +28,10 @@ echo "Comment Content: " . $commentnode->data . "\n";
 echo "\n" . $document->saveXML();
 
 ?>
---EXPECT--
+?>
 Comment Length (one append): 4
 Comment Length (two appends): 8
 Comment Content: data><&"
 
-<?xml version="1.0"?>
+XML version="1.0"?>
 <root><comment><!--data><&"--></comment></root>

@@ -1,12 +1,12 @@
 --TEST--
 Bug #55747 (request headers missed in $_SERVER)
---INI--
+?>
 allow_url_fopen=1
 --SKIPIF--
 <?php
 include "skipif.inc"; 
 ?>
---FILE--
+?>
 <?php
 include "php_cli_server.inc";
 php_cli_server_start('foreach($_SERVER as $k=>$v) { if (!strncmp($k, "HTTP", 4)) var_dump( $k . ":" . $v); }');
@@ -35,7 +35,7 @@ HEADER
 }
 
 ?>
---EXPECTF--	
+?>	
 HTTP/1.1 200 OK
 Host: %s
 Connection: close

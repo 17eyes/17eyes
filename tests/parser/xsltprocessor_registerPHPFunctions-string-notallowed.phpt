@@ -18,7 +18,7 @@ if(!$phpfuncxsl) {
 $proc->importStylesheet($phpfuncxsl);
 var_dump($proc->registerPHPFunctions('strpos'));
 var_dump($proc->transformToXml($dom));
---EXPECTF--
+?>
 NULL
 
 Warning: XSLTProcessor::transformToXml(): Not allowed to call handler 'ucwords()' in %s on line %d

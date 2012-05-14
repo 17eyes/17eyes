@@ -14,7 +14,7 @@ $td  = mcrypt_module_open(MCRYPT_BLOWFISH, '', MCRYPT_MODE_CBC, '');
 echo mcrypt_enc_get_algorithms_name($td) . "\n";
 $td  = mcrypt_module_open('des', '', 'ecb', '');
 echo mcrypt_enc_get_algorithms_name($td) . "\n";
---EXPECT--
+?>
 Rijndael-128
 Rijndael-128
 RC2

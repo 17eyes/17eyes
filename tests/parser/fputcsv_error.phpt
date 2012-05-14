@@ -40,7 +40,7 @@ for($loop_counter = 1; $loop_counter <= count($invalid_args); $loop_counter++) {
 }
 
 echo "Done\n";
---EXPECTF--
+?>
 *** Testing error conditions ***
 -- Testing fputcsv() with zero argument --
 

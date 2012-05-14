@@ -1,6 +1,6 @@
 --TEST--
 Test array_merge_recursive() function : usage variations - binary safe checking
---FILE--
+?>
 <?php
 /* Prototype  : array array_merge_recursive(array $arr1[, array $...])
  * Description: Recursively merges elements from passed arrays into one array
@@ -27,7 +27,7 @@ var_dump( array_merge_recursive($arr1, $arr2) );
 
 echo "Done";
 ?>
---EXPECTF--
+?>
 *** Testing array_merge_recursive() : array with binary data for $arr1 argument ***
 -- With default argument --
 array(5) {

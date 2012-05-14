@@ -5,7 +5,7 @@ Test mb_strrpos() function : basic functionality
 extension_loaded('mbstring') or die('skip');
 function_exists('mb_strrpos') or die("skip mb_strrpos() is not available in this build");
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : int mb_strrpos(string $haystack, string $needle [, int $offset [, string $encoding]])
  * Description: Find position of last occurrence of a string within another 
@@ -40,7 +40,7 @@ var_dump(mb_strrpos($string_mb, $needle2));
 
 echo "Done";
 ?>
---EXPECTF--
+?>
 *** Testing mb_strrpos() : basic ***
 
 -- ASCII string 1 --

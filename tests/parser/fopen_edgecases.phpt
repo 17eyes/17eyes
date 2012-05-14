@@ -2,7 +2,7 @@
 Phar: fopen/stat/fseek/unlink/rename edge cases
 --SKIPIF--
 <?php if (!extension_loaded("phar")) die("skip"); ?>
---INI--
+?>
 phar.readonly=0
 phar.require_hash=0
 --FILE--
@@ -66,12 +66,12 @@ $a = fopen("./notfound.php", "r");
 include $pname . '/test.php';
 ?>
 
-===DONE===
+=?>=
 --CLEAN--
 <?php unlink(dirname(__FILE__) . '/' . basename(__FILE__, '.clean.php') . '.phar.php'); ?>
 <?php unlink(dirname(__FILE__) . '/' . basename(__FILE__, '.clean.php') . '.2.phar.php'); ?>
 <?php unlink(dirname(__FILE__) . '/fopen_edgetest.phar');
---EXPECTF--
+?>
 Warning: fopen(phar://%sfopen_edgecases.phar.php/b/c.php): failed to open stream: phar error: open mode append not supported in %sfopen_edgecases.php on line %d
 
 Warning: fopen(phar://%sfopen_edgecases.phar.php.phar.gz): failed to open stream: phar error: invalid url or non-existent phar "phar://%sfopen_edgecases.phar.php.phar.gz" in %sfopen_edgecases.php on line %d
@@ -121,4 +121,4 @@ Warning: rename(): phar error: cannot rename "phar://%sfopen_edgecases.phar.php/
 
 Warning: fopen(./notfound.php): failed to open stream: No such file or directory in phar://%sfopen_edgecases.phar.php/test.php on line %d
 
-===DONE===
+=?>=

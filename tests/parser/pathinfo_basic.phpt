@@ -1,6 +1,6 @@
 --TEST--
 Test pathinfo() function: basic functionality
---FILE--
+?>
 <?php
 /* Prototype: mixed pathinfo ( string $path [, int $options] );
    Description: Returns information about a file path
@@ -65,7 +65,7 @@ foreach($paths as $path) {
 
 echo "Done\n";
 ?>
---EXPECTF--
+?>
 *** Testing basic functions of pathinfo() ***
 -- Iteration 1 --
 %unicode|string%(%d) "%s/foo"

@@ -20,7 +20,7 @@ var_dump($class->newInstanceWithoutConstructor());
 
 $class = new ReflectionClass('DateTime');
 var_dump($class->newInstanceWithoutConstructor());
---EXPECTF--
+?>
 object(Foo)#%d (0) {
 }
 object(stdClass)#%d (0) {

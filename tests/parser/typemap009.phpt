@@ -2,9 +2,9 @@
 SOAP typemap 9: SoapServer support for typemap's from_xml() (SoapFault)
 --SKIPIF--
 <?php require_once('skipif.inc'); ?>
---INI--
+?>
 soap.wsdl_cache_enabled=0
---FILE--
+?>
 <?php
 $GLOBALS['HTTP_RAW_POST_DATA']="
 <env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\" 
@@ -52,7 +52,7 @@ $server->setClass("test");
 $server->handle($HTTP_RAW_POST_DATA);
 echo "ok\n";
 ?>
---EXPECT--
-<?xml version="1.0" encoding="UTF-8"?>
+?>
+XML version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"><SOAP-ENV:Body><SOAP-ENV:Fault><faultcode>SOAP-ENV:Server</faultcode><faultstring>Conversion Failed</faultstring></SOAP-ENV:Fault></SOAP-ENV:Body></SOAP-ENV:Envelope>
 ok

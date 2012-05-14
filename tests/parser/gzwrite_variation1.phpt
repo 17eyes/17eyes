@@ -6,7 +6,7 @@ if (!extension_loaded("zlib")) {
 	print "skip - ZLIB extension not loaded"; 
 }
 ?>
---FILE--
+?>
 <?php
 
 $filename = dirname(__FILE__)."/004.txt.gz";
@@ -19,9 +19,9 @@ var_dump(gzwrite( $h, $str, $length ) );
 gzclose($h);
 
 ?>
-===DONE===
---EXPECT--
+=?>=
+?>
 int(0)
 string(10) "When you'r"
 int(0)
-===DONE===
+=?>=

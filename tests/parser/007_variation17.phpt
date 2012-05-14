@@ -1,6 +1,6 @@
 --TEST--
 Test fopen and fclose() functions - usage variations - "rb" mode 
---FILE--
+?>
 <?php
 /*
  fopen() function:
@@ -36,11 +36,11 @@ var_dump( fwrite($file_handle, $string) );  //Check for write operation; fails; 
 var_dump( fclose($file_handle) );  //Check for close operation on the file handle
 var_dump( get_resource_type($file_handle) );  //Check whether resource is lost after close operation
 echo "*** Done ***\n"; 
---CLEAN--
+?>
 <?php
 unlink(dirname(__FILE__)."/007_variation17.tmp");
 ?>
---EXPECTF--
+?>
 *** Test fopen() & fclose() functions:  with 'rb' mode ***
 resource(%d) of type (stream)
 string(6) "stream"

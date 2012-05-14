@@ -4,7 +4,7 @@ Test function gzfile() reading a plain relative file
 <?php
 if (!extension_loaded('zlib')) die ('skip zlib extension not available in this build');
 ?>
---FILE--
+?>
 <?php
 $plaintxt = b<<<EOT
 hello world
@@ -24,8 +24,8 @@ var_dump(gzfile( $filename ) );
 unlink($filename);
 rmdir($dirname);
 ?>
-===DONE===
---EXPECT--
+=?>=
+?>
 array(3) {
   [0]=>
   string(12) "hello world
@@ -36,4 +36,4 @@ array(3) {
   [2]=>
   string(17) "for all languages"
 }
-===DONE===
+=?>=

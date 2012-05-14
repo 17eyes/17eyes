@@ -28,7 +28,7 @@ unlink($include_path_nested_file);
 rmdir($include_path_nested);
 unlink($include_path_file);
 rmdir($include_path);
---EXPECTF--
+?>
 Warning: stream_resolve_include_path() expects exactly 1 parameter, 0 given in %s on line %d
 NULL
 bool(false)

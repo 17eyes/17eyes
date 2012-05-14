@@ -3,10 +3,10 @@ Phar context
 --SKIPIF--
 <?php if (!extension_loaded("phar")) die("skip"); ?>
 <?php if (!extension_loaded("zlib")) die("skip zlib not present"); ?>
---INI--
+?>
 phar.require_hash=0
 phar.readonly=0
---FILE--
+?>
 <?php
 $fname = dirname(__FILE__) . '/' . basename(__FILE__, '.php') . '.phar.php';
 $pname = 'phar://' . $fname;
@@ -58,12 +58,12 @@ var_dump(file_get_contents($pname . '/b'));
 var_dump($phar['b']->isCompressed());
 var_dump($phar['b']->getMetaData());
 ?>
-===DONE===
---CLEAN--
+=?>=
+?>
 <?php 
 unlink(dirname(__FILE__) . '/' . basename(__FILE__, '.clean.php') . '.phar.php');
 ?>
---EXPECT--
+?>
 string(1) "a"
 bool(false)
 string(1) "b"
@@ -97,4 +97,4 @@ array(1) {
   [0]=>
   int(4)
 }
-===DONE===
+=?>=

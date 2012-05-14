@@ -5,7 +5,7 @@ Muhammad Khalid Adnan
 # TestFest 2008
 --SKIPIF--
 <?php require_once('skipif.inc'); ?>
---FILE--
+?>
 <?php
 
 $doc = new DOMDocument;
@@ -20,7 +20,7 @@ $node->appendChild($test_attribute);
 echo $doc->saveXML();
 
 ?>
---EXPECT--
-<?xml version="1.0"?>
+?>
+XML version="1.0"?>
 <para hahaha=""/>
 

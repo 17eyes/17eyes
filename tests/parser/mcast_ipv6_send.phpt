@@ -13,7 +13,7 @@ $s = socket_create($domain, SOCK_DGRAM, SOL_UDP) or die("skip Can not create soc
 if (socket_set_option($s, $level, IP_MULTICAST_IF, 1) === false) {
 	die("skip interface 1 either doesn't exist or has no ipv6 address");
 }
---FILE--
+?>
 <?php
 $domain = AF_INET6;
 $level = IPPROTO_IPV6;
@@ -50,7 +50,7 @@ $r = socket_get_option($s, $level, IPV6_MULTICAST_IF);
 var_dump($r);
 echo "\n";
 
---EXPECT--
+?>
 Setting IPV6_MULTICAST_TTL
 bool(true)
 int(9)

@@ -2,7 +2,7 @@
 Test 3: Using Parameters
 --SKIPIF--
 <?php require_once dirname(__FILE__) .'/skipif.inc'; ?>
---FILE--
+?>
 <?php
 echo "Test 3: Using Parameters";
 include("prepare.inc");
@@ -13,9 +13,9 @@ print $proc->transformToXml($dom);
 print "\n";
 
 
---EXPECT--
+?>
 Test 3: Using Parameters
-<?xml version="1.0" encoding="iso-8859-1"?>
+XML version="1.0" encoding="iso-8859-1"?>
 <html><body>hello world
 a1 b1 c1 <br/> 
 a2 c2 <br/> 

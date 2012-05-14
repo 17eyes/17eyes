@@ -12,7 +12,7 @@ $s = serialize($x);
 $s = str_replace("Foo", "Bar", $s);
 $y = unserialize($s);
 var_dump($y);
---EXPECTF--
+?>
 Warning: Class __PHP_Incomplete_Class has no unserializer in %sbug45706.php on line %d
 array(2) {
   [0]=>

@@ -1,6 +1,6 @@
 --TEST--
 Bug #49244 (Floating point NaN cause garbage characters)
---FILE--
+?>
 <?php
 
 for ($i = 0; $i < 10; $i++) {
@@ -9,7 +9,7 @@ for ($i = 0; $i < 10; $i++) {
 }
 
 ?>
---EXPECT--
+?>
 {NaN} NaN
 {NaN} NaN
 {NaN} NaN

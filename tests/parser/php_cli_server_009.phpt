@@ -7,7 +7,7 @@ now could serve correctly with request_uri "index.php" and PATH_INFO "/foo/bar/"
 <?php
 include "skipif.inc"; 
 ?>
---FILE--
+?>
 <?php
 include "php_cli_server.inc";
 php_cli_server_start('var_dump($_SERVER["PATH_INFO"]);', TRUE);
@@ -75,7 +75,7 @@ HEADER
 
 fclose($fp);
 ?>
---EXPECTF--
+?>
 HTTP/1.1 200 OK
 Host: %s
 Connection: close

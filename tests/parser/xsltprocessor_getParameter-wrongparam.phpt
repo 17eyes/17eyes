@@ -12,7 +12,7 @@ include dirname(__FILE__) .'/prepare.inc';
 var_dump($proc->getParameter());
 var_dump($proc->getParameter(array(), array()));
 var_dump($proc->getParameter('', array()));
---EXPECTF--
+?>
 Warning: XSLTProcessor::getParameter() expects exactly 2 parameters, 0 given in %s on line %d
 bool(false)
 

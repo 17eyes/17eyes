@@ -1,6 +1,6 @@
 --TEST--
 Testing 'new static;' calling parent method
---FILE--
+?>
 <?php 
 
 class bar {
@@ -23,7 +23,7 @@ call_user_func(array($foo, 'test'));
 call_user_func(array('foo', 'test'));
 
 ?>
---EXPECTF--
+?>
 object(foo)#%d (0) {
 }
 

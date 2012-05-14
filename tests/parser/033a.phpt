@@ -2,10 +2,10 @@
 Phar::chmod
 --SKIPIF--
 <?php if (!extension_loaded("phar")) die("skip"); ?>
---INI--
+?>
 phar.readonly=1
 phar.require_hash=0
---FILE--
+?>
 <?php
 $fname = dirname(__FILE__) . '/' . basename(__FILE__, '.php') . '.1.phar.php';
 $pname = 'phar://hio';
@@ -25,12 +25,12 @@ try {
 	echo $e->getMessage() . "\n";
 }
 ?>
-===DONE===
---CLEAN--
+=?>=
+?>
 <?php 
 unlink(dirname(__FILE__) . '/' . basename(__FILE__, '.clean.php') . '.1.phar.php');
 ?>
---EXPECTF--
+?>
 bool(false)
 Cannot modify permissions for file "a.php" in phar "%s033a.1.phar.php", write operations are prohibited
-===DONE===
+=?>=

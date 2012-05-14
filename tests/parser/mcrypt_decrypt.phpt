@@ -19,7 +19,7 @@ echo trim(mcrypt_decrypt($cipher, $key, $enc_data, $mode, $iv)) . "\n";
 mcrypt_decrypt($cipher, $key, $enc_data, MCRYPT_MODE_CBC);
 
 var_dump(strpos(mcrypt_decrypt(MCRYPT_BLOWFISH, "FooBar", $enc_data, MCRYPT_MODE_CBC, $iv), "Testfest") !== false);
---EXPECTF--
+?>
 PHP Testfest 2008
 
 Warning: mcrypt_decrypt(): Attempt to use an empty IV, which is NOT recommend in %s on line %d

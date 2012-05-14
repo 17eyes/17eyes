@@ -39,7 +39,7 @@ if (defined("MCAST_JOIN_SOURCE_GROUP")) {
 	}
 }
 
---FILE--
+?>
 <?php
 include __DIR__."/mcast_helpers.php.inc";
 $domain = AF_INET6;
@@ -107,7 +107,7 @@ if ($i == 3) {
 }
 
 }
---EXPECTF--
+?>
 creating send socket
 resource(%d) of type (Socket)
 creating receive socket

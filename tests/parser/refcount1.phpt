@@ -4,10 +4,10 @@ Phar: test that refcounting avoids problems with deleting a file
 <?php if (!extension_loaded("phar")) die("skip"); ?>
 <?php if (!extension_loaded("spl")) die("skip SPL not available"); ?>
 <?php if (version_compare(PHP_VERSION, "5.3", "<")) die("skip requires 5.3 or later"); ?>
---INI--
+?>
 phar.readonly=0
 phar.require_hash=0
---FILE--
+?>
 <?php
 $fname = dirname(__FILE__) . '/' . basename(__FILE__, '.php') . '.phar.php';
 $pname = 'phar://' . $fname;
@@ -36,10 +36,10 @@ var_dump(fread($b, 20));
 include $pname . '/b/c.php';
 ?>
 
-===DONE===
---CLEAN--
+=?>=
+?>
 <?php unlink(dirname(__FILE__) . '/' . basename(__FILE__, '.clean.php') . '.phar.php'); ?>
---EXPECTF--
+?>
 ===CLOSE===
 object(PharFileInfo)#%d (2) {
   [%spathName":%sSplFileInfo":private]=>
@@ -59,4 +59,4 @@ object(PharFileInfo)#%d (2) {
 }
 string(5) "extra"
 extra
-===DONE===
+=?>=

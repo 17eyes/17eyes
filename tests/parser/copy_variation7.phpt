@@ -6,7 +6,7 @@ if(substr(PHP_OS, 0, 3) == "WIN")
   die("skip Invalid for Windows");
 ?>
 
---FILE--
+?>
 <?php
 /* Prototype: bool copy ( string $source, string $dest );
    Description: Makes a copy of the file source to dest.
@@ -55,7 +55,7 @@ clearstatcache();
 echo "*** Done ***\n";
 ?>
 
---CLEAN--
+?>
 <?php
 $file_path = dirname(__FILE__);
 unlink($file_path."/copy_copy_variation7_symlink.tmp");
@@ -65,7 +65,7 @@ unlink($file_path."/copy_variation7_hardlink.tmp");
 unlink($file_path."/copy_variation7.tmp");
 ?>
 
---EXPECTF--
+?>
 *** Testing copy() with symlink and hardlink ***
 Size of source files => 
 int(%d)

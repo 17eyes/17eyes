@@ -2,7 +2,7 @@
 Bug #47849 (Non-deep import loses the namespace).
 --SKIPIF--
 <?php require_once('skipif.inc'); ?>
---FILE--
+?>
 <?php 
 
 $aDOM= new DOMDocument();
@@ -17,6 +17,6 @@ $aDOM->documentElement->appendChild($aDOM->importNode($data));
 echo $aDOM->saveXML();
 
 ?>
---EXPECT--
-<?xml version="1.0"?>
+?>
+XML version="1.0"?>
 <r:root xmlns:r="urn::root"><data xmlns="urn::data"/></r:root>

@@ -1,6 +1,6 @@
 --TEST--
 Trying to access undeclared static property
---FILE--
+?>
 <?php
 
 class bar {
@@ -22,5 +22,5 @@ class foo extends bar {
 new foo;
 
 ?>
---EXPECTF--
+?>
 Fatal error: Access to undeclared static property: foo::$f in %s on line %d

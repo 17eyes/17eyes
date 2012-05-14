@@ -1,6 +1,6 @@
 --TEST--
 SPL: spl_autoload_register() Bug #48541: registering multiple closures fails with memleaks
---FILE--
+?>
 <?php
 
 class X {
@@ -30,10 +30,10 @@ spl_autoload_register($c);
 spl_autoload_register($c2);
 $c = new foo;
 ?>
-===DONE===
---EXPECT--
+=?>=
+?>
 a called
 a2 called
 b called
 foo
-===DONE===
+=?>=

@@ -1,6 +1,6 @@
 --TEST--
 Testing lambda function in set_exception_handler()
---FILE--
+?>
 <?php
 function au($class) {
         eval('class handler {
@@ -23,5 +23,5 @@ set_exception_handler(function($exception) {
 
 throw new Exception('exception');
 ?>
---EXPECT--
+?>
 exception

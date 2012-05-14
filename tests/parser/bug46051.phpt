@@ -10,5 +10,5 @@ $x->openFile(NULL, NULL, NULL);
 } catch (Exception $e) { }
 
 var_dump($x->getPathName());
---EXPECTF--
+?>
 %unicode|string%(%d) "%sbug46051.php"

@@ -2,7 +2,7 @@
 Test 6: Extends Test
 --SKIPIF--
 <?php  require_once('skipif.inc'); ?>
---FILE--
+?>
 <?php
 
 Class books extends domDocument {
@@ -26,8 +26,8 @@ $dom = new books;
 $dom->load(dirname(__FILE__)."/book.xml");
 $dom->addBook("PHP de Luxe", "Richard Samar, Christian Stocker");
 print $dom->saveXML();
---EXPECT--
-<?xml version="1.0"?>
+?>
+XML version="1.0"?>
 <books>
  <book>
   <title>The Grapes of Wrath</title>

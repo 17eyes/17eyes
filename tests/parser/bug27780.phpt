@@ -5,7 +5,7 @@ Bug #27780 (strtotime(+1 xxx) returns a wrong date/time)
 if (defined('PHP_WINDOWS_VERSION_MAJOR')) {
 	die("skip. Not the same TZ on windows.");
 }
---FILE--
+?>
 <?php
 $timezones = array (
 	"America/Chicago", "Europe/Amsterdam", "Asia/Jerusalem",
@@ -41,7 +41,7 @@ foreach ($timezones as $timezone) {
 	echo "\n";
 }
 ?>
---EXPECT--
+?>
 America/Chicago
 1076824799 [2004-02-14 23:59:59 CST] [2004-04-07 00:00:00 -2 months +7 days +23 hours +59 minutes +59 seconds]
 1076824800 [2004-02-15 00:00:00 CST] [2004-04-07 00:00:00 -2 months +7 days +23 hours +59 minutes +60 seconds]

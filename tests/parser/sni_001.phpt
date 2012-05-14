@@ -5,7 +5,7 @@ SNI 001
 	if (!extension_loaded('openssl')) die("skip openssl extension not available");
 	if (!getenv('SNI_TESTS')) die("skip Set SNI_TESTS to enable this test (uses remote resources)");
 ?>
---FILE--
+?>
 <?php
 /* Server Name Indication (SNI) tests
  * 
@@ -147,7 +147,7 @@ stream_context_set_option($context, 'ssl', 'SNI_server_name', str_repeat('a.', 5
 do_enable_crypto_test('tcp://mallory.sni.velox.ch:443', $context);
 
 ?>
---EXPECTF--
+?>
 -- auto host name (1) --
 %unicode|string%(18) "alice.sni.velox.ch"
 -- auto host name (2) --

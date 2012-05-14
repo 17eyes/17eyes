@@ -7,7 +7,7 @@ Dave Kelsey <d_kelsey@uk.ibm.com>
 if (substr(PHP_OS, 0, 3) != 'WIN') {
     die('skip.. only for Windows');
 }
---FILE--
+?>
 <?php
 /* Prototype  : bool touch(string filename [, int time [, int atime]])
  * Description: Set modification time of file 
@@ -150,8 +150,8 @@ function get_atime($path) {
 
 
 ?>
-===DONE===
---EXPECTF--
+=?>=
+?>
 *** Testing touch() : variation ***
 
 *** testing nonexisting paths ***
@@ -226,5 +226,5 @@ PASSED: %s/touchVar5.tmp/aSubDirOrFile/ - touched
 PASSED: touchVar5.tmp//aSubDirOrFile - touched
 --- testing %s//touchVar5.tmp//aSubDirOrFile ---
 PASSED: %s//touchVar5.tmp//aSubDirOrFile - touched
-===DONE===
+=?>=
 

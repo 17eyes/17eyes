@@ -23,7 +23,7 @@ $stmt = $db->prepare('SELECT * FROM test WHERE id = ?');
 $stmt->execute($values);
 var_dump($values);
 
---EXPECT--
+?>
 array(1) {
   [0]=>
   int(1)

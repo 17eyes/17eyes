@@ -8,7 +8,7 @@ if (!extension_loaded("gettext")) {
 if (!setlocale(LC_ALL, 'en_US.UTF-8')) {
     die("skip en_US.UTF-8 locale not supported.");
 }
---FILE--
+?>
 <?php
 chdir(dirname(__FILE__));
 setlocale(LC_MESSAGES, 'en_US.UTF-8');
@@ -17,7 +17,7 @@ bindtextdomain('dngettextTest', './locale');
 
 var_dump(dcgettext('dngettextTest', 'item', LC_CTYPE));
 var_dump(dcgettext('dngettextTest', 'item', LC_MESSAGES));
---EXPECTF--
+?>
 string(8) "cProdukt"
 string(7) "Produkt"
 --CREDITS--

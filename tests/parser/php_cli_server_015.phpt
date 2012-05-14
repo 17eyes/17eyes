@@ -4,9 +4,9 @@ Bug #60523 (PHP Errors are not reported in browsers using built-in SAPI)
 <?php
 include "skipif.inc"; 
 ?>
---INI--
+?>
 display_errors=1
---FILE--
+?>
 <?php
 include "php_cli_server.inc";
 php_cli_server_start('require("syntax_error.php");');
@@ -38,7 +38,7 @@ echo $output;
 @unlink($dir . "/syntax_error.php");
 fclose($fp);
 ?>
---EXPECTF--
+?>
 HTTP/1.1 200 OK
 Host: %s
 Connection: close

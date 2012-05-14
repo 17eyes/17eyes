@@ -5,11 +5,11 @@ Chris Snyder <chsnyder@gmail.com>
 # TestFest 2009 NYPHP
 --SKIPIF--
 <?php require_once('skipif.inc'); ?>
---FILE--
+?>
 <?php
 // create dom document
 $dom = new DOMDocument;
-$xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+$xml = 'XML version="1.0" encoding="UTF-8" standalone="yes"?>
 <!DOCTYPE s1 PUBLIC "http://www.ibm.com/example.dtd" "example.dtd">
 <s1>foo</s1>';
 $dom->loadXML($xml);
@@ -34,14 +34,14 @@ var_dump( $test );
 
 echo "Done";
 ?>
---EXPECT--
+?>
 Standalone DOMDocument created
 Read initial standalone:
 bool(true)
 Set standalone to FALSE, reading again:
 bool(false)
 Document is no longer standalone
-string(136) "<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+string(136) "XML version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE s1 PUBLIC "http://www.ibm.com/example.dtd" "example.dtd">
 <s1>foo</s1>
 "

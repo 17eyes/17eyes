@@ -9,7 +9,7 @@ mysqli_stmt_get_result - data types
 	if (!function_exists('mysqli_stmt_get_result'))
 		die("skip mysqli_stmt_get_result() not available");
 ?>
---FILE--
+?>
 <?php
 	require('connect.inc');
 	if (!$link = my_mysqli_connect($host, $user, $passwd, $db, $port, $socket))
@@ -251,9 +251,9 @@ mysqli_stmt_get_result - data types
 	mysqli_close($link);
 	print "done!";
 ?>
---CLEAN--
+?>
 <?php
 	require_once("clean_table.inc");
 ?>
---EXPECTF--
+?>
 done!

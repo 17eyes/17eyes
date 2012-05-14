@@ -1,6 +1,6 @@
 --TEST--
 Test sha1_file() function with ASCII output and raw binary output. Based on ext/standard/tests/strings/md5_file.phpt
---FILE--
+?>
 <?php
 
 /* Prototype: string sha1_file( string filename[, bool raw_output] )
@@ -69,8 +69,8 @@ unlink("DataFile.txt");
 unlink("EmptyFile.txt");
 
 ?>
-===DONE===
---EXPECTF--
+=?>=
+?>
 *** Testing sha1_file() : basic functionality ***
 
 *** Testing for error conditions ***
@@ -116,4 +116,4 @@ string(40) "d16a568ab98233deff7ec8b1668eb4b3d9e53fee"
 
 -- Raw Binary Output for a valid file with some contents --
 string(40) "d16a568ab98233deff7ec8b1668eb4b3d9e53fee"
-===DONE===
+=?>=

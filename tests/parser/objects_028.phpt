@@ -1,6 +1,6 @@
 --TEST--
 Testing 'static::' and 'parent::' in calls
---FILE--
+?>
 <?php
 
 class bar {
@@ -20,6 +20,6 @@ class foo extends bar {
 new foo;
 
 ?>
---EXPECT--
+?>
 hello
 hello

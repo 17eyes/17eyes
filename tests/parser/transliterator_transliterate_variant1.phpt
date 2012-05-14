@@ -20,7 +20,7 @@ echo transliterator_transliterate(new A(), $str), "\n";
 echo intl_get_error_message(), "\n";
 
 echo "Done.\n";
---EXPECTF--
+?>
 \u0020o
 
 Warning: transliterator_transliterate(): String conversion of id to UTF-16 failed in %s on line %d

@@ -1,6 +1,6 @@
 --TEST--
 Testing method name case
---FILE--
+?>
 <?php
 
 class Foo {
@@ -25,7 +25,7 @@ $a::bAr();
 foo::BAZ();
 
 ?>
---EXPECT--
+?>
 nonstatic
 string(6) "fOoBaR"
 nonstatic

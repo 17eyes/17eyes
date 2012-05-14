@@ -6,7 +6,7 @@ if (@preg_match('/./u', '') === false) {
 	die('skip no utf8 support in PCRE library');
 }
 ?>
---FILE--
+?>
 <?php
 
 $string = b"\xc3\xa9 uma string utf8 bem formada";
@@ -21,7 +21,7 @@ var_dump(preg_last_error() == PREG_NO_ERROR);
 
 echo "Done\n";
 ?>
---EXPECT--
+?>
 bool(false)
 array(0) {
 }

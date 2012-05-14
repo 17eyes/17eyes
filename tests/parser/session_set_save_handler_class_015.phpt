@@ -1,6 +1,6 @@
 --TEST--
 Test session_set_save_handler() : register session handler but don't start
---INI--
+?>
 session.save_handler=files
 session.name=PHPSESSID
 --SKIPIF--
@@ -20,5 +20,5 @@ echo "*** Testing session_set_save_handler() : register session handler but don'
 
 session_set_save_handler(new SessionHandler);
 
---EXPECTF--
+?>
 *** Testing session_set_save_handler() : register session handler but don't start  ***

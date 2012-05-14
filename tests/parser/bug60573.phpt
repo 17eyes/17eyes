@@ -76,7 +76,7 @@ class Bar6 extends Foo6 {
 public function setSelf(Foo6 $s) { }
 
 }
---EXPECTF--
+?>
 Strict Standards: Declaration of Bar4::setSelf() should be compatible with Foo4::setSelf(Foo4 $s) in %sbug60573.php on line %d
 
 Strict Standards: Declaration of Bar5::setSelf() should be compatible with Foo5::setSelf(Base $s) in %sbug60573.php on line %d

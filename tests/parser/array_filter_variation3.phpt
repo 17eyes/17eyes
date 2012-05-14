@@ -1,6 +1,6 @@
 --TEST--
 Test array_filter() function : usage variations - Different types of array for 'input' argument
---FILE--
+?>
 <?php
 /* Prototype  : array array_filter(array $input [, callback $callback])
  * Description: Filters elements from the array via the callback. 
@@ -49,7 +49,7 @@ for($count = 0; $count < count($input_values); $count++)
 
 echo "Done"
 ?>
---EXPECTF--
+?>
 *** Testing array_filter() : usage variations - different types of array for 'input' argument***
 -- Iteration 1 --
 array(5) {

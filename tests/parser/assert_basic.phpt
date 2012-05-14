@@ -1,6 +1,6 @@
 --TEST--
 assert() - basic - check  that assert runs when assert.active is set to 1.
---INI--
+?>
 assert.active = 1
 assert.warning = 0
 assert.callback = f1
@@ -21,7 +21,7 @@ var_dump($r2=assert($sa));
 //Non string assert 
 var_dump($r2=assert(0));
 var_dump($r2=assert(1));
---EXPECTF--
+?>
 f1 called
 NULL
 bool(true)

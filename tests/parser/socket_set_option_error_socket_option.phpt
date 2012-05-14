@@ -26,7 +26,7 @@ socket_close($socket);
 --CLEAN--
 <?php
 unlink(dirname(__FILE__) . '/006_root_check.tmp');
---EXPECTF--
+?>
 Warning: socket_set_option(): unable to set socket option [%d]: Permission denied in %s on line %d
 --CREDITS--
 Moritz Neuhaeuser, info@xcompile.net

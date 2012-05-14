@@ -4,7 +4,7 @@ Test imap_base64() function : basic functionality
 <?php
 extension_loaded('imap') or die('skip imap extension not available in this build');
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : string imap_base64  ( string $text  )
  * Description: Decode BASE64 encoded text.
@@ -39,7 +39,7 @@ if (imap_base64($base64) == $hex) {
 
 ?>
 ===Done===
---EXPECT--
+?>
 *** Testing imap_base64() : basic functionality ***
 TEST PASSED
 TEST PASSED

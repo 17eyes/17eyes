@@ -1,6 +1,6 @@
 --TEST--
 Test copy() function: usage variations - destination file names(numerics/strings)
---FILE--
+?>
 <?php
 /* Prototype: bool copy ( string $source, string $dest );
    Description: Makes a copy of the file source to dest.
@@ -70,12 +70,12 @@ foreach($dest_files as $dest_file) {
 echo "*** Done ***\n";
 ?>
 
---CLEAN--
+?>
 <?php
 unlink(dirname(__FILE__)."/copy_variation1.tmp");
 ?>
 
---EXPECTF--
+?>
 *** Test copy() function: destination file names containing numerics/strings ***
 Size of the source file before copy operation => int(1500)
 

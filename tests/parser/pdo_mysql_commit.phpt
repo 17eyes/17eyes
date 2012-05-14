@@ -9,7 +9,7 @@ $db = MySQLPDOTest::factory();
 if (false == MySQLPDOTest::detect_transactional_mysql_engine($db))
 	die("skip Transactional engine not found");
 ?>
---FILE--
+?>
 <?php
 	require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'mysql_pdo_test.inc');
 	$db = MySQLPDOTest::factory();
@@ -79,12 +79,12 @@ if (false == MySQLPDOTest::detect_transactional_mysql_engine($db))
 	}
 
 	print "done!";
---CLEAN--
+?>
 <?php
 require dirname(__FILE__) . '/mysql_pdo_test.inc';
 $db = MySQLPDOTest::factory();
 $db->exec('DROP TABLE IF EXISTS test_commit');
 MySQLPDOTest::dropTestTable($db);
 ?>
---EXPECT--
+?>
 done!

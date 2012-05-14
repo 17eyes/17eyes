@@ -2,7 +2,7 @@
 Bug #38406 (crash when assigning objects to SimpleXML attributes)
 --SKIPIF--
 <?php if (!extension_loaded("simplexml")) print "skip"; ?>
---FILE--
+?>
 <?php
 
 $item = new SimpleXMLElement(b'<something />');
@@ -17,7 +17,7 @@ $item->$a = new stdclass;
 
 echo "Done\n";
 ?>
---EXPECTF--	
+?>	
 object(SimpleXMLElement)#%d (1) {
   [0]=>
   string(9) "something"

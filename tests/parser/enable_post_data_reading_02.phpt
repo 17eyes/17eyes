@@ -1,6 +1,6 @@
 --TEST--
 enable_post_data_reading: rfc1867
---INI--
+?>
 enable_post_data_reading=0
 --POST_RAW--
 Content-Type: multipart/form-data; boundary=---------------------------20896060251896012921717172737
@@ -15,7 +15,7 @@ Content-Type: text/plain-file
 var_dump($_FILES);
 var_dump($_POST);
 var_dump(file_get_contents("php://input"));
---EXPECTF--
+?>
 array(0) {
 }
 array(0) {

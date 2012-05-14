@@ -19,7 +19,7 @@ $version = $matches[0] * 10000 + $matches[1] * 100 + $matches[2];
 if ($version < 41000)
 	die(sprintf("skip Need MySQL Server 4.1.0+, found %d.%02d.%02d (%d)\n",
 		$matches[0], $matches[1], $matches[2], $version));
---FILE--
+?>
 <?php
 require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'mysql_pdo_test.inc');
 $db = MySQLPDOTest::factory();
@@ -56,7 +56,7 @@ $db->exec('DROP TABLE IF EXISTS test');
 
 print "done!";
 ?>
---EXPECTF--
+?>
 Emulated Prepared Statements...
 array(1) {
   [0]=>

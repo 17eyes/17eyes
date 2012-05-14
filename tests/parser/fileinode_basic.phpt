@@ -1,6 +1,6 @@
 --TEST--
 Test fileinode() function: Basic functionality
---FILE--
+?>
 <?php
 /* 
 Prototype: int fileinode ( string $filename );
@@ -22,11 +22,11 @@ print( fileinode(".") )."\n";
 print( fileinode("./..") )."\n";
 
 echo "\n*** Done ***";
---CLEAN--
+?>
 <?php
 unlink (dirname(__FILE__)."/inode.tmp");
 ?>
---EXPECTF--
+?>
 *** Testing fileinode() with file, directory ***
 %d
 %d

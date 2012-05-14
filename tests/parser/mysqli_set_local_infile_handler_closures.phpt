@@ -22,9 +22,9 @@ if ($msg = check_local_infile_support($link, $engine))
 
 mysqli_close($link);
 ?>
---INI--
+?>
 mysqli.allow_local_infile=1
---FILE--
+?>
 <?php
 	require_once('connect.inc');
 	require_once('local_infile_tools.inc');
@@ -51,11 +51,11 @@ mysqli.allow_local_infile=1
 	mysqli_close($link);
 	print "done!";
 ?>
---CLEAN--
+?>
 <?php
 	require_once("clean_table.inc");
 ?>
---EXPECTF--
+?>
 Callback set to 'Closure object'
 Callback: 0
 Callback: 1

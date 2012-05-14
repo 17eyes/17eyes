@@ -14,12 +14,12 @@ if (posix_geteuid() == 0) {
 if (PHP_VERSION_ID < 503099) {
     die('SKIP Safe mode is no longer available.');
 }
---FILE--
+?>
 <?php
 var_dump(posix_access('/tmp', POSIX_W_OK));
 ?>
-===DONE===
---EXPECTF--
+=?>=
+?>
 Deprecated: Directive 'safe_mode' is deprecated in PHP 5.3 and greater in %s on line %d
 bool(false)
-===DONE===
+=?>=

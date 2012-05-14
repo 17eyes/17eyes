@@ -4,7 +4,7 @@ XMLWriter: PI, Comment, CDATA
 <?php 
 if (!extension_loaded("xmlwriter")) die("skip"); 
 ?>
---FILE--
+?>
 <?php 
 /* $Id: OO_009.phpt 216722 2006-07-19 18:50:51Z pajoye $ */
 /*
@@ -34,8 +34,8 @@ $xw->endDocument();
 $output = $xw->flush(true);
 print $output;
 ?>
---EXPECTF--
-<?xml version="1.0" encoding="UTF-8"?>
+?>
+XML version="1.0" encoding="UTF-8"?>
 <root id="elem1">
  <elem1 attr1="first">
   <!--start PI-->

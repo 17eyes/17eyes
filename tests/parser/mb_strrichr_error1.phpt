@@ -5,7 +5,7 @@ Test mb_strrichr() function : error conditions
 extension_loaded('mbstring') or die('skip');
 function_exists('mb_strrichr') or die("skip mb_strrichr() is not available in this build");
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : string mb_strrichr(string haystack, string needle[, bool part[, string encoding]])
  * Description: Finds the last occurrence of a character in a string within another, case insensitive 
@@ -31,8 +31,8 @@ $haystack = b'string_val';
 var_dump( mb_strrichr($haystack) );
 
 ?>
-===DONE===
---EXPECTF--
+=?>=
+?>
 *** Testing mb_strrichr() : error conditions ***
 
 -- Testing mb_strrichr() function with more than expected no. of arguments --
@@ -44,4 +44,4 @@ bool(false)
 
 Warning: mb_strrichr() expects at least 2 parameters, 1 given in %s on line %d
 bool(false)
-===DONE===
+=?>=

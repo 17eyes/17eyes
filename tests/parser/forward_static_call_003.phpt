@@ -1,6 +1,6 @@
 --TEST--
 forward_static_call() calling outside of the inheritance chain.
---FILE--
+?>
 <?php
 
 class A
@@ -38,8 +38,8 @@ echo "-\n";
 C::test();
 
 ?>
-===DONE===
---EXPECTF--
+=?>=
+?>
 A
 -
 B
@@ -48,4 +48,4 @@ B
 C
 B
 B
-===DONE===
+=?>=

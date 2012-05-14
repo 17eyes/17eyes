@@ -5,10 +5,10 @@ Phar: include/fopen magic zip-based
 if (!extension_loaded("phar")) die("skip");
 if (version_compare(PHP_VERSION, "6.0", "<")) die("skip Unicode support required");
 ?>
---INI--
+?>
 phar.require_hash=0
 phar.readonly=0
---FILE--
+?>
 <?php
 $fname = dirname(__FILE__) . '/' . basename(__FILE__, '.php') . '.phar.zip.php';
 $pname = dirname(__FILE__) . '/' . basename(__FILE__, '.php') . '.phar.zip.php';
@@ -25,17 +25,17 @@ include "phar://" . __FILE__ . "/a";
 __HALT_COMPILER();');
 include $pname;
 ?>
-===DONE===
---CLEAN--
+=?>=
+?>
 <?php 
 unlink(dirname(__FILE__) . '/' . basename(__FILE__, '.clean.php') . '.phar.zip.php');
 __HALT_COMPILER();
 ?>
---EXPECTF--
+?>
 bool(true)
 unicode(%d) "%sphar_magicU.phar.zip.php"
 bool(true)
 in b
 <?php include "b/c.php";
 in d
-===DONE===
+=?>=

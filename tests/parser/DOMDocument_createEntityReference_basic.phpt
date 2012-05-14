@@ -7,13 +7,13 @@ Knut Urdalen <knut@php.net>
 <?php
 require_once dirname(__FILE__) .'/skipif.inc';
 ?>
---FILE--
+?>
 <?php
 $dom = new DOMDocument('1.0');
 $ref = $dom->createEntityReference('nbsp');
 $dom->appendChild($ref);
 echo $dom->saveXML();
 ?>
---EXPECTF--
-<?xml version="1.0"?>
+?>
+XML version="1.0"?>
 &nbsp;

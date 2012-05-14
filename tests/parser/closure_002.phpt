@@ -1,6 +1,6 @@
 --TEST--
 Closure 002: Lambda with lexical variables (global scope)
---FILE--
+?>
 <?php
 
 $x = 4;
@@ -21,7 +21,7 @@ $lambda2();
 
 echo "Done\n";
 ?>
---EXPECT--
+?>
 4
 4
 4

@@ -1,6 +1,6 @@
 --TEST--
 Testing recursion detection with Closures
---FILE--
+?>
 <?php
 
 $x = function () use (&$x) {
@@ -14,7 +14,7 @@ $x = function () use (&$x) {
 var_dump($x());
 
 ?>
---EXPECTF--
+?>
 object(Closure)#%d (1) {
   ["static"]=>
   array(1) {

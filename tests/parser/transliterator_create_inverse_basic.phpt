@@ -24,7 +24,7 @@ echo $recovstr,"\n";
 var_dump(($orstr == $recovstr) == $recovstr2);
 
 echo "Done.\n";
---EXPECT--
+?>
 オーシャンビュー
 ōshanbyū
 オーシャンビュー

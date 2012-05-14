@@ -1,6 +1,6 @@
 --TEST--
 Test fscanf() function: usage variations - string formats with integer values
---FILE--
+?>
 <?php
 
 /*
@@ -86,7 +86,7 @@ $file_path = dirname(__FILE__);
 $filename = "$file_path/fscanf_variation18.tmp";
 unlink($filename);
 ?>
---EXPECTF--
+?>
 *** Test fscanf(): different string format types with integer values ***
 
 -- iteration 1 --

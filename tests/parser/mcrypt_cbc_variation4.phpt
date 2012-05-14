@@ -6,7 +6,7 @@ if (!extension_loaded("mcrypt")) {
 	print "skip - mcrypt extension not loaded"; 
 }	 
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : string mcrypt_cbc(string cipher, string key, string data, int mode, string iv)
  * Description: CBC crypt/decrypt data using key key with cipher cipher starting with iv 
@@ -119,8 +119,8 @@ foreach($inputs as $valueType =>$value) {
 fclose($fp);
 
 ?>
-===DONE===
---EXPECTF--
+=?>=
+?>
 *** Testing mcrypt_cbc() : usage variation ***
 
 --float 10.5--
@@ -202,4 +202,4 @@ string(32) "5f781523f696d596e4b809d72197a0cc"
 
 --resource--
 string(%d) %s
-===DONE===
+=?>=

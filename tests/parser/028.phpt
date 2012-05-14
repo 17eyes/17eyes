@@ -1,6 +1,6 @@
 --TEST--
 Testing calling user-level functions from C
---FILE--
+?>
 <?php
 
 error_reporting(1023);
@@ -53,7 +53,7 @@ print $name=call_user_func(array(&$dafna,"GetMyName"));
 print "\n";
 
 ?>
---EXPECT--
+?>
 0
 Dafna!
 I'm still alive

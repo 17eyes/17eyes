@@ -3,7 +3,7 @@ pcntl_signal()
 --SKIPIF--
 <?php if (!extension_loaded("pcntl")) print "skip"; ?>
 <?php if (!extension_loaded("posix")) die("skip posix extension not available"); ?>
---FILE--
+?>
 <?php
 pcntl_signal(SIGTERM, function($signo){
 	echo "signal dispatched\n";
@@ -22,7 +22,7 @@ var_dump(pcntl_signal(SIGALRM, "not callable"));
 posix_kill(posix_getpid(), SIGTERM);
 echo "ok\n";
 ?>
---EXPECTF--
+?>
 signal dispatched
 
 Warning: pcntl_signal() expects at least 2 parameters, 0 given in %s

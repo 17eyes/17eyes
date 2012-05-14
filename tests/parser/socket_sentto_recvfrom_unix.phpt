@@ -5,7 +5,7 @@ Test if socket_recvfrom() receives data sent by socket_sendto() through a Unix d
 if (!extension_loaded('sockets')) {
     die('SKIP The sockets extension is not loaded.');
 }
---FILE--
+?>
 <?php
     $socket = socket_create(AF_UNIX, SOCK_DGRAM, SOL_UDP); // cause warning
     $socket = socket_create(AF_UNIX, SOCK_DGRAM, 0);
@@ -48,7 +48,7 @@ if (!extension_loaded('sockets')) {
     socket_close($socket);
 	@unlink($address);
 ?>
---EXPECTF--
+?>
 Warning: socket_create(): Unable to create socket [%d]: Protocol not supported in %s on line %d
 
 Warning: socket_recvfrom(): unable to recvfrom [%d]: Resource temporarily unavailable in %s on line %d

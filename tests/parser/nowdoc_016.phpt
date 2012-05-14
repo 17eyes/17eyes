@@ -1,6 +1,6 @@
 --TEST--
 Testing nowdocs with escape sequences
---FILE--
+?>
 <?php 
 
 $test = <<<'TEST'
@@ -33,7 +33,7 @@ TEST;
 var_dump(strlen($test));
 
 ?>
---EXPECT--
+?>
 int(0)
 int(1)
 int(2)

@@ -1,6 +1,6 @@
 --TEST--
 Bug #46426 (3rd parameter offset of stream_get_contents not works for "0")
---FILE--
+?>
 <?php
 
 $tmp = tmpfile();
@@ -24,7 +24,7 @@ echo stream_get_contents($tmp, -1);
 @unlink($tmp);
 
 ?>
---EXPECT--
+?>
 23
 45
 12345

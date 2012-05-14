@@ -1,6 +1,6 @@
 --TEST--
 Test is_scalar() function
---FILE--
+?>
 <?php
 /* Prototype: bool is_scalar ( mixed $var );
  * Description: Finds whether a variable is a scalar (i.e integer, float, string or boolean)
@@ -120,7 +120,7 @@ fclose($fp);
 closedir($dfp);
 
 ?>
---EXPECTF--
+?>
 *** Testing basic operations ***
 -- Iteration 1 --
 bool(true)

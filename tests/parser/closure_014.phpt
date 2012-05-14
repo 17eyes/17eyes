@@ -1,6 +1,6 @@
 --TEST--
 Closure 014: return by value/reference
---FILE--
+?>
 <?php
 class C1 {
 	function __invoke() {
@@ -64,7 +64,7 @@ var_dump($x->__invoke());
 $x();
 $x->__invoke();
 ?>
---EXPECT--
+?>
 int(0)
 int(0)
 int(0)

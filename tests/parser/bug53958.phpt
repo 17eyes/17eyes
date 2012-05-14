@@ -1,6 +1,6 @@
 --TEST--
 Bug #53958 (Closures can't 'use' shared variables by value and by reference)
---FILE--
+?>
 <?php
 // TEST 1
 $a = 1;
@@ -42,7 +42,7 @@ $fn2(); // 5
 $fn1(); // 1
 $fn2(); // 6
 ?>
---EXPECT--
+?>
 1
 1
 1

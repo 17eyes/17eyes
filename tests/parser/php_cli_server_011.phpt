@@ -4,7 +4,7 @@ Bug #60180 ($_SERVER["PHP_SELF"] incorrect)
 <?php
 include "skipif.inc"; 
 ?>
---FILE--
+?>
 <?php
 include "php_cli_server.inc";
 php_cli_server_start('sytanx error;', TRUE);
@@ -37,5 +37,5 @@ HEADER
 fclose($fp);
 
 ?>
---EXPECTF--
+?>
 okey

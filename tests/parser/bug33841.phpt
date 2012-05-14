@@ -21,7 +21,7 @@ $stmt->bindParam(':text', $name);
 $name = 'test2';
 var_dump($stmt->execute(), $stmt->rowCount());
 
---EXPECT--
+?>
 bool(true)
 int(1)
 bool(true)

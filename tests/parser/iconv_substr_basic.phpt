@@ -5,11 +5,11 @@ Test iconv_substr() function : basic functionality
 extension_loaded('iconv') or die('skip');
 function_exists('iconv_substr') or die("skip iconv_substr() is not available in this build");
 ?>
---INI--
+?>
 iconv.input_encoding=ISO-8859-1
 iconv.internal_encoding=ISO-8859-1
 iconv.output_encoding=ISO-8859-1
---FILE--
+?>
 <?php
 /* Prototype  : string iconv_substr(string str, int offset, [int length, string charset])
  * Description: Returns part of a string 
@@ -42,7 +42,7 @@ var_dump(bin2hex($result_2));
 
 echo "Done";
 ?>
---EXPECT--
+?>
 *** Testing iconv_substr() : basic functionality ***
 
 -- ASCII string 1 --

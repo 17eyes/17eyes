@@ -4,9 +4,9 @@ Test is_int() & it's FALIASes: is_long() & is_integer() functions
 <?php
 if (PHP_INT_SIZE != 8) die("skip this test is for 64bit platform only");
 ?>
---INI--
+?>
 precision=14
---FILE--
+?>
 <?php
 /* Prototype: bool is_int ( mixed $var );
  * Description: Finds whether the given variable is an integer  
@@ -147,7 +147,7 @@ var_dump( is_long(TRUE, FALSE) );
  
 echo "Done\n";
 ?>
---EXPECTF--
+?>
 *** Testing is_int(), is_integer() & is_long()  with valid integer values ***
 --Iteration 1--
 bool(true)

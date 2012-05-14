@@ -1,6 +1,6 @@
 --TEST--
 Test session_set_save_handler() : full handler implementation
---INI--
+?>
 session.save_handler=files
 session.name=PHPSESSID
 --SKIPIF--
@@ -89,7 +89,7 @@ var_dump($_SESSION);
 session_write_close();
 session_unset();
 
---EXPECTF--
+?>
 *** Testing session_set_save_handler() : full handler implementation ***
 string(%d) "%s"
 string(4) "user"

@@ -1,6 +1,6 @@
 --TEST--
 Closure 028: Trying to use lambda directly in foreach
---FILE--
+?>
 <?php
 
 foreach (function(){ return 1; } as $y) { 
@@ -10,5 +10,5 @@ foreach (function(){ return 1; } as $y) {
 print "ok\n";
 
 ?>
---EXPECT--
+?>
 ok

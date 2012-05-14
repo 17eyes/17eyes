@@ -12,5 +12,5 @@ curl_setopt($curl, CURLOPT_PRIVATE, "123");
 curl_exec($curl);
 
 var_dump(curl_getinfo($curl, CURLINFO_PRIVATE));
---EXPECT--
+?>
 string(3) "123"

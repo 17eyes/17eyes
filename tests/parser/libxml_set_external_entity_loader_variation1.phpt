@@ -2,7 +2,7 @@
 libxml_set_external_entity_loader() variation: resolve externals and entities
 --SKIPIF--
 <?php if (!extension_loaded('dom')) die('skip'); ?>
---FILE--
+?>
 <?php
 chdir(__DIR__);
 $xml = <<<XML
@@ -43,7 +43,7 @@ var_dump($dd->validate());
 
 echo "Done.\n";
 
---EXPECTF--
+?>
 string(10) "-//FOO/BAR"
 string(25) "http://example.com/foobar"
 array(4) {

@@ -5,7 +5,7 @@
 if (!extension_loaded("gettext")) {
 	die("skip\n");
 }
---FILE--
+?>
 <?php
 $overflown = str_repeat('C', 8476509);
 $msgid     = "msgid";
@@ -35,8 +35,8 @@ var_dump(dgettext($domain, $overflown));
 
 var_dump(textdomain($overflown));
 ?>
-==DONE==
---EXPECTF--
+?>
+?>
 
 Warning: bindtextdomain(): domain passed too long in %s on line %d
 bool(false)
@@ -82,4 +82,4 @@ bool(false)
 
 Warning: textdomain(): domain passed too long in %s on line %d
 bool(false)
-==DONE==
+?>

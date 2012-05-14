@@ -7,7 +7,7 @@ Dave Kelsey <d_kelsey@uk.ibm.com>
 if (substr(PHP_OS, 0, 3) == 'WIN') {
     die('skip Do not run on Windows');
 }
---FILE--
+?>
 <?php
 /* 
 Prototype: int fileinode ( string $filename );
@@ -40,7 +40,7 @@ unlink($file_path."/fileinode_variation1_link.tmp");
 unlink($file_path."/fileinode_variation1.tmp");
 ?>
 
---EXPECTF--
+?>
 *** Testing fileinode() with links ***
 int(%d)
 int(%d)

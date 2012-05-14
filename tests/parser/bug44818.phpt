@@ -1,6 +1,6 @@
 --TEST--
 Bug #44818 (php://memory writeable when opened read only)
---FILE--
+?>
 <?php
 function test($url, $mode) {
 	echo "$url, $mode\n";
@@ -14,7 +14,7 @@ test("php://memory","r+");
 test("php://temp","r");
 test("php://temp","w");
 ?>
---EXPECTF--
+?>
 php://memory, r
 resource(%d) of type (stream)
 int(0)

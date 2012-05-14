@@ -6,7 +6,7 @@ if (!function_exists('crypt') || !defined("CRYPT_SHA512")) {
 	die("SKIP crypt()-sha512 is not available");
 }
 ?> 
---FILE--
+?>
 <?php
 
 $tests = array(
@@ -60,6 +60,6 @@ Got       <$res>\n";
 }
 echo "Passes.";
 ?>
---EXPECTF--
+?>
 Passes.
 

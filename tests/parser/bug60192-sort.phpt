@@ -16,6 +16,6 @@ class Collator2 extends Collator{
 $c = new Collator2();
 $a = array('a', 'b');
 $c->sort($a);
---EXPECTF--
+?>
 
 Catchable fatal error: Collator::sort(): Object not initialized in %s on line %d

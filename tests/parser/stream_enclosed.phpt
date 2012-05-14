@@ -3,7 +3,7 @@ Unexposed/leaked stream encloses another stream
 --SKIPIF--
 <?php
 if (!function_exists('leak_variable')) die("skip only debug builds");
---FILE--
+?>
 <?php
 $s = fopen('php://temp/maxmemory=1024','wb+');
 
@@ -17,4 +17,4 @@ while ($i++ < 5000) {
 
 leak_variable($s, true);
 leak_variable($t, true);
---EXPECT--
+?>

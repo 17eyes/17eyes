@@ -2,10 +2,10 @@
 Bug #30994 (SOAP server unable to handle request with references)
 --SKIPIF--
 <?php require_once('skipif.inc'); ?>
---FILE--
+?>
 <?php
 $HTTP_RAW_POST_DATA = <<<EOF
-<?xml version="1.0" encoding="utf-8"?>
+XML version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
 	xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
 	xmlns:tns="http://spock/kunta/kunta"
@@ -42,6 +42,6 @@ $x = new SoapServer(NULL, array("uri"=>"http://spock/kunta/kunta"));
 $x->addFunction("bassCall");
 $x->handle($HTTP_RAW_POST_DATA);
 ?>
---EXPECT--
-<?xml version="1.0" encoding="UTF-8"?>
+?>
+XML version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://spock/kunta/kunta" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"><SOAP-ENV:Body><ns1:bassCallResponse><return xsi:type="xsd:string">ok</return></ns1:bassCallResponse></SOAP-ENV:Body></SOAP-ENV:Envelope>

@@ -1,6 +1,6 @@
 --TEST--
 ZE2 Late Static Binding using static:: in functions called by non execute() calls and constructors.
---FILE--
+?>
 <?php
 
 class Foo {
@@ -29,7 +29,7 @@ unset($foo);
 unset($fooChild);
 
 ?>
---EXPECTF--
+?>
 Foo::__construct
 FooChild::__construct
 Foo::__destruct

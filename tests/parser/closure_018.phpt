@@ -1,6 +1,6 @@
 --TEST--
 Closure 018: Assigning lambda to static var and returning by ref
---FILE--
+?>
 <?php
 
 class foo {
@@ -21,7 +21,7 @@ var_dump($x = $test->test($y));
 var_dump($y, $x);
 
 ?>
---EXPECT--
+?>
 int(4)
 int(16)
 int(16)

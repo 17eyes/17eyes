@@ -1,6 +1,6 @@
 --TEST--
 Bug #52057 (ReflectionClass fails on Closure class)
---FILE--
+?>
 <?php
 
 $closure = function($a) { echo $a; };
@@ -27,7 +27,7 @@ var_dump($h = $reflection->getMethod('__invoke')); // true
 var_dump($h->class.'::'.$h->getName());
 
 ?>
---EXPECTF--
+?>
 bool(true)
 bool(true)
 bool(true)

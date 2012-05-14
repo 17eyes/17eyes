@@ -24,7 +24,7 @@ var_dump($tr->transliterate(array()));
 transliterator_transliterate($tr, "\x80\x03");
 
 echo "Done.\n";
---EXPECTF--
+?>
 Warning: transliterator_transliterate() expects at least 2 parameters, 0 given in %s on line %d
 
 Warning: transliterator_transliterate(): transliterator_transliterate: bad arguments in %s on line %d

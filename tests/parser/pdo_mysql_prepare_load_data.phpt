@@ -17,7 +17,7 @@ if (($tmp[1] !== 'localhost') && ($tmp[1] !== '127.0.0.1'))
 	die("skip Test cannot be run against remote database server");
 
 ?>
---FILE--
+?>
 <?php
 	function exec_and_count($offset, &$db, $sql, $exp) {
 
@@ -103,12 +103,12 @@ if (($tmp[1] !== 'localhost') && ($tmp[1] !== '127.0.0.1'))
 
 	print "done!";
 ?>
---CLEAN--
+?>
 <?php
 require dirname(__FILE__) . '/mysql_pdo_test.inc';
 MySQLPDOTest::dropTestTable();
 ?>
---EXPECTF--
+?>
 Warning: PDOStatement::execute(): SQLSTATE[HY000]: General error: %s in %s on line %d
 [004] [0] array (
   0 => 'HY000',

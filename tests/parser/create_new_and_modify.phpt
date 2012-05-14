@@ -3,10 +3,10 @@ Phar: create and modify phar
 --SKIPIF--
 <?php if (!extension_loaded("phar")) die("skip"); ?>
 <?php if (!extension_loaded("spl")) die("skip SPL not available"); ?>
---INI--
+?>
 phar.readonly=0
 phar.require_hash=1
---FILE--
+?>
 <?php
 
 $fname = dirname(__FILE__) . '/' . basename(__FILE__, '.php') . '.phar.php';
@@ -35,14 +35,14 @@ include $pname . '/a.php';
 include $pname . '/b.php';
 
 ?>
-===DONE===
---CLEAN--
+=?>=
+?>
 <?php unlink(dirname(__FILE__) . '/' . basename(__FILE__, '.clean.php') . '.phar.php'); ?>
---EXPECTF--
+?>
 brand new!
 string(40) "%s"
 string(40) "%s"
 bool(true)
 modified!
 another!
-===DONE===
+=?>=

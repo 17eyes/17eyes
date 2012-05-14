@@ -17,7 +17,7 @@ $enclosure ="\"";
 var_dump( $fo->fputcsv($fields, $delim, $enclosure, $fo) );
 
 echo "Done\n";
---EXPECTF--
+?>
 *** Testing error conditions ***
 -- Testing fputcsv() with zero argument --
 

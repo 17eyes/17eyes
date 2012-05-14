@@ -5,7 +5,7 @@ Test mb_ereg() function : usage variations - pass different character classes as
 extension_loaded('mbstring') or die('skip');
 function_exists('mb_ereg') or die("skip mb_ereg() is not available in this build");
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : int mb_ereg(string $pattern, string $string [, array $registers])
  * Description: Regular expression match for multibyte string 
@@ -73,7 +73,7 @@ function base64_encode_var_dump($regs) {
 echo "Done";
 
 ?>
---EXPECTF--
+?>
 *** Testing mb_ereg() : usage variations ***
 
 -- Iteration 1 --

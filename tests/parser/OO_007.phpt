@@ -5,7 +5,7 @@ XMLWriter: libxml2 XML Writer, Elements & Attributes
 if (!extension_loaded("xmlwriter")) die("skip"); 
 if (LIBXML_VERSION < 20629) die("skip: libxml2 2.6.29+ required");
 ?>
---FILE--
+?>
 <?php 
 /* $Id: OO_007.phpt 238660 2007-06-26 12:12:31Z tony2001 $ */
 
@@ -30,8 +30,8 @@ $xw->endDocument();
 $output = $xw->flush(true);
 print $output;
 ?>
---EXPECT--
-<?xml version="1.0" encoding="UTF-8"?>
+?>
+XML version="1.0" encoding="UTF-8"?>
 <root>
    <ns1:child1 ns1:att1="a&amp;b" att2="double&quot; single'" ns1:att2="&lt;&gt;&quot;'&amp;" xmlns:ns1="urn:ns1">
       <chars>special characters: &lt;&gt;&quot;'&amp;</chars>

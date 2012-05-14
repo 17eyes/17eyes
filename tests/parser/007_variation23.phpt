@@ -1,6 +1,6 @@
 --TEST--
 Test fopen and fclose() functions - usage variations - "xb" mode 
---FILE--
+?>
 <?php
 /*
  fopen() function:
@@ -38,11 +38,11 @@ var_dump( fclose($file_handle) );  //Check for close operation on the file handl
 var_dump( get_resource_type($file_handle) );  //Check whether resource is lost after close operation
 $file_handle = fopen($file, "xb");  //Opening the existing data file in 'xb' mode to check for the warning message
 echo "*** Done ***\n"; 
---CLEAN--
+?>
 <?php
 unlink(dirname(__FILE__)."/007_variation23.tmp");
 ?>
---EXPECTF--
+?>
 *** Test fopen() & fclose() functions:  with 'xb' mode ***
 resource(%d) of type (stream)
 %unicode|string%(6) "stream"

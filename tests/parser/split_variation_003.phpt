@@ -1,6 +1,6 @@
 --TEST--
 Test split() function : usage variations  - unexpected type for arg 3
---FILE--
+?>
 <?php
 /* Prototype  : proto array split(string pattern, string string [, int limit])
  * Description: Split string into array by regular expression 
@@ -78,7 +78,7 @@ foreach($values as $value) {
 
 echo "Done";
 ?>
---EXPECTF--
+?>
 *** Testing split() : usage variations ***
 
 Arg value 10.5 

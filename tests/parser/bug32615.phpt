@@ -2,7 +2,7 @@
 Bug #32615 (Replacing and inserting Fragments)
 --SKIPIF--
 <?php require_once('skipif.inc'); ?>
---FILE--
+?>
 <?php
 $dom = new DomDocument;
 $frag = $dom->createDocumentFragment();
@@ -71,14 +71,14 @@ $root->replaceChild($frag, $root->firstChild);
 echo $dom->saveXML();
 
 ?>
---EXPECT--
+?>
 
-<?xml version="1.0"?>
+XML version="1.0"?>
 <root><first/><newsecond/><newthird/><newfourth/></root>
 
-<?xml version="1.0"?>
+XML version="1.0"?>
 <root><first/><second/><third/><fourth/></root>
 
-<?xml version="1.0"?>
+XML version="1.0"?>
 <root><second/><third/><fourth/></root>
 

@@ -5,7 +5,7 @@ Michael Stillwell <mjs@beebo.org>
 # TestFest 2008
 --SKIPIF--
 <?php require_once('skipif.inc'); ?>
---FILE--
+?>
 <?php
 
 $dom = new DOMDocument();
@@ -33,15 +33,15 @@ $dom->loadXML('<root><a/><b/></root>');
 var_dump($dom->documentElement->hasChildNodes());
 
 ?>
---EXPECTF--
-<?xml version="1.0"?>
+?>
+XML version="1.0"?>
 <root/>
 Document has child nodes
 bool(false)
 Document has child nodes
 bool(true)
 Remove node and save
-<?xml version="1.0"?>
+XML version="1.0"?>
 <root/>
 Document has child nodes
 bool(false)

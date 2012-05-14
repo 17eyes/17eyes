@@ -1,6 +1,6 @@
 --TEST--
 Closure 036: Rebinding closures, keep calling scope
---FILE--
+?>
 <?php
 
 class A {
@@ -27,7 +27,7 @@ var_dump($cb());
 var_dump($cb2());
 
 ?>
---EXPECTF--
+?>
 int(1)
 int(11)
 int(12)

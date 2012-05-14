@@ -5,7 +5,7 @@ Test iconv_mime_decode() function : usage variations - Pass different data types
 extension_loaded('iconv') or die('skip');
 function_exists('iconv_mime_decode') or die("skip iconv_mime_decode() is not available in this build");
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : string iconv_mime_decode(string encoded_string [, int mode, string charset])
  * Description: Decodes a mime header field
@@ -113,7 +113,7 @@ fclose($fp);
 
 echo "Done";
 ?>
---EXPECTF--
+?>
 *** Testing iconv_mime_decode() : usage variations ***
 
 -- Iteration 1 --

@@ -5,7 +5,7 @@ Test ksort() function : usage variations - sort strings
 if (substr(PHP_OS, 0, 3) == 'WIN') {
   die("skip Output tested contains chars that are not shown the same on windows concole (ESC and co)");
 }
---FILE--
+?>
 <?php
 /* Prototype  : bool ksort ( array &$array [, int $sort_flags] )
  * Description: Sort an array by key, maintaining key to data correlation
@@ -62,7 +62,7 @@ foreach ($various_arrays as $array) {
 
 echo "Done\n";
 ?>
---EXPECTF--
+?>
 *** Testing ksort() : usage variations ***
 
 -- Testing ksort() by supplying various string arrays --

@@ -1,6 +1,6 @@
 --TEST--
 ZE2 Late Static Binding with exceptions 
---FILE--
+?>
 <?php
 function foo() {
     B::throwException();
@@ -67,8 +67,8 @@ A::myCatch();
 echo "via B:\n";
 B::myCatch();
 ?>
-==DONE==
---EXPECTF--
+?>
+?>
 via A:
 A
 A
@@ -89,4 +89,4 @@ B
 B
 B
 B
-==DONE==
+?>

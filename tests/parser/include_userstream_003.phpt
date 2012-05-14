@@ -1,6 +1,6 @@
 --TEST--
 allow_url_fopen disabled
---INI--
+?>
 allow_url_fopen=0
 allow_url_include=1
 --FILE--
@@ -93,7 +93,7 @@ echo file_get_contents("test1://hello"),"\n";
 include "test1://hello";
 echo file_get_contents("test2://hello"),"\n";
 include "test2://hello";
---EXPECTF--
+?>
 Warning: file_get_contents(): test1:// wrapper is disabled in the server configuration by allow_url_fopen=0 in %sinclude_userstream_003.php on line 86
 
 Warning: file_get_contents(test1://hello): failed to open stream: no suitable wrapper could be found in %sinclude_userstream_003.php on line 86

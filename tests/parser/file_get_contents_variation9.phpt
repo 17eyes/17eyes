@@ -7,7 +7,7 @@ Dave Kelsey <d_kelsey@uk.ibm.com>
 if(substr(PHP_OS, 0, 3) == "WIN")
   die("skip Do not run on Windows");
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : string file_get_contents(string filename [, bool use_include_path [, resource context [, long offset [, long maxlen]]]])
  * Description: Read the entire file into a string 
@@ -46,7 +46,7 @@ unlink($filename);
 
 echo "\n*** Done ***\n";
 ?>
---EXPECTF--
+?>
 *** Testing file_get_contents() : variation ***
 string(330) "Here is a repeated amount of dataHere is a repeated amount of dataHere is a repeated amount of dataHere is a repeated amount of dataHere is a repeated amount of dataHere is a repeated amount of dataHere is a repeated amount of dataHere is a repeated amount of dataHere is a repeated amount of dataHere is a repeated amount of data"
 string(330) "Here is a repeated amount of dataHere is a repeated amount of dataHere is a repeated amount of dataHere is a repeated amount of dataHere is a repeated amount of dataHere is a repeated amount of dataHere is a repeated amount of dataHere is a repeated amount of dataHere is a repeated amount of dataHere is a repeated amount of data"

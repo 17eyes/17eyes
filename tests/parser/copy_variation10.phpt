@@ -1,6 +1,6 @@
 --TEST--
 Test copy() function: usage variations - identical names 
---FILE--
+?>
 <?php
 /* Prototype: bool copy ( string $source, string $dest );
    Description: Makes a copy of the file source to dest.
@@ -24,12 +24,12 @@ var_dump( filesize($file) );
 echo "*** Done ***\n";
 ?>
 
---CLEAN--
+?>
 <?php
 unlink(dirname(__FILE__)."/copy_variation10.tmp");
 ?>
 
---EXPECTF--
+?>
 *** Test copy(): Trying to create a copy of file with the same source name ***
 bool(false)
 bool(true)

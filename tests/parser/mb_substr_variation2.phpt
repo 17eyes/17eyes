@@ -5,7 +5,7 @@ Test mb_substr() function : usage variations - Pass different data types as $enc
 extension_loaded('mbstring') or die('skip');
 function_exists('mb_substr') or die("skip mb_substr() is not available in this build");
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : string mb_substr(string $str, int $start [, int $length [, string $encoding]])
  * Description: Returns part of a string 
@@ -109,7 +109,7 @@ foreach($inputs as $input) {
 fclose($fp);
 echo "Done";
 ?>
---EXPECTF--
+?>
 *** Testing mb_substr() : usage variations ***
 
 -- Iteration 1 --

@@ -8,7 +8,7 @@ pcnt_signal_dispatch()
 	elseif (!function_exists("posix_kill")) print "skip posix_kill() not available";
 	elseif (!function_exists("posix_getpid")) print "skip posix_getpid() not available";
 ?>
---FILE--
+?>
 <?php
 
 pcntl_signal(SIGTERM, function ($signo) { echo "Signal handler called!\n"; });
@@ -20,7 +20,7 @@ pcntl_signal_dispatch();
 echo "Done!\n";
 
 ?>
---EXPECTF--
+?>
 Start!
 Signal handler called!
 Done!

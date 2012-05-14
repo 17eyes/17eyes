@@ -4,7 +4,7 @@ Bug #41287 (Writing empty tags with Xmlwriter::WriteElement[ns])
 <?php 
 if (!extension_loaded("xmlwriter")) die("skip"); 
 ?>
---FILE--
+?>
 <?php
 $xml = new XmlWriter();
 $xml->openMemory();
@@ -36,9 +36,9 @@ $xw->endElement();
 $xw->endDocument();
 print $xw->flush(true);
 ?>
---EXPECTF--
+?>
 Warning: XMLWriter::endElement() expects exactly 0 parameters, 1 given in %s on line %d
-<?xml version="1.0"?>
+XML version="1.0"?>
 <test>
  <foo/>
  <foo2></foo2>
@@ -46,7 +46,7 @@ Warning: XMLWriter::endElement() expects exactly 0 parameters, 1 given in %s on 
  <bar/>
 </test>
 
-<?xml version="1.0"?>
+XML version="1.0"?>
 <test:test xmlns:test="urn:x-test:">
  <test:foo></test:foo>
  <bar xmlns="urn:x-test:"></bar>

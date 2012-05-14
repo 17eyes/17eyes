@@ -4,7 +4,7 @@ Bug #60180 ($_SERVER["PHP_SELF"] incorrect)
 <?php
 include "skipif.inc"; 
 ?>
---FILE--
+?>
 <?php
 include "php_cli_server.inc";
 php_cli_server_start('var_dump($_SERVER["PHP_SELF"], $_SERVER["SCRIPT_NAME"], $_SERVER["PATH_INFO"], $_SERVER["QUERY_STRING"]);', TRUE);
@@ -52,7 +52,7 @@ HEADER
 fclose($fp);
 
 ?>
---EXPECTF--
+?>
 HTTP/1.1 200 OK
 Host: %s
 Connection: close

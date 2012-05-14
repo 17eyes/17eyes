@@ -6,7 +6,7 @@ if (substr(PHP_OS, 0, 3) != 'WIN') {
     die('skip Windows-only test');
 }
 ?>
---FILE--
+?>
 <?php
 /*
    Prototype: int fileatime ( string $filename );
@@ -141,7 +141,7 @@ stat_fn("$file_path/005_variation_touch_new.tmp");
 
 echo "Done\n";
 ?>
---CLEAN--
+?>
 <?php
 $file_path = dirname(__FILE__);
 unlink($file_path."/005_variation_softlink.tmp");
@@ -152,7 +152,7 @@ unlink($file_path."/005_variation_touch.tmp");
 unlink($file_path."/005_variation_touch_fly.tmp");
 unlink($file_path."/005_variation_touch_new.tmp");
 ?>
---EXPECTF--
+?>
 *** Testing fileattime(), filemtime(), filectime() & touch() : usage variations ***
 -- File access time is => %d:%s:%s:%d:%d:%d
 -- File modification time is => %d:%s:%s:%d:%d:%d

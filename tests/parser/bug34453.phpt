@@ -2,9 +2,9 @@
 Bug #29839 (incorrect convert (xml:lang to lang))
 --SKIPIF--
 <?php require_once('skipif.inc'); ?>
---INI--
+?>
 soap.wsdl_cache_enabled=0
---FILE--
+?>
 <?php
 
 function EchoString($s) {
@@ -35,9 +35,9 @@ echo $client->__getLastRequest();
 echo $client->__getLastResponse();
 echo "ok\n";
 ?>
---EXPECT--
-<?xml version="1.0" encoding="UTF-8"?>
+?>
+XML version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://test-uri"><SOAP-ENV:Body><string xml:lang="en"><ns1:value>hello</ns1:value></string></SOAP-ENV:Body></SOAP-ENV:Envelope>
-<?xml version="1.0" encoding="UTF-8"?>
+XML version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://test-uri"><SOAP-ENV:Body><string xml:lang="en"><ns1:value>hello</ns1:value></string></SOAP-ENV:Body></SOAP-ENV:Envelope>
 ok

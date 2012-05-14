@@ -1,6 +1,6 @@
 --TEST--
 stream userfilter test
---FILE--
+?>
 <?php
 # vim600:syn=php:
 class testfilter extends php_user_filter {
@@ -32,6 +32,6 @@ var_dump(fgets($fp));
 fclose($fp);
 
 ?>
---EXPECT--
+?>
 params: testuserfilter
 string(12) "HELLO THERE!"

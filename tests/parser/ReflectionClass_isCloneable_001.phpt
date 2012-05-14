@@ -2,7 +2,7 @@
 Testing ReflectionClass::isCloneable()
 --SKIPIF--
 <?php if (!extension_loaded('simplexml') || !extension_loaded('xmlwriter')) die("skip SimpleXML and XMLWriter is required for this test"); ?>
---FILE--
+?>
 <?php
 
 class foo {
@@ -51,7 +51,7 @@ var_dump($obj->isCloneable());
 $h = clone new xmlwriter;
 
 ?>
---EXPECTF--
+?>
 User class
 bool(true)
 bool(true)

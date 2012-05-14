@@ -1,6 +1,6 @@
 --TEST--
 CallbackFilterIterator 002
---FILE--
+?>
 <?php
 
 set_error_handler(function($errno, $errstr){
@@ -41,7 +41,7 @@ try {
 	echo $e->getMessage() . "\n";
 }
 
---EXPECT--
+?>
 CallbackFilterIterator::__construct() expects exactly 2 parameters, 0 given
 Argument 1 passed to CallbackFilterIterator::__construct() must implement interface Iterator, null given
 CallbackFilterIterator::__construct() expects exactly 2 parameters, 1 given

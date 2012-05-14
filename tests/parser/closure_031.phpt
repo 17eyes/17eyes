@@ -1,6 +1,6 @@
 --TEST--
 Closure 031: Closure properties with custom error handlers
---FILE--
+?>
 <?php
 function foo($errno, $errstr, $errfile, $errline) {
 	echo "Error: $errstr\n";
@@ -10,7 +10,7 @@ $foo = function() {
 };
 var_dump($foo->a);
 ?>
---EXPECT--
+?>
 Error: Closure object cannot have properties
 NULL
 

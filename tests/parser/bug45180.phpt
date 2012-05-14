@@ -1,6 +1,6 @@
 --TEST--
 Testing callback formats within class method
---FILE--
+?>
 <?php
 
 class foo {
@@ -38,7 +38,7 @@ $f::$f();
 foo::$f();
 
 ?>
---EXPECT--
+?>
 __call:
 string(3) "ABC"
 __call:

@@ -6,7 +6,7 @@ if (!extension_loaded("mcrypt")) {
 	print "skip - mcrypt extension not loaded"; 
 }	 
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : string mcrypt_decrypt(string cipher, string key, string data, string mode, string iv)
  * Description: OFB crypt/decrypt data using key key with cipher cipher starting with iv 
@@ -64,8 +64,8 @@ function special_var_dump($str) {
    var_dump(bin2hex($str));
 }  
 ?>
-===DONE===
---EXPECTF--
+=?>=
+?>
 *** Testing mcrypt_decrypt() : basic functionality ***
 
 --- testing different key lengths
@@ -98,4 +98,4 @@ iv length=9
 
 Warning: mcrypt_decrypt(): The IV parameter must be as long as the blocksize in %s on line %d
 string(32) "736563726574206d6573736167650000"
-===DONE===
+=?>=

@@ -7,7 +7,7 @@ Closures as a signal handler
 	elseif (!function_exists("posix_kill")) print "skip posix_kill() not available";
 	elseif (!function_exists("posix_getpid")) print "skip posix_getpid() not available";
 ?>
---FILE--
+?>
 <?php
 declare (ticks = 1);
 
@@ -19,7 +19,7 @@ $i = 0; // dummy
 echo "Done!\n";
 
 ?>
---EXPECTF--
+?>
 Start!
 Signal handler called!
 Done!

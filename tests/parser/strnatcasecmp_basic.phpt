@@ -2,7 +2,7 @@
 Test strnatcasecmp() function : basic functionality 
 --CREDITS--
 Felix De Vliegher <felix.devliegher@gmail.com>
---FILE--
+?>
 <?php
 /* Prototype  : int strnatcasecmp(string s1, string s2)
  * Description: Returns the result of case-insensitive string comparison using 'natural' algorithm 
@@ -32,8 +32,8 @@ str_dump('pIc 6', 'pic   7');
 str_dump(0xFFF, 0Xfff);
 
 ?>
-===DONE===
---EXPECT--
+=?>=
+?>
 *** Testing strnatcasecmp() : basic functionality ***
 int(0)
 int(-1)
@@ -48,4 +48,4 @@ int(-1)
 int(0)
 int(-1)
 int(0)
-===DONE===
+=?>=

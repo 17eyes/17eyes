@@ -6,7 +6,7 @@ if (substr(PHP_OS, 0, 3) != 'WIN') {
     die('skip only on Windows');
 }
 ?>
---FILE--
+?>
 <?php
 /* Prototype: string realpath ( string $path );
    Description: Returns canonicalized absolute pathname
@@ -51,7 +51,7 @@ foreach($filenames as $file) {
 
 echo "Done\n";
 ?>
---CLEAN--
+?>
 <?php
 $name_prefix = dirname(__FILE__)."/realpath_basic";
 unlink("$name_prefix/home/test/realpath_basic.tmp");
@@ -61,7 +61,7 @@ rmdir("$name_prefix/home/test/");
 rmdir("$name_prefix/home/");
 rmdir("$name_prefix/");
 ?>
---EXPECTF--
+?>
 *** Testing basic functions of realpath() with files ***
 
 *** Testing realpath() on filenames ***

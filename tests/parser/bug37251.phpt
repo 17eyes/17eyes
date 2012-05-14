@@ -15,5 +15,5 @@ class Foo {
 
 $foo = new Foo();
 $foo->bar();
---EXPECT--
+?>
 OK

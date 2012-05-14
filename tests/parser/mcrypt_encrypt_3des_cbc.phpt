@@ -6,7 +6,7 @@ if (!extension_loaded("mcrypt")) {
 	print "skip - mcrypt extension not loaded"; 
 }	 
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : string mcrypt_encrypt(string cipher, string key, string data, string mode, string iv)
  * Description: OFB crypt/decrypt data using key key with cipher cipher starting with iv 
@@ -57,8 +57,8 @@ foreach ($ivs as $iv) {
 }
 
 ?>
-===DONE===
---EXPECTF--
+=?>=
+?>
 *** Testing mcrypt_encrypt() : TripleDES functionality ***
 
 --- testing different key lengths
@@ -91,4 +91,4 @@ iv length=9
 
 Warning: mcrypt_encrypt(): The IV parameter must be as long as the blocksize in %s on line %d
 string(112) "440a6f54601969b127aad3c217ce7583c7f7b29989693130645569301db0020b29a34a3dcd104b2d0e3ba19d6cbd8a33d352b9c27cc34ef1"
-===DONE===
+=?>=

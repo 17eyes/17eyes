@@ -24,7 +24,7 @@ for ($index = 0; $index < $children->length; $index++) {
 	var_dump($current->textContent);
 }
 
---EXPECTF--
+?>
 bool(true)
 --- child 0 ---
 object(DOMComment)#%d (0) {

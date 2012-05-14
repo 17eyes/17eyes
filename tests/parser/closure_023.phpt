@@ -1,6 +1,6 @@
 --TEST--
 Closure 023: Closure declared in statically called method
---FILE--
+?>
 <?php
 class foo {
     public static function bar() {
@@ -9,6 +9,6 @@ class foo {
     }
 }
 foo::bar();
---EXPECT--
+?>
 Done
 

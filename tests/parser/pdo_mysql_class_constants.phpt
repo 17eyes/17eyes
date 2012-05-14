@@ -81,5 +81,5 @@ require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'skipif.inc');
 	}
 
 	print "done!";
---EXPECT--
+?>
 done!

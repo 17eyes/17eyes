@@ -6,7 +6,7 @@ if (!extension_loaded('sockets')) {
 	die('SKIP sockets extension not available.');
 }
 
---FILE--
+?>
 <?php
 
 var_dump(socket_import_stream());
@@ -22,7 +22,7 @@ var_dump(socket_import_stream($s));
 
 
 echo "Done.";
---EXPECTF--
+?>
 Warning: socket_import_stream() expects exactly 1 parameter, 0 given in %s on line %d
 NULL
 

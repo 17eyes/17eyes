@@ -1,6 +1,6 @@
 --TEST--
 assert() - basic - check switch on warnings using assert_options.
---INI--
+?>
 assert.active = 1
 assert.warning = 0
 assert.callback = f1
@@ -22,7 +22,7 @@ var_dump($r2=assert($sa));
 
 //switch warning on and test return value
 var_dump($rao=assert_options(ASSERT_WARNING, 0));
---EXPECTF--
+?>
 int(0)
 f1 called
 

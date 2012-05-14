@@ -1,6 +1,6 @@
 --TEST--
 Torture the T_END_NOWDOC rules with variable expansions (nowdoc)
---FILE--
+?>
 <?php
 
 require_once 'nowdoc.inc';
@@ -23,7 +23,7 @@ ENDOFNOWDOC;
 print "{$x}";
 
 ?>
---EXPECT--
+?>
 {$fooledYou}ENDOFNOWDOC{$fooledYou}
 ENDOFNOWDOC{$fooledYou}
 {$fooledYou}ENDOFNOWDOC

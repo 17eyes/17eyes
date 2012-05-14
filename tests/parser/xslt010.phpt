@@ -20,7 +20,7 @@ $dom = new domDocument();
   $xml->load(dirname(__FILE__)."/exslt.xml");
   
   print $proc->transformToXml($xml);
---EXPECT--
+?>
 Test 10: EXSLT Support
   
   

@@ -1,6 +1,6 @@
 --TEST--
 Closure 003: Lambda with lexical variables (local scope)
---FILE--
+?>
 <?php
 
 function run () {
@@ -25,7 +25,7 @@ run();
 
 echo "Done\n";
 ?>
---EXPECT--
+?>
 4
 4
 4

@@ -1,6 +1,6 @@
 --TEST--
 Bug #54384: Several SPL classes crash when the parent constructor is not called
---FILE--
+?>
 <?php
 
 function test($f) {
@@ -153,7 +153,7 @@ echo $a,"\n";
 }
 } );
 
---EXPECT--
+?>
 IteratorIterator... exception (expected)
 FilterIterator... exception (expected)
 RecursiveFilterIterator... exception (expected)

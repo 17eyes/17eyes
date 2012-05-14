@@ -1,6 +1,6 @@
 --TEST--
 Test array_walk() function : usage variations - 'input' argument as diff. associative arrays
---FILE--
+?>
 <?php
 /* Prototype  : bool array_walk(array $input, string $funcname [, mixed $userdata])
  * Description: Apply a user function to every member of an array 
@@ -81,7 +81,7 @@ var_dump( array_walk($input, "for_mixed"));
 
 echo "Done"
 ?>
---EXPECTF--
+?>
 *** Testing array_walk() : 'input' as an associative array ***
 -- Associative array with numeric keys --
 int(1)

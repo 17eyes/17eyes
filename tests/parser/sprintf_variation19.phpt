@@ -1,6 +1,6 @@
 --TEST--
 Test sprintf() function : usage variations - string formats with integer values
---FILE--
+?>
 <?php
 /* Prototype  : string sprintf(string $format [, mixed $arg1 [, mixed ...]])
  * Description: Return a formatted string 
@@ -51,7 +51,7 @@ foreach($integer_values as $integer_value) {
 
 echo "Done";
 ?>
---EXPECTF--
+?>
 *** Testing sprintf() : string formats with integer values ***
 
 -- Iteration 1 --

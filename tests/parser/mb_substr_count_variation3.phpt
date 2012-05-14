@@ -5,7 +5,7 @@ Test mb_substr_count() function :usage variations - pass different data types as
 extension_loaded('mbstring') or die('skip');
 function_exists('mb_substr_count') or die("skip mb_substr_count() is not available in this build");
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : int mb_substr_count(string $haystack, string $needle [, string $encoding])
  * Description: Count the number of substring occurrences 
@@ -103,7 +103,7 @@ fclose($fp);
 
 echo "Done";
 ?>
---EXPECTF--
+?>
 *** Testing mb_substr_count() : usage variations ***
 
 -- Iteration 1 --

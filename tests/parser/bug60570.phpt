@@ -2,7 +2,7 @@
 Bug #60570 (Stream context leaks when http request fails)
 --SKIPIF--
 <?php require 'server.inc'; http_server_skipif('tcp://127.0.0.1:12342'); ?>
---INI--
+?>
 allow_url_fopen=1
 allow_url_include=1
 --FILE--
@@ -39,7 +39,7 @@ function do_test() {
 
 do_test();
 
---EXPECTF--
+?>
 Warning: file_get_contents(http://127.0.0.1:12342/): failed to open stream: HTTP request failed! HTTP/1.0 404 Not Found
  in %s on line %d
 

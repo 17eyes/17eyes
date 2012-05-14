@@ -1,6 +1,6 @@
 --TEST--
 Testing disk_total_space() functions : Usage Variations.
---FILE--
+?>
 <?php
 /*
  *  Prototype: float disk_total_space( string directory )
@@ -59,14 +59,14 @@ var_dump( disk_total_space(b"$file_path") );
 echo"\n--- Done ---";
 ?>
 
---CLEAN--
+?>
 <?php
 $file_path = dirname(__FILE__);
 rmdir($file_path."/disk_total_space");
 ?>
 
 
---EXPECTF--
+?>
 *** Testing with a directory ***
 float(%d)
 

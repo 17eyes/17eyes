@@ -6,10 +6,10 @@ SOAP Server 20: compressed request (deflate)
 	require_once('skipif.inc'); 
 	if (!extension_loaded('zlib')) die('skip zlib extension not available');
 ?>
---INI--
+?>
 precision=14
 --POST--
-<?xml version="1.0" encoding="ISO-8859-1"?>
+XML version="1.0" encoding="ISO-8859-1"?>
 <SOAP-ENV:Envelope
   SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
   xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
@@ -22,7 +22,7 @@ precision=14
 </SOAP-ENV:Envelope>
 --DEFLATE_POST--
 1
---FILE--
+?>
 <?php
 function test() {
   return "Hello World";
@@ -33,7 +33,7 @@ $server->addfunction("test");
 $server->handle();
 echo "ok\n";
 ?>
---EXPECT--
-<?xml version="1.0" encoding="UTF-8"?>
+?>
+XML version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://testuri.org" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"><SOAP-ENV:Body><ns1:testResponse><return xsi:type="xsd:string">Hello World</return></ns1:testResponse></SOAP-ENV:Body></SOAP-ENV:Envelope>
 ok

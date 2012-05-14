@@ -1,8 +1,8 @@
 --TEST--
 Test strval() function
---INI--
+?>
 precision=14
---FILE--
+?>
 <?php
 /* Prototype: string strval ( mixed $var );
  * Description: Returns the string value of var
@@ -155,7 +155,7 @@ fclose($fp);
 closedir($dfp);
 
 ?>
---EXPECTF--
+?>
 *** Testing str_val() with scalar values***
 -- Iteration 1 --
 string(1) "0"

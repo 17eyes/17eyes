@@ -2,9 +2,9 @@
 SOAP Interop Round3 GroupE List 004 (php/wsdl): echoLinkedList
 --SKIPIF--
 <?php require_once('skipif.inc'); ?>
---INI--
+?>
 soap.wsdl_cache_enabled=0
---FILE--
+?>
 <?php
 class SOAPList {
     function SOAPList($s, $i, $c) {
@@ -21,10 +21,10 @@ $HTTP_RAW_POST_DATA = $client->__getlastrequest();
 include("round3_groupE_list.inc");
 echo "ok\n";
 ?>
---EXPECT--
-<?xml version="1.0" encoding="UTF-8"?>
+?>
+XML version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://soapinterop.org/WSDLInteropTestRpcEnc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns2="http://soapinterop.org/xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"><SOAP-ENV:Body><ns1:echoLinkedList><param0 xsi:nil="true" xsi:type="ns2:List"/></ns1:echoLinkedList></SOAP-ENV:Body></SOAP-ENV:Envelope>
-<?xml version="1.0" encoding="UTF-8"?>
+XML version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://soapinterop.org/WSDLInteropTestRpcEnc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns2="http://soapinterop.org/xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"><SOAP-ENV:Body><ns1:echoLinkedListResponse><return xsi:nil="true" xsi:type="ns2:List"/></ns1:echoLinkedListResponse></SOAP-ENV:Body></SOAP-ENV:Envelope>
 NULL
 ok

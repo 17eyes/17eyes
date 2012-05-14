@@ -1,6 +1,6 @@
 --TEST--
 jump 05: goto from loop (forward)
---FILE--
+?>
 <?php
 $ar = array("1","2","3");
 foreach ($ar as $val) {
@@ -20,7 +20,7 @@ echo "bug\n";
 L1:
 echo "3: ok\n";
 ?>
---EXPECT--
+?>
 1: ok
 2: ok
 3: ok

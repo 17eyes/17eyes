@@ -1,6 +1,6 @@
 --TEST--
 Test strip_tags() function : usage variations - valid value for 'str' and invalid values for 'allowable_tags'
---INI--
+?>
 short_open_tag = on
 --FILE--
 <?php
@@ -38,7 +38,7 @@ foreach($quotes as $string_value)
 }
 
 echo "Done";
---EXPECTF--
+?>
 *** Testing strip_tags() : usage variations ***
 -- Iteration 1 --
 string(33) "hello 	world... strip_tags_test"

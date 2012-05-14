@@ -10,7 +10,7 @@ var_dump((int)$sock2);
 @fwrite($sock2, "2");
 fclose($sock2);
 fwrite($sock, "3");
---EXPECTF--
+?>
 int(%d)
 int(%d)
 

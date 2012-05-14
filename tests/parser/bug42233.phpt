@@ -1,6 +1,6 @@
 --TEST--
 Bug #42233 (extract(): scandic characters not allowed as variable name)
---FILE--
+?>
 <?php
 
 $test = array(
@@ -17,7 +17,7 @@ var_dump($æøåäö);
 
 echo "Done.\n";
 ?>
---EXPECT--
+?>
 array(3) {
   ["a"]=>
   string(1) "1"

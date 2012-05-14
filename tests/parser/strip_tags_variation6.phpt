@@ -1,8 +1,8 @@
 --TEST--
 Test strip_tags() function : usage variations - binary safe checking
---INI--
+?>
 short_open_tag = on
---FILE--
+?>
 <?php
 /* Prototype  : string strip_tags(string $str [, string $allowable_tags])
  * Description: Strips HTML and PHP tags from a string
@@ -34,7 +34,7 @@ foreach($strings as $value)
 
 echo "Done";
 ?>
---EXPECTF--
+?>
 *** Testing strip_tags() : usage variations ***
 -- Iteration 1 --
 string(18) " I am html string "

@@ -1,6 +1,6 @@
 --TEST--
 __HALT_COMPILER() basic test
---FILE--
+?>
 <?php
 
 $fp = fopen(__FILE__, "r");
@@ -9,5 +9,5 @@ print fread($fp, 1000);
 
 __HALT_COMPILER();
 Overlay information...
---EXPECT--
+?>
 Overlay information...

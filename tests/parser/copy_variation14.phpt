@@ -1,6 +1,6 @@
 --TEST--
 Test copy() function: usage variations - non existing src/dest
---FILE--
+?>
 <?php
 /* Prototype: bool copy ( string $source, string $dest );
    Description: Makes a copy of the file source to dest.
@@ -29,12 +29,12 @@ var_dump( filesize($file) );  //size of the source
 echo "*** Done ***\n";
 ?>
 
---CLEAN--
+?>
 <?php
 unlink(dirname(__FILE__)."/copy_variation14.tmp");
 ?>
 
---EXPECTF--
+?>
 *** Test copy() function: Trying to create a copy of non-existing source in existing destination ***
 Warning: copy(%s): %s
 bool(false)

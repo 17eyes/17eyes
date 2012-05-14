@@ -4,7 +4,7 @@ Bug #43008 (php://filter uris ignore url encoded filternames and can't handle sl
 <?php
 if (!extension_loaded("iconv")) die("skip iconv extension not available");
 ?>
---FILE--
+?>
 <?php
 $url = b""
 	. b"php://filter/read="
@@ -15,5 +15,5 @@ $url = b""
 	. b"/resource=data://text/plain,foob%E2r";
 var_dump(urlencode(file_get_contents($url)));
 ?>
---EXPECTF--
+?>
 string(8) "foob%E2r"

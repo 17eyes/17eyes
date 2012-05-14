@@ -5,7 +5,7 @@ Test mb_strrichr() function : usage variation - multiple needles
 extension_loaded('mbstring') or die('skip');
 function_exists('mb_strrichr') or die("skip mb_strrichr() is not available in this build");
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : string mb_strrichr(string haystack, string needle[, bool part[, string encoding]])
  * Description: Finds the last occurrence of a character in a string within another, case insensitive 
@@ -47,8 +47,8 @@ var_dump(bin2hex(mb_strrichr($string_mb, $needle_mb_mixed, false)));
 var_dump(bin2hex(mb_strrichr($string_mb, $needle_mb_mixed, true)));
 
 ?>
-===DONE===
---EXPECT--
+=?>=
+?>
 *** Testing mb_strrichr() : basic functionality ***
 
 -- ASCII string: needle exists --
@@ -66,4 +66,4 @@ string(20) "ce9cce9dcebecebfcea0"
 string(42) "cebacebbcebccebdcebece9fcea0cea120cebacebb"
 string(20) "ce9cce9dcebecebfcea0"
 string(42) "cebacebbcebccebdcebece9fcea0cea120cebacebb"
-===DONE===
+=?>=

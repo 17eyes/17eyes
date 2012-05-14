@@ -20,7 +20,7 @@ $a = new A();
 $a->foo();
 $b = new B();
 $b->foo();
---EXPECT--
+?>
 bool(true)
 bool(true)
 bool(true)

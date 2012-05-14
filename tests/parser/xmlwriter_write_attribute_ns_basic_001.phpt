@@ -2,7 +2,7 @@
 xmlwriter_write_attribute_ns basic function tests
 --SKIPIF--
 <?php if (!extension_loaded("xmlwriter")) print "skip"; ?>
---FILE--
+?>
 <?php
 $xw = xmlwriter_open_memory();
 xmlwriter_set_indent($xw, TRUE);
@@ -20,8 +20,8 @@ print $output;
 ?>
 --CREDITS--
 Koen Kuipers koenk82@gmail.com
---EXPECT--
-<?xml version="1.0" encoding="UTF-8"?>
+?>
+XML version="1.0" encoding="UTF-8"?>
 <root prefix:id="elem1" xmlns:prefix="http://www.php.net/uri">
  <elem1 attr1="first"/>
 </root>

@@ -1,6 +1,6 @@
 --TEST--
 Testing __call and __callstatic
---FILE--
+?>
 <?php
 
 class a {
@@ -27,7 +27,7 @@ $a->baz();
 a::Foo();
 
 ?>
---EXPECT--
+?>
 __callstatic: Test
 __call: Test
 __call: Bar

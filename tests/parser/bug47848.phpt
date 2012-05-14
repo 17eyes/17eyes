@@ -2,7 +2,7 @@
 Bug #47848 (importNode doesn't preserve attribute namespaces)
 --SKIPIF--
 <?php require_once('skipif.inc'); ?>
---FILE--
+?>
 <?php 
 
 $aDOM = new DOMDocument();
@@ -20,6 +20,6 @@ $aDOM->documentElement->appendChild($aDOM->importNode($attr, true));
 echo $aDOM->saveXML();
 
 ?>
---EXPECT--
-<?xml version="1.0"?>
+?>
+XML version="1.0"?>
 <f2f:a xmlns:f2f="http://friend2friend.net/" xmlns:ai="http://altruists.org" ai:attr="namespaced"/>

@@ -1,6 +1,6 @@
 --TEST--
 Bug #46205 (Closure - Memory leaks when ReflectionException is thrown)
---FILE--
+?>
 <?php
 $x = new reflectionmethod('reflectionparameter', 'export');
 $y = function() { };
@@ -10,5 +10,5 @@ try {
 } catch (Exception $e) { }
 ?>
 ok
---EXPECT--
+?>
 ok

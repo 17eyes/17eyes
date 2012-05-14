@@ -1,8 +1,8 @@
 --TEST--
 Test ob_start() function : closures as output handlers
---INI--
+?>
 output_buffering=0
---FILE--
+?>
 <?php
 echo "*** Testing ob_start() : closures as output handlers ***\n";
 
@@ -27,8 +27,8 @@ ob_end_flush();
 echo $str1, $str2;
 
 ?>
-===DONE===
---EXPECT--
+=?>=
+?>
 *** Testing ob_start() : closures as output handlers ***
 Output (1): Output (2): Test
 With newlines
@@ -36,4 +36,4 @@ Test
 With newlines
 Output (2): Test
 With newlines
-===DONE===
+=?>=

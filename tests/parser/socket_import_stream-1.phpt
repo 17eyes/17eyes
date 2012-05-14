@@ -6,7 +6,7 @@ if (!extension_loaded('sockets')) {
 	die('SKIP sockets extension not available.');
 }
 
---FILE--
+?>
 <?php
 
 $domain = (strtoupper(substr(PHP_OS, 0, 3) == 'WIN') ? STREAM_PF_INET : STREAM_PF_UNIX);
@@ -21,6 +21,6 @@ socket_write($sock, "test message");
 socket_close($sock);
 
 var_dump(stream_get_contents($s1));
---EXPECTF--
+?>
 resource(%d) of type (Socket)
 string(12) "test message"

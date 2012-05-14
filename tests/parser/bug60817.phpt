@@ -28,7 +28,7 @@ while (!feof($f)) {
     var_dump($line);
 }
 
---EXPECT--
+?>
 Read done
 string(1) "a"
 string(2) "bb"

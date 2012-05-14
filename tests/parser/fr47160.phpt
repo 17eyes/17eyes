@@ -1,6 +1,6 @@
 --TEST--
 Calling method from array
---FILE--
+?>
 <?php
 
 class Hello {
@@ -98,7 +98,7 @@ var_dump($f('you'));
 var_dump(call_user_func($f, 'you'));
 
 ?>
---EXPECTF--
+?>
 Strict Standards: Non-static method Hello::world() should not be called statically in %s on line %d
 Hello, you
 

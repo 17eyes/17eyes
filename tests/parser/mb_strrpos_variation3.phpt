@@ -5,7 +5,7 @@ Test mb_strrpos() function : usage variations - Pass different data types as $of
 extension_loaded('mbstring') or die('skip');
 function_exists('mb_strrpos') or die("skip mb_strrpos() is not available in this build");
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : int mb_strrpos(string $haystack, string $needle [, int $offset [, string $encoding]])
  * Description: Find position of last occurrence of a string within another 
@@ -86,7 +86,7 @@ foreach($inputs as $input) {
 
 echo "Done";
 ?>
---EXPECTF--
+?>
 *** Testing mb_strrpos() : usage variations ***
 
 -- Iteration 1 --

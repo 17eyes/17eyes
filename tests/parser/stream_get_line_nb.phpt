@@ -7,7 +7,7 @@ if (!$sockets) die("skip stream_socket_pair() should work");
 fclose($sockets[0]);
 fclose($sockets[1]);
 ?>
---FILE--
+?>
 <?php
 /**
  * Tests that stream_get_line() behaves as documented on non-blocking streams:
@@ -47,7 +47,7 @@ var_dump(stream_get_line($sockets[1], 8192, $eol)); // Returns incomplete line (
 fclose($sockets[1]);
 
 ?>
---EXPECTF--
+?>
 array(2) {
   [0]=>
   resource(%d) of type (stream)

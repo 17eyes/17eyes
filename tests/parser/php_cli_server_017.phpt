@@ -4,7 +4,7 @@ Implement Req #60850 (Built in web server does not set $_SERVER['SCRIPT_FILENAME
 <?php
 include "skipif.inc"; 
 ?>
---FILE--
+?>
 <?php
 include "php_cli_server.inc";
 php_cli_server_start(<<<PHP
@@ -34,7 +34,7 @@ HEADER
 
 fclose($fp);
 ?>
---EXPECTF--
+?>
 HTTP/1.1 200 OK
 Host: %s
 Connection: close

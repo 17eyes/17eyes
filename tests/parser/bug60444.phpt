@@ -14,5 +14,5 @@ class Some {
 }
 new Foo;
 echo "done\n";
---EXPECT--
+?>
 done

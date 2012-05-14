@@ -5,7 +5,7 @@ Nic Rosental nicrosental@gmail.com
 # TestFest Atlanta 2009-5-28 
 --SKIPIF--
 <?php require_once('skipif.inc'); ?>
---FILE--
+?>
 <?php
 
 $document = new DOMDocument;
@@ -20,9 +20,9 @@ $cdata->data = 100;
 print $document->saveXML()."\n";
 
 ?>
---EXPECT--
-<?xml version="1.0"?>
+?>
+XML version="1.0"?>
 <root><![CDATA[t]]></root>
 
-<?xml version="1.0"?>
+XML version="1.0"?>
 <root><![CDATA[100]]></root>

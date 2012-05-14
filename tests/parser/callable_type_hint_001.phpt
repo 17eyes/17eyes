@@ -1,6 +1,6 @@
 --TEST--
 callable type hint#001
---FILE--
+?>
 <?php
 
 class bar {
@@ -17,7 +17,7 @@ foo("foo");
 foo(array("bar", "baz"));
 foo(array("bar", "foo"));
 foo($closure);
---EXPECTF--
+?>
 string(6) "strpos"
 string(3) "foo"
 

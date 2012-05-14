@@ -1,6 +1,6 @@
 --TEST--
 ZE2 Late Static Binding creating a new class with 'static'
---FILE--
+?>
 <?php
 
 class TestClass {
@@ -17,8 +17,8 @@ $childClass = ChildClass::createInstance();
 echo get_class($testClass) . "\n";
 echo get_class($childClass) . "\n";
 ?>
-==DONE==
---EXPECTF--
+?>
+?>
 TestClass
 ChildClass
-==DONE==
+?>

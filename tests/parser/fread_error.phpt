@@ -57,7 +57,7 @@ var_dump( fread(@$fp,10) );
 var_dump( fclose(@$fp) );
 
 echo "Done\n";
---EXPECTF--
+?>
 *** Testing error conditions ***
 -- Testing fread() with zero argument --
 

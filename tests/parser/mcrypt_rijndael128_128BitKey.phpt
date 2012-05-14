@@ -6,7 +6,7 @@ if (!extension_loaded("mcrypt")) {
 	print "skip - mcrypt extension not loaded"; 
 }	 
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : string mcrypt_encrypt(string cipher, string key, string data, string mode, string iv)
  * Description: OFB crypt/decrypt data using key key with cipher cipher starting with iv 
@@ -68,8 +68,8 @@ foreach ($ivs as $iv) {
 }
 
 ?>
-===DONE===
---EXPECTF--
+=?>=
+?>
 *** Testing mcrypt : Rijndael128 functionality ***
 
 --- testing different key lengths
@@ -127,4 +127,4 @@ string(128) "c082b3fabaae4c8c410eb8dba64bae10e48d79b5241fb8f24462cad43bd0b35ad27
 
 Warning: mcrypt_decrypt(): The IV parameter must be as long as the blocksize in %s on line %d
 string(128) "546869732069732074686520736563726574206d657373616765207768696368206d75737420626520656e637279707465640000000000000000000000000000"
-===DONE===
+=?>=

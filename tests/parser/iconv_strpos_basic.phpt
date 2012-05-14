@@ -5,7 +5,7 @@ Test iconv_strpos() function : basic functionality
 extension_loaded('iconv') or die('skip');
 function_exists('iconv_strpos') or die("skip iconv_strpos() is not available in this build");
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : int iconv_strpos(string haystack, string needle [, int offset [, string charset]])
  * Description: Find position of first occurrence of a string within another 
@@ -40,7 +40,7 @@ var_dump(iconv_strpos($string_mb, $needle2));
 
 echo "Done";
 ?>
---EXPECTF--
+?>
 *** Testing iconv_strpos() : basic functionality***
 
 -- ASCII string 1 --

@@ -5,9 +5,9 @@ Phar: opendir test, recurse into
 if (!extension_loaded("phar")) die("skip");
 if (version_compare(PHP_VERSION, "6.0", "<")) die("skip Unicode support required");
 ?>
---INI--
+?>
 phar.require_hash=0
---FILE--
+?>
 <?php
 $fname = dirname(__FILE__) . '/' . basename(__FILE__, '.php') . '.phar.php';
 $pname = 'phar://' . $fname;
@@ -49,9 +49,9 @@ function dump($phar, $base)
 dump('phar://hio', '/');
 
 ?>
---CLEAN--
+?>
 <?php unlink(dirname(__FILE__) . '/' . basename(__FILE__, '.clean.php') . '.phar.php'); ?>
---EXPECT--
+?>
 unicode(11) "phar://hio/"
 unicode(2) "/a"
 bool(false)

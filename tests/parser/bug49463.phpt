@@ -2,7 +2,7 @@
 Bug #49463 (setAttributeNS fails setting default namespace).
 --SKIPIF--
 <?php require_once('skipif.inc'); ?>
---FILE--
+?>
 <?php
 
 $doc = new DOMDocument('1.0', 'utf-8');
@@ -12,6 +12,6 @@ $root->setAttributeNS("http://www.w3.org/2000/xmlns/","xmlns","http://purl.org/r
 
 echo $doc->saveXML()."\n";
 ?>
---EXPECT--
-<?xml version="1.0" encoding="utf-8"?>
+?>
+XML version="1.0" encoding="utf-8"?>
 <rdf:RDF xmlns:rdf="http://purl.org/rss/1.0/" xmlns="http://purl.org/rss/1.0/"/>

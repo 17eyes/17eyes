@@ -1,6 +1,6 @@
 --TEST--
 Test session_set_save_handler() function: interface wrong
---INI--
+?>
 session.save_handler=files
 session.name=PHPSESSID
 --SKIPIF--
@@ -81,7 +81,7 @@ var_dump($ret);
 
 session_start();
 
---EXPECTF--
+?>
 *** Testing session_set_save_handler() function: interface wrong ***
 bool(true)
 

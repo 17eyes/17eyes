@@ -1,6 +1,6 @@
 --TEST--
 Test session_set_save_handler() : basic class wrapping existing handler
---INI--
+?>
 session.save_handler=files
 session.name=PHPSESSID
 --SKIPIF--
@@ -50,7 +50,7 @@ var_dump($_SESSION);
 session_write_close();
 session_unset();
 
---EXPECTF--
+?>
 *** Testing session_set_save_handler() : basic class wrapping existing handler ***
 Open 
 Read %s

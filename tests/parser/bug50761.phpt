@@ -2,9 +2,9 @@
 Bug #50761 (system.multiCall crashes)
 --SKIPIF--
 <?php if (!extension_loaded("xmlrpc")) print "skip"; ?>
---FILE--
+?>
 <?php
-$req = '<?xml version="1.0"?>
+$req = 'XML version="1.0"?>
 <methodCall>
 <methodName>system.multiCall</methodName>
 <params><param><value><array><data>
@@ -30,8 +30,8 @@ xmlrpc_server_register_method($server, 'testMethodB', 'testB');
 $res = xmlrpc_server_call_method($server, $req, null);
 echo $res;
 ?>
---EXPECT--
-<?xml version="1.0" encoding="iso-8859-1"?>
+?>
+XML version="1.0" encoding="iso-8859-1"?>
 <methodResponse>
 <params>
  <param>

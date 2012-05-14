@@ -5,9 +5,9 @@ Bug #40576 (double values are truncated to 6 decimal digits when encoding)
 if (!extension_loaded("xmlrpc")) print "skip";
 if (PHP_INT_SIZE != 8) die("skip this test is for 64bit platform only");
 ?>
---INI--
+?>
 precision=12
---FILE--
+?>
 <?php
 
 var_dump(xmlrpc_encode(1.123456789));
@@ -19,8 +19,8 @@ var_dump(xmlrpc_encode("1.22222222222222222222222"));
 
 echo "Done\n";
 ?>
---EXPECTF--	
-string(125) "<?xml version="1.0" encoding="utf-8"?>
+?>	
+string(125) "XML version="1.0" encoding="utf-8"?>
 <params>
 <param>
  <value>
@@ -29,7 +29,7 @@ string(125) "<?xml version="1.0" encoding="utf-8"?>
 </param>
 </params>
 "
-string(119) "<?xml version="1.0" encoding="utf-8"?>
+string(119) "XML version="1.0" encoding="utf-8"?>
 <params>
 <param>
  <value>
@@ -38,7 +38,7 @@ string(119) "<?xml version="1.0" encoding="utf-8"?>
 </param>
 </params>
 "
-string(116) "<?xml version="1.0" encoding="utf-8"?>
+string(116) "XML version="1.0" encoding="utf-8"?>
 <params>
 <param>
  <value>
@@ -47,7 +47,7 @@ string(116) "<?xml version="1.0" encoding="utf-8"?>
 </param>
 </params>
 "
-string(106) "<?xml version="1.0" encoding="utf-8"?>
+string(106) "XML version="1.0" encoding="utf-8"?>
 <params>
 <param>
  <value>
@@ -56,7 +56,7 @@ string(106) "<?xml version="1.0" encoding="utf-8"?>
 </param>
 </params>
 "
-string(118) "<?xml version="1.0" encoding="utf-8"?>
+string(118) "XML version="1.0" encoding="utf-8"?>
 <params>
 <param>
  <value>
@@ -65,7 +65,7 @@ string(118) "<?xml version="1.0" encoding="utf-8"?>
 </param>
 </params>
 "
-string(139) "<?xml version="1.0" encoding="utf-8"?>
+string(139) "XML version="1.0" encoding="utf-8"?>
 <params>
 <param>
  <value>

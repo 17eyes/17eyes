@@ -2,7 +2,7 @@
 parse_ini_file() multiple calls
 --SKIPIF--
 <?php if( substr(PHP_OS, 0, 3) == 'WIN' ) die("skip Windows has different error message");?>
---FILE--
+?>
 <?php
 
 $filename = dirname(__FILE__)."/parse_ini_file.dat";
@@ -120,7 +120,7 @@ var_dump(parse_ini_file($filename, true));
 @unlink($filename);
 echo "Done\n";
 ?>
---EXPECTF--	
+?>	
 Warning: parse_ini_file() expects at least 1 parameter, 0 given in %sparse_ini_file.php on line 6
 bool(false)
 

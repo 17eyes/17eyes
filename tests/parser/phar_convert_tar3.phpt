@@ -3,10 +3,10 @@ Phar::convertToTar() bz2 compressed
 --SKIPIF--
 <?php if (!extension_loaded("phar")) die("skip"); ?>
 <?php if (!extension_loaded("bz2")) die("skip"); ?>
---INI--
+?>
 phar.require_hash=0
 phar.readonly=0
---FILE--
+?>
 <?php
 
 $fname = dirname(__FILE__) . '/' . basename(__FILE__, '.php') . '.phar.php';
@@ -41,8 +41,8 @@ var_dump($phar->isCompressed() == Phar::BZ2);
 var_dump($phar->getStub());
 
 ?>
-===DONE===
---CLEAN--
+=?>=
+?>
 <?php 
 unlink(dirname(__FILE__) . '/' . basename(__FILE__, '.clean.php') . '.phar.tar.bz2');
 unlink(dirname(__FILE__) . '/' . basename(__FILE__, '.clean.php') . '.2.phar.tar');
@@ -50,7 +50,7 @@ unlink(dirname(__FILE__) . '/' . basename(__FILE__, '.clean.php') . '.phar.tar')
 unlink(dirname(__FILE__) . '/' . basename(__FILE__, '.clean.php') . '.phar.php');
 __HALT_COMPILER();
 ?>
---EXPECT--
+?>
 bool(false)
 bool(false)
 string(48) "<?php echo "first stub\n"; __HALT_COMPILER(); ?>"
@@ -62,4 +62,4 @@ bool(true)
 bool(true)
 string(60) "<?php // tar-based phar archive stub file
 __HALT_COMPILER();"
-===DONE===
+=?>=

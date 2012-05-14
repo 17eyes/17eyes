@@ -1,6 +1,6 @@
 --TEST--
 Closure 001: Lambda without lexical variables
---FILE--
+?>
 <?php
 
 $lambda1 = function () {
@@ -20,7 +20,7 @@ call_user_func($lambda2, "Universe");
 
 echo "Done\n";
 ?>
---EXPECT--	
+?>	
 bool(true)
 bool(true)
 Hello World!

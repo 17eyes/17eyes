@@ -11,7 +11,7 @@ $iv3 = mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB)
 echo strlen($iv1) . "\n";
 echo strlen($iv2) . "\n";
 echo strlen($iv3) . "\n";
---EXPECT--
+?>
 16
 24
 32

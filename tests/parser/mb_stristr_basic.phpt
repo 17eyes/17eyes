@@ -5,7 +5,7 @@ Test mb_stristr() function : basic functionality
 extension_loaded('mbstring') or die('skip');
 function_exists('mb_stristr') or die("skip mb_stristr() is not available in this build");
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : string mb_stristr(string haystack, string needle[, bool part[, string encoding]])
  * Description: Finds first occurrence of a string within another, case insensitive 
@@ -48,8 +48,8 @@ $needle2 = base64_decode("zrzOvs6/");
 var_dump(mb_stristr($string_mb, $needle2));
 
 ?>
-===DONE===
---EXPECT--
+=?>=
+?>
 *** Testing mb_stristr() : basic functionality ***
 
 -- ASCII string: needle exists --
@@ -67,4 +67,4 @@ string(44) "ceb1ceb2ceb3ceb4ceb5ceb6ceb7ceb8ceb9cebacebb"
 
 -- Multibyte string: needle doesn't exist --
 bool(false)
-===DONE===
+=?>=

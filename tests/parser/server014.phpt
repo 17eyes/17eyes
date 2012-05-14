@@ -2,7 +2,7 @@
 SOAP Server 14: fault
 --SKIPIF--
 <?php require_once('skipif.inc'); ?>
---FILE--
+?>
 <?php
 function Add($x,$y) {
   undefined_function_x();
@@ -13,7 +13,7 @@ $server = new soapserver(null,array('uri'=>"http://testuri.org"));
 $server->addfunction("Add");
 
 $HTTP_RAW_POST_DATA = <<<EOF
-<?xml version="1.0" encoding="ISO-8859-1"?>
+XML version="1.0" encoding="ISO-8859-1"?>
 <SOAP-ENV:Envelope
   SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
   xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
@@ -32,6 +32,6 @@ EOF;
 $server->handle($HTTP_RAW_POST_DATA);
 echo "ok\n";
 ?>
---EXPECT--
-<?xml version="1.0" encoding="UTF-8"?>
+?>
+XML version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"><SOAP-ENV:Body><SOAP-ENV:Fault><faultcode>SOAP-ENV:Server</faultcode><faultstring>Call to undefined function undefined_function_x()</faultstring></SOAP-ENV:Fault></SOAP-ENV:Body></SOAP-ENV:Envelope>

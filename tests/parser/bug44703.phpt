@@ -1,6 +1,6 @@
 --TEST--
 Bug #44703 (htmlspecialchars() does not detect bad character set argument)
---FILE--
+?>
 <?php
 
 var_dump(htmlspecialchars(b"<a href='test'>Test</a>", ENT_COMPAT, 1));
@@ -21,7 +21,7 @@ var_dump(htmlspecialchars(b"<>", ENT_COMPAT, 'SjiS'));
 var_dump(htmlspecialchars(b"<>", ENT_COMPAT, str_repeat('a', 100)));
 
 ?>
---EXPECTF--
+?>
 Warning: htmlspecialchars(): charset `1' not supported, assuming utf-8 in %s on line %d
 string(35) "&lt;a href='test'&gt;Test&lt;/a&gt;"
 

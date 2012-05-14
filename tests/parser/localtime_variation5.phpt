@@ -1,6 +1,6 @@
 --TEST--
 Test localtime() function : usage variation - Passing hexa decimal values to timestamp.
---FILE--
+?>
 <?php
 /* Prototype  : array localtime([int timestamp [, bool associative_array]])
  * Description: Returns the results of the C system call localtime as an associative array 
@@ -30,8 +30,8 @@ foreach($inputs as $key =>$value) {
 }
 	  
 ?>
-===DONE===
---EXPECTF--
+=?>=
+?>
 *** Testing localtime() : usage variation ***
 
 --Hexa-decimal 0--
@@ -159,4 +159,4 @@ array(9) {
   ["tm_isdst"]=>
   int(0)
 }
-===DONE===
+=?>=

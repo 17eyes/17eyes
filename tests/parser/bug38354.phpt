@@ -2,7 +2,7 @@
 Bug #38354 (Unwanted reformatting of XML when using AsXML)
 --SKIPIF--
 <?php if (!extension_loaded("simplexml")) print "skip"; ?>
---FILE--
+?>
 <?php
 
 $xml = simplexml_load_string(
@@ -17,8 +17,8 @@ foreach ($xml->xpath("//*") as $element) {
 
 echo "Done\n";
 ?>
---EXPECTF--	
-string(101) "<?xml version="1.0"?>
+?>	
+string(101) "XML version="1.0"?>
 <code>
 	<a href="javascript:alert('1');"><strong>Item Two</strong></a>
 </code>

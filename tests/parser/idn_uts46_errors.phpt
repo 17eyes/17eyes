@@ -6,7 +6,7 @@ IDN UTS #46 API error tests
 		die('skip');
 	if (!defined('INTL_IDNA_VARIANT_UTS46'))
 		die('skip no UTS #46 API');
---FILE--
+?>
 <?php
 ini_set("intl.error_level", E_WARNING);
 echo "=> PHP level errors", "\n";
@@ -39,7 +39,7 @@ var_dump(idn_to_ascii(
 		INTL_IDNA_VARIANT_UTS46, $foo));
 var_dump($foo);
 var_dump($foo["errors"]==IDNA_ERROR_CONTEXTJ);
---EXPECTF--
+?>
 => PHP level errors
 bad args:
 

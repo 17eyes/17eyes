@@ -57,7 +57,7 @@ for ($index = 0; $index < $children->length; $index++) {
 	dumpcourse($current);
 }
 
---EXPECTF--
+?>
 orignal has 5 nodes
 node 4
 Course: no title:object(DOMText)#4 (0) {

@@ -5,7 +5,7 @@ Test fopen and fclose() functions - usage variations - "wt" mode
 if( substr(PHP_OS, 0, 3) != "WIN" )
   die('skip Run only on Windows');
 ?>
---FILE--
+?>
 <?php
 /*
  fopen() function:
@@ -55,11 +55,11 @@ unlink($file);  //Deleting the file
 fclose( fopen($file, "wt") );  //Opening the non-existing file in "wt" mode, which will be created
 var_dump( file_exists($file) );  //Check for the existance of file
 echo "*** Done ***\n"; 
---CLEAN--
+?>
 <?php
 unlink(dirname(__FILE__)."/007_variation11.tmp");
 ?>
---EXPECTF--
+?>
 *** Test fopen() & fclose() functions:  with 'wt' mode ***
 resource(%d) of type (stream)
 string(6) "stream"

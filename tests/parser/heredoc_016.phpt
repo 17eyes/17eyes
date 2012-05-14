@@ -1,6 +1,6 @@
 --TEST--
 Testing heredoc (double quotes) with escape sequences
---FILE--
+?>
 <?php 
 
 $test = <<<"TEST"
@@ -34,7 +34,7 @@ var_dump(strlen($test) == 2);
 
 
 ?>
---EXPECT--
+?>
 bool(true)
 bool(true)
 bool(true)

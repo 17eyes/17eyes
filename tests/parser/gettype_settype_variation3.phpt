@@ -4,9 +4,9 @@ Test gettype() & settype() functions : usage variations
 <?php
 if (PHP_INT_SIZE != 4) die("skip this test is for 32bit platform only");
 ?>
---INI--
+?>
 precision=14
---FILE--
+?>
 <?php
 /* Prototype: string gettype ( mixed $var );
    Description: Returns the type of the PHP variable var
@@ -184,7 +184,7 @@ foreach ($types as $type) {
 
 echo "Done\n";
 ?>
---EXPECTF--	
+?>	
 8: Undefined variable: unset_var
 8: Undefined variable: undef_var
 

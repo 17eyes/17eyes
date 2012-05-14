@@ -1,6 +1,6 @@
 --TEST--
 Bug #60367 (Reflection and Late Static Binding)
---FILE--
+?>
 <?php
 abstract class A {
 
@@ -24,5 +24,5 @@ $method->invokeArgs(null, array());
 $method = new ReflectionMethod("A::call");
 $method->invoke(null);
 $method->invokeArgs(null, array());
---EXPECTF--
+?>
 BBAA

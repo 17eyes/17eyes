@@ -5,7 +5,7 @@ Test filesize() function: usage variations - file size after truncate
 if (substr(PHP_OS, 0, 3) == 'WIN') {
     die('skip only valid for Linux');
 }
---FILE--
+?>
 <?php
 /* 
  Prototype   : int filesize ( string $filename );
@@ -40,7 +40,7 @@ echo "*** Done ***\n";
 $file_path = dirname(__FILE__);
 unlink($file_path."/filesize_variation3.tmp");
 ?>
---EXPECTF--
+?>
 *** Testing filesize(): usage variations ***
 -- Testing filesize() after truncating the file to a new length --
 bool(true)

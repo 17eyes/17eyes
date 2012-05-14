@@ -32,7 +32,7 @@ var_dump($out);
 $my_var = str_repeat('A', 40);
 $out = substr_replace(array(&$my_var), array(new test3), 40, 0);
 var_dump($out);
---EXPECTF--
+?>
 
 Warning: substr_replace(): Argument was modified while replacing in %s on line %d
 array(0) {

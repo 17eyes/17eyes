@@ -16,7 +16,7 @@ function testAccess($c, $ao) {
         unset($ao['prop']);
         var_dump($c->prop, $ao['prop']);
 }
---EXPECTF--
+?>
 Notice: Undefined property: C::$prop in %sbug54323.php on line 14
 
 Notice: Undefined index:  prop in %sbug54323.php on line 14

@@ -15,7 +15,7 @@ echo "\n*** Testing is_exceutable() on non-existent directory ***\n";
 var_dump( is_executable(dirname(__FILE__)."/is_executable") );
 
 echo "Done\n";
---EXPECTF--
+?>
 *** Testing is_executable(): error conditions ***
 
 Warning: is_executable() expects exactly 1 parameter, 0 given in %s on line %d

@@ -12,5 +12,5 @@ $myGlobal=new MyClass($myGlobal);
 $myGlobal->myRef=&$myGlobal;
 $myGlobal->myNonExistentProperty="ok\n";
 echo $myGlobal;
---EXPECT--
+?>
 ok

@@ -2,11 +2,11 @@
 Bug #40836 (Segfault in insertBefore)
 --SKIPIF--
 <?php require_once('skipif.inc'); ?>
---FILE--
+?>
 <?php
 $dom = new DOMDocument("1.0", "UTF-8");
 $dom->preserveWhiteSpace = false;
-$xml = (binary)'<?xml version="1.0" encoding="utf-8"?>
+$xml = (binary)'XML version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   <entry xmlns="http://www.w3.org/2005/Atom">
     <updated>2007-02-14T00:00:00+01:00</updated>
@@ -24,6 +24,6 @@ $dateNode = $entry->getElementsByTagName("updated")->item(0)->firstChild;
 $contentNode->firstChild->insertBefore($dateNode);
 echo $dom->saveXML();
 ?>
---EXPECT--
-<?xml version="1.0" encoding="utf-8"?>
+?>
+XML version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom"><entry xmlns="http://www.w3.org/2005/Atom"><updated/><content><div xmlns="http://www.w3.org/1999/xhtml"><p>paragraph2007-02-14T00:00:00+01:00</p></div></content></entry></feed>

@@ -29,7 +29,7 @@ echo "\n---> 2. Return a value by reference -> Warning:\n";
 
 var_dump (testReturnValByRef());
 
---EXPECTF--
+?>
 ---> 1. Return a variable by reference -> No warning:
 int(1)
 

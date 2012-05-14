@@ -5,7 +5,7 @@ Mike Sullivan <mike@regexia.com>
 #TestFest 2008 (London)
 --SKIPIF--
 <?php require_once('skipif.inc'); ?>
---FILE--
+?>
 <?php
 
 $document = new DOMDocument;
@@ -28,10 +28,10 @@ echo "CDATA Content: " . $cdatanode->data . "\n";
 echo "\n" . $document->saveXML();
 
 ?>
---EXPECT--
+?>
 CDATA Length (one append): 4
 CDATA Length (two appends): 8
 CDATA Content: data><&"
 
-<?xml version="1.0"?>
+XML version="1.0"?>
 <root><cdata><![CDATA[data><&"]]></cdata></root>

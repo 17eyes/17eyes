@@ -37,5 +37,5 @@ $zip->close();
 
 unlink($filename);
 
---EXPECT--
+?>
 files: 1

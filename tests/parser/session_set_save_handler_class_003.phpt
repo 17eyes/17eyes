@@ -1,6 +1,6 @@
 --TEST--
 Test session_set_save_handler() : inheritance
---INI--
+?>
 session.save_handler=files
 session.name=PHPSESSID
 --SKIPIF--
@@ -63,7 +63,7 @@ session_unset();
 
 var_dump(session_id(), $_SESSION, $handler->i);
 
---EXPECTF--
+?>
 *** Testing session_set_save_handler() : inheritance ***
 array(1) {
   ["foo"]=>

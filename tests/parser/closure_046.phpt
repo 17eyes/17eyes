@@ -1,6 +1,6 @@
 --TEST--
 Closure 046: Rebinding: preservation of previous scope when "static" given as scope arg (same as closure #041)
---FILE--
+?>
 <?php
 
 /* It's impossible to preserve the previous scope when doing so would break
@@ -39,7 +39,7 @@ $d = $nonstaticScoped->bindTo(new B, "static"); $d(); echo "\n";
 
 echo "Done.\n";
 
---EXPECTF--
+?>
 Before binding
 bool(false)
 bool(false)

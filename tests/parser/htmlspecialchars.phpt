@@ -1,6 +1,6 @@
 --TEST--
 Test htmlspecialchars() function
---FILE--
+?>
 <?php
 /* Prototype: string htmlspecialchars ( string $string [, int $quote_style [, string $charset]] );
    Description: Convert special characters to HTML entities
@@ -44,7 +44,7 @@ var_dump( htmlspecialchars("<br>",ENT_QUOTES,'iso-8859-1', "test2") );
 
 echo "Done\n"
 ?>
---EXPECTF--
+?>
 *** Retrieving htmlspecialchars for 256 characters ***
 string(12) "636872283029"
 string(12) "636872283129"

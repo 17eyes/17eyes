@@ -7,7 +7,7 @@ require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'mysql_pdo_test.inc');
 MySQLPDOTest::skip();
 $db = MySQLPDOTest::factory();
 ?>
---INI--
+?>
 error_reporting=E_ALL
 --FILE--
 <?php
@@ -158,7 +158,7 @@ error_reporting=E_ALL
 	$db->query('THIS IS NOT VALID SQL');
 
 	print "done!\n";
---EXPECTF--
+?>
 [003] Maybe PDO could indicate that this is not a proper way of setting the ERRMODE...true
 
 Warning: PDO::query(): SQLSTATE[42000]: Syntax error or access violation: %d You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '%s' at line %d in %s on line %d

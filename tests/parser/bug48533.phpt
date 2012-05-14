@@ -1,6 +1,6 @@
 --TEST--
 Bug #48533 (__callStatic is not invoked for private/protected methods)
---FILE--
+?>
 <?php
 
 class foo {
@@ -30,7 +30,7 @@ $x::b();
 $x::c();
 
 ?>
---EXPECTF--
+?>
 %unicode|string%(9) "__call::a"
 int(2)
 %unicode|string%(9) "__call::c"

@@ -1,6 +1,6 @@
 --TEST--
 Reflection on closures: Segfault with getClosure() on closure itself
---FILE-- 
+?> 
 <?php
 $closure = function() { echo "Invoked!\n"; };
 
@@ -30,8 +30,8 @@ $closure2 ();
 $closure2->__invoke ();
 
 ?>
-===DONE===
---EXPECTF--
+=?>=
+?>
 Invoked!
 Invoked!
 Invoked!
@@ -40,4 +40,4 @@ Invoked!
 Invoked!
 Invoked!
 Invoked!
-===DONE===
+=?>=

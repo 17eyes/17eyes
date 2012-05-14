@@ -2,7 +2,7 @@
 Bug #50285 (xmlrpc does not preserve keys in encoded indexed arrays)
 --SKIPIF--
 <?php if (!extension_loaded("xmlrpc")) print "skip"; ?>
---FILE--
+?>
 <?php
 
 function test1($func, $params) {
@@ -24,7 +24,7 @@ function test4($func, $params) {
 $server = xmlrpc_server_create();
 $result = xmlrpc_server_register_method($server, 'test1', 'test1');
 $HTTP_RAW_POST_DATA = <<<EOD
-<?xml version="1.0" encoding="UTF-8"?>
+XML version="1.0" encoding="UTF-8"?>
 <methodCall>
 <methodName>test1</methodName>
 <params />
@@ -38,7 +38,7 @@ var_dump(xmlrpc_decode($response));
 $server = xmlrpc_server_create();
 $result = xmlrpc_server_register_method($server, 'test2', 'test2');
 $HTTP_RAW_POST_DATA = <<<EOD
-<?xml version="1.0" encoding="UTF-8"?>
+XML version="1.0" encoding="UTF-8"?>
 <methodCall>
 <methodName>test2</methodName>
 <params />
@@ -52,7 +52,7 @@ var_dump(xmlrpc_decode($response));
 $server = xmlrpc_server_create();
 $result = xmlrpc_server_register_method($server, 'test3', 'test3');
 $HTTP_RAW_POST_DATA = <<<EOD
-<?xml version="1.0" encoding="UTF-8"?>
+XML version="1.0" encoding="UTF-8"?>
 <methodCall>
 <methodName>test3</methodName>
 <params />
@@ -66,7 +66,7 @@ var_dump(xmlrpc_decode($response));
 $server = xmlrpc_server_create();
 $result = xmlrpc_server_register_method($server, 'test4', 'test4');
 $HTTP_RAW_POST_DATA = <<<EOD
-<?xml version="1.0" encoding="UTF-8"?>
+XML version="1.0" encoding="UTF-8"?>
 <methodCall>
 <methodName>test4</methodName>
 <params />
@@ -76,7 +76,7 @@ $response = xmlrpc_server_call_method($server, $HTTP_RAW_POST_DATA, null);
 var_dump(xmlrpc_decode($response));
 
 ?>
---EXPECT--
+?>
 array(3) {
   [1]=>
   string(3) "One"

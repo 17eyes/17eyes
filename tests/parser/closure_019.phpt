@@ -1,6 +1,6 @@
 --TEST--
 Closure 019: Calling lambda using $GLOBALS and global $var
---FILE--
+?>
 <?php
 
 $lambda = function &(&$x) {
@@ -19,7 +19,7 @@ function test() {
 test();
 
 ?>
---EXPECTF--
+?>
 int(9)
 int(81)
 

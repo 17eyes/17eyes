@@ -1,6 +1,6 @@
 --TEST--
 ZE2 Late Static Binding within hooks/magic methods
---FILE--
+?>
 <?php
 
 class TestChild extends TestParent {
@@ -33,9 +33,9 @@ $o->test();
 $o->a = "b";
 echo $o->a;
 ?>
-==DONE==
---EXPECTF--
+?>
+?>
 TestChild
 TestChild
 TestChild
-==DONE==
+?>

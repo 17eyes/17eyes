@@ -1,6 +1,6 @@
 --TEST--
 empty doc test (nowdoc)
---FILE--
+?>
 <?php
 
 require_once 'nowdoc.inc';
@@ -14,4 +14,4 @@ ENDOFNOWDOC;
 print "{$x}";
 
 ?>
---EXPECT--
+?>

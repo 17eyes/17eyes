@@ -4,7 +4,7 @@ No router, no script
 <?php
 include "skipif.inc"; 
 ?>
---FILE--
+?>
 <?php
 include "php_cli_server.inc";
 php_cli_server_start(NULL, TRUE);
@@ -79,7 +79,7 @@ HEADER
 echo preg_replace("/<style type=\"text\/css\">(.*?)<\/style>/s", "<style type=\"text/css\">AAA</style>", $output), "\n";
 fclose($fp);
 ?>
---EXPECTF--
+?>
 
 HTTP/1.1 404 Not Found
 Host: %s

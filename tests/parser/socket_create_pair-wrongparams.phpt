@@ -5,7 +5,7 @@ Test parameter handling in socket_create_pair()
 if (!extension_loaded('sockets')) {
     die('SKIP The sockets extension is not loaded.');
 }
---FILE--
+?>
 <?php
 var_dump(socket_create_pair(AF_INET, null, null));
 
@@ -17,7 +17,7 @@ var_dump(socket_create_pair(AF_INET, null, null, $sockets));
 var_dump(socket_create_pair(31337, null, null, $sockets));
 
 var_dump(socket_create_pair(AF_INET, 31337, 0, $sockets));
---EXPECTF--
+?>
 Warning: socket_create_pair() expects exactly 4 parameters, 3 given in %s on line %d
 NULL
 

@@ -5,7 +5,7 @@ Test mb_stripos() function : basic functionality
 extension_loaded('mbstring') or die('skip');
 function_exists('mb_stripos') or die("skip mb_stripos() is not available in this build");
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : int mb_stripos(string haystack, string needle [, int offset [, string encoding]])
  * Description: Finds position of first occurrence of a string within another, case insensitive 
@@ -71,7 +71,7 @@ foreach ($greek_needles as $needle) {
 
 echo "Done";
 ?>
---EXPECTF--
+?>
 *** Testing mb_stripos() : basic functionality***
 
  -- ASCII Strings --

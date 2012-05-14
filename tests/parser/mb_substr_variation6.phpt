@@ -5,7 +5,7 @@ Test mb_substr() function : usage variations - pass different integers to $start
 extension_loaded('mbstring') or die('skip');
 function_exists('mb_substr') or die("skip mb_substr() is not available in this build");
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : string mb_substr(string $str, int $start [, int $length [, string $encoding]])
  * Description: Returns part of a string 
@@ -54,7 +54,7 @@ for ($i = -60; $i <= 60; $i += 10) {
 
 echo "Done";
 ?>
---EXPECT--
+?>
 *** Testing mb_substr() : usage variations ***
 
 **-- Offset is: -60 --**

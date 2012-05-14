@@ -5,7 +5,7 @@ stream_copy_to_stream() with socket as $source
 $sockets = @stream_socket_pair(STREAM_PF_UNIX, STREAM_SOCK_STREAM, 0);
 if (!$sockets) die("skip stream_socket_pair");
 ?>
---FILE--
+?>
 <?php
 
 $sockets = stream_socket_pair(STREAM_PF_UNIX, STREAM_SOCK_STREAM, 0);
@@ -25,6 +25,6 @@ var_dump(stream_get_contents($tmp));
 
 
 ?>
---EXPECT--
+?>
 string(1) "a"
 string(1) "a"

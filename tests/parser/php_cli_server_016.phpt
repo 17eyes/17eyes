@@ -7,7 +7,7 @@ and require php compiled with --enable-debug
 <?php
 include "skipif.inc"; 
 ?>
---FILE--
+?>
 <?php
 include "php_cli_server.inc";
 php_cli_server_start(<<<PHP
@@ -42,5 +42,5 @@ HEADER
 
 fclose($fp);
 ?>
---EXPECTF--
+?>
 HTTP/1.1 404 Not Found

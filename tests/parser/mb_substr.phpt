@@ -2,10 +2,10 @@
 mb_substr()
 --SKIPIF--
 <?php extension_loaded('mbstring') or die('skip mbstring not available'); ?>
---INI--
+?>
 output_handler=
 mbstring.func_overload=0
---FILE--
+?>
 <?php
 // TODO: Add more encodings
 ini_set('include_path','.');
@@ -26,7 +26,7 @@ $str = mb_substr($euc_jp, -100, 10,'EUC-JP');
 
 ?>
 
---EXPECT--
+?>
 1: c6fccbdcb8eca4c7a4b9a1a34555432d
 2: 30313233a4b3a4cecab8bbfacef3a4cfc6fccbdcb8eca4c7a4b9a1a34555432d4a50a4f2bbc8a4c3a4c6a4a4a4dea4b9a1a3c6fccbdcb8eca4cfccccc5ddbdada4a4a1a3
 3 OK

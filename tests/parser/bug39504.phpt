@@ -4,7 +4,7 @@ Bug #39504 (xmlwriter_write_dtd_entity() creates Attlist tag, not enity)
 <?php 
 if (!extension_loaded("xmlwriter")) die("skip"); 
 ?>
---FILE--
+?>
 <?php
 
 $xw = xmlwriter_open_memory();
@@ -28,9 +28,9 @@ $xw->endDocument();
 print $xw->flush(true);
 
 ?>
---EXPECTF--
-<?xml version="1.0" encoding="UTF-8"?>
+?>
+XML version="1.0" encoding="UTF-8"?>
 <!DOCTYPE root [<!ENTITY ent2 "val2">]><root/>
 
-<?xml version="1.0" encoding="UTF-8"?>
+XML version="1.0" encoding="UTF-8"?>
 <!DOCTYPE root [<!ENTITY c PUBLIC "-//W3C//TEXT copyright//EN" "http://www.w3.org/xmlspec/copyright.xml">]><root/>

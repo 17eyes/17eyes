@@ -5,7 +5,7 @@ Test mb_ereg_match() function : basic functionality
 extension_loaded('mbstring') or die('skip');
 function_exists('mb_ereg_match') or die("skip mb_ereg_match() is not available in this build");
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : bool mb_ereg_match(string $pattern, string $string [,string $option])
  * Description: Regular expression match for multibyte string 
@@ -41,7 +41,7 @@ var_dump(mb_ereg_match($regex2, $string_mb));
 
 echo "Done";
 ?>
---EXPECTF--
+?>
 
 *** Testing mb_ereg_match() : basic functionality ***
 

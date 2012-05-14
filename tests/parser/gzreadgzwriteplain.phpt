@@ -3,7 +3,7 @@ gzopen(), gzread(), gzwrite() for non-compressed data
 --SKIPIF--
 <?php # vim600:syn=php:
 if (!extension_loaded("zlib")) print "skip"; ?>
---FILE--
+?>
 <?php
 $original = str_repeat(b"hallo php",4096);
 $filename = tempnam("/tmp", "phpt");
@@ -46,7 +46,7 @@ if ($data == substr($original, strlen($original) / 2)) {
 gzclose($fp);
 unlink($filename);
 ?>
---EXPECT--
+?>
 int(36864)
 int(36864)
 Strings are equal

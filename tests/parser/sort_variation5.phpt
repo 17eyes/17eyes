@@ -5,7 +5,7 @@ Test sort() function : usage variations - sort strings
 if (substr(PHP_OS, 0, 3) == 'WIN') {
   die("skip Output tested contains chars that are not shown the same on windows concole (ESC and co)");
 }
---FILE--
+?>
 <?php
 /* Prototype  : bool sort ( array &$array [, int $sort_flags] )
  * Description: This function sorts an array. 
@@ -56,7 +56,7 @@ foreach ($various_arrays as $array) {
 
 echo "Done\n";
 ?>
---EXPECTF--
+?>
 *** Testing sort() : usage variations ***
 
 -- Testing sort() by supplying various string arrays --

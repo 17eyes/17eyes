@@ -19,5 +19,5 @@ print bzread($bz);
 bzclose($bz);
 unlink($filename);
 
---EXPECT--
+?>
 This is a test string.

@@ -1,10 +1,10 @@
 --TEST--
 testing integer overflow (32bit)
---INI--
+?>
 precision=14
 --SKIPIF--
 <?php if (PHP_INT_SIZE != 4) die("skip this test is for 32bit platform only"); ?>
---FILE--
+?>
 <?php
 
 $doubles = array(
@@ -21,7 +21,7 @@ foreach ($doubles as $d) {
 
 echo "Done\n";
 ?>
---EXPECTF--	
+?>	
 float(4.0833602971%dE+14)
 float(4.7223664828%dE+21)
 float(1.3521606402%dE+31)

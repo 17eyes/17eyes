@@ -5,7 +5,7 @@ Test mb_strrpos() function : mb_strrpos offset is byte count for negative values
 extension_loaded('mbstring') or die('skip');
 function_exists('mb_strrpos') or die("skip mb_strrpos() is not available in this build");
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : int mb_strrpos(string $haystack, string $needle [, int $offset [, string $encoding]])
  * Description: Find position of last occurrence of a string within another 
@@ -34,7 +34,7 @@ foreach ($offsets as $i) {
 }
 ?>
 
---EXPECTF--
+?>
 
 -- Offset is -25 --
 Multibyte String:

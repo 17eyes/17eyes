@@ -1,6 +1,6 @@
 --TEST--
 SPL: spl_autoload_functions() with closures and invokables
---FILE--
+?>
 <?php
 $closure = function($class) {
   echo "a called\n";
@@ -26,8 +26,8 @@ spl_autoload_register($al2);
 var_dump(spl_autoload_functions());
 
 ?>
-===DONE===
---EXPECTF--
+=?>=
+?>
 array(3) {
   [0]=>
   object(Closure)#%d (1) {
@@ -48,4 +48,4 @@ array(3) {
     string(2) "d2"
   }
 }
-===DONE===
+=?>=

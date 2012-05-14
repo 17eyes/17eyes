@@ -26,5 +26,5 @@ $zip->close();
 echo "status: " . $zip->status . "\n";
 echo "\n";
 
---EXPECT--
+?>
 status: 0

@@ -6,7 +6,7 @@ require_once('skipif.inc');
 require_once('skipifemb.inc');
 require_once('skipifconnectfailure.inc');
 ?>
---FILE--
+?>
 <?php
 	require_once("connect.inc");
 
@@ -315,11 +315,11 @@ require_once('skipifconnectfailure.inc');
 	mysqli_close($link);
 	print "done!";
 ?>
---CLEAN--
+?>
 <?php
 	require_once("clean_table.inc");
 ?>
---EXPECTF--
+?>
 Warning: mysqli_stmt_bind_result(): invalid object or resource mysqli_stmt
  in %s on line %d
 

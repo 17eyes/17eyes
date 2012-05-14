@@ -1,6 +1,6 @@
 --TEST--
 Test array_diff() function : usage variations - unexpected values for 'arr2' argument
---FILE--
+?>
 <?php
 /* Prototype  : array array_diff(array $arr1, array $arr2 [, array ...])
  * Description: Returns the entries of $arr1 that have values which are 
@@ -98,7 +98,7 @@ foreach($inputs as $input) {
 fclose($fp);
 echo "Done";
 ?>
---EXPECTF--
+?>
 *** Testing array_diff() : usage variations ***
 
 -- Iteration 1 --

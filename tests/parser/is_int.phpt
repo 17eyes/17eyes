@@ -4,7 +4,7 @@ Test is_int() & it's FALIASes: is_long() & is_integer() functions
 <?php
 if (PHP_INT_SIZE != 4) die("skip this test is for 32bit platform only");
 ?>
---FILE--
+?>
 <?php
 /* Prototype: bool is_int ( mixed $var );
  * Description: Finds whether the given variable is an integer  
@@ -150,7 +150,7 @@ fclose($fp);
 closedir($dfp);
 
 ?>
---EXPECTF--
+?>
 *** Testing is_int(), is_integer() & is_long()  with valid integer values ***
 --Iteration 1--
 bool(true)

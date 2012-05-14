@@ -15,7 +15,7 @@ if(fileowner($filename) == 0) {
 }
 unlink($filename);
 ?>
---FILE--
+?>
 <?php
 /* Prototype: bool copy ( string $source, string $dest );
    Description: Makes a copy of the file source to dest.
@@ -51,12 +51,12 @@ var_dump( filesize($dest_file_name) );
 echo "*** Done ***\n";
 ?>
 
---CLEAN--
+?>
 <?php
 unlink(dirname(__FILE__)."/copy_copy_variation9.tmp");
 unlink(dirname(__FILE__)."/copy_variation9.tmp");
 ?>
---EXPECTF--
+?>
 *** Test copy() function: destination with/without write permissions ***
 
 -- With write permissions --

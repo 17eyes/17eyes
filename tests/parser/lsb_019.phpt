@@ -1,6 +1,6 @@
 --TEST--
 ZE2 Late Static Binding properties and methods declared as protected and overridden as public. 
---FILE--
+?>
 <?php
 class TestClass {
 	protected static $staticVar;
@@ -39,7 +39,7 @@ echo ChildClass1::testStaticFunction() . "\n";
 echo ChildClass2::testStaticVar() . "\n";
 echo ChildClass2::testStaticFunction() . "\n";
 ?>
---EXPECTF--
+?>
 TestClassStatic
 TestClassFunction
 ChildClassStatic

@@ -11,7 +11,7 @@ echo hash('md2', 'message digest') . "\n";
 echo hash('md2', 'abcdefghijklmnopqrstuvwxyz') . "\n";
 echo hash('md2', 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789') . "\n";
 echo hash('md2', '12345678901234567890123456789012345678901234567890123456789012345678901234567890') . "\n";
---EXPECT--
+?>
 8350e5a3e24c153df2275c9f80692773
 32ec01ec4a6dac72c0ab96fb34c0b5d1
 da853b0d3f88d99b30283a69e6ded6bb

@@ -1,6 +1,6 @@
 --TEST--
 Test ucwords() function : usage variations - unexpected input values
---FILE--
+?>
 <?php
 /* Prototype  : string ucwords ( string $str )
  * Description: Uppercase the first character of each word in a string
@@ -110,7 +110,7 @@ for($index = 0; $index < count($values); $index ++) {
 fclose($fp);
 echo "Done\n";
 ?>
---EXPECTF--
+?>
 *** Testing ucwords() : usage variations ***
 
 --- Testing ucwords() by supplying different values for 'str' argument ---

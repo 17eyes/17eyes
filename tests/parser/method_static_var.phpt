@@ -23,7 +23,7 @@ foo::test();
  */ 
 Bar::test();
 Bar::test();
---EXPECT--
+?>
 int(1)
 int(2)
 int(1)

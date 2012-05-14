@@ -1,6 +1,6 @@
 --TEST--
 Test nowdoc and line numbering
---FILE--
+?>
 <?php
 function error_handler($num, $msg, $file, $line, $vars) {
 	echo $line,"\n";
@@ -47,7 +47,7 @@ var_dump($x);
 trigger_error("line", E_USER_ERROR);
 echo "ok\n";
 ?>
---EXPECT--
+?>
 6
 string(0) ""
 10

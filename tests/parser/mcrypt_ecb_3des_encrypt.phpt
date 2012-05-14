@@ -6,7 +6,7 @@ if (!extension_loaded("mcrypt")) {
 	print "skip - mcrypt extension not loaded"; 
 }	 
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : string mcrypt_ecb(int cipher, string key, string data, int mode, string iv)
  * Description: ECB crypt/decrypt data using key key with cipher cipher starting with iv 
@@ -49,8 +49,8 @@ foreach ($ivs as $iv) {
    var_dump(bin2hex(mcrypt_ecb($cipher, $key, $data, $mode, $iv)));
 }
 ?>
-===DONE===
---EXPECTF--
+=?>=
+?>
 *** Testing mcrypt_ecb() : basic functionality ***
 
 --- testing different key lengths
@@ -79,4 +79,4 @@ string(112) "440a6f54601969b15e81df09cd381ef585fede5f3620587fd1a949c520aed9f6d10
 
 iv length=9
 string(112) "440a6f54601969b15e81df09cd381ef585fede5f3620587fd1a949c520aed9f6d10ebbabf2cea3e1f04c9251c2878c0ca37d51c80d490165"
-===DONE===
+=?>=

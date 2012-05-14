@@ -2,9 +2,9 @@
 Bug #36226 (Inconsistent handling when passing nillable arrays)
 --SKIPIF--
 <?php require_once('skipif.inc'); ?>
---INI--
+?>
 soap.wsdl_cache_enabled=0
---FILE--
+?>
 <?php
 $timestamp = "2005-11-08T11:22:07+03:00";
 $wsdl = dirname(__FILE__)."/bug36226-2.wsdl";
@@ -91,8 +91,8 @@ class IVREvents {
 
 }
 ?>
---EXPECT--
-<?xml version="1.0" encoding="UTF-8"?>
+?>
+XML version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://testurl/Message" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><SOAP-ENV:Body><ns1:ivrEvents version="1.0" activityId="101" messageId="12345" source="IVR"><ns1:logOffEvent audienceMemberId="34567" timestamp="2005-11-08T11:22:07+03:00" smokeStatus="Smoked" callInitiator="IVR"/><ns1:logOnEvent xsi:nil="true"/></ns1:ivrEvents></SOAP-ENV:Body></SOAP-ENV:Envelope>
 
 object(IVREvents)#5 (6) {

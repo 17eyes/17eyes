@@ -44,7 +44,7 @@ while (!feof($f)) {
 }
 
 
---EXPECT--
+?>
 string(1) "a"
 string(1) "b"
 bool(false)

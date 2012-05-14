@@ -1,6 +1,6 @@
 --TEST--
 Test array_combine() function : usage variations - binary safe checking 
---FILE--
+?>
 <?php
 /* Prototype  : array array_combine(array $keys, array $values)
  * Description: Creates an array by using the elements of the first parameter as keys
@@ -30,7 +30,7 @@ var_dump( array_combine($arr_binary, $arr_normal) );
 
 echo "Done";
 ?>
---EXPECTF--
+?>
 *** Testing array_combine() : binary safe checking ***
 array(2) {
   ["hello"]=>

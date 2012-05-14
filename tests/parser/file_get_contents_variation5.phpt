@@ -2,7 +2,7 @@
 Test file_get_contents() function : usage variation 
 --CREDITS--
 Dave Kelsey <d_kelsey@uk.ibm.com>
---FILE--
+?>
 <?php
 /* Prototype  : string file_get_contents(string filename [, bool use_include_path [, resource context [, long offset [, long maxlen]]]])
  * Description: Read the entire file into a string 
@@ -117,8 +117,8 @@ foreach($inputs as $key =>$value) {
 unlink($absFile);
 
 ?>
-===DONE===
---EXPECTF--
+=?>=
+?>
 *** Testing file_get_contents() : usage variation ***
 
 --int 0--
@@ -219,4 +219,4 @@ string(%d) "contents read"
 
 --unset var--
 string(%d) "contents read"
-===DONE===
+=?>=

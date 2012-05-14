@@ -20,7 +20,7 @@ print $proc->transformToXml($dom);
 print "\n";
 
 
---EXPECT--
+?>
 Test 2: Transform To HTML String
 <html><body>bar
 a1 b1 c1 <br> 

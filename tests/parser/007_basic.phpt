@@ -88,7 +88,7 @@ for( $i=0; $i<count($x_modes); $i++ ) {
 }
 
 echo "\n*** Done ***\n";
---EXPECTF--
+?>
 *** Testing basic operations of fopen() and fclose() functions ***
 
 -- Iteration with mode 'w' --

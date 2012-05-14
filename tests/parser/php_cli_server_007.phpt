@@ -4,7 +4,7 @@ Bug #55758 (Digest Authenticate missed in 5.4)
 <?php
 include "skipif.inc"; 
 ?>
---FILE--
+?>
 <?php
 include "php_cli_server.inc";
 php_cli_server_start('header(\'WWW-Authenticate: Digest realm="foo",qop="auth",nonce="XXXXX",opaque="'.md5("foo").'"\');');
@@ -31,7 +31,7 @@ HEADER
 }
 
 ?>
---EXPECTF--	
+?>	
 HTTP/1.1 401 Unauthorized
 Host: %s
 Connection: close

@@ -5,7 +5,7 @@ mcrypt_list_modes
 --FILE--
 <?php
 var_dump(mcrypt_list_modes());
---EXPECT--
+?>
 array(8) {
   [0]=>
   string(3) "cbc"

@@ -5,7 +5,7 @@ Test rsort() function : usage variations - String values
 if (substr(PHP_OS, 0, 3) == 'WIN') {
   die("skip Output tested contains chars that are not shown the same on windows concole (ESC and co)");
 }
---FILE--
+?>
 <?php
 /* Prototype  : bool rsort(array &$array_arg [, int $sort_flags])
  * Description: Sort an array in reverse order 
@@ -52,7 +52,7 @@ foreach ($various_arrays as $array) {
 echo "Done";
 ?>
 
---EXPECTF--
+?>
 *** Testing rsort() : variation ***
 
 -- Iteration 1 --

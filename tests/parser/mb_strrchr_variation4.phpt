@@ -5,7 +5,7 @@ Test mb_strrchr() function : usage variation - different encoding types
 extension_loaded('mbstring') or die('skip');
 function_exists('mb_strrchr') or die("skip mb_strrchr() is not available in this build");
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : string mb_strrchr(string haystack, string needle[, bool part[, string encoding]])
  * Description: Finds the last occurrence of a character in a string within another 
@@ -117,8 +117,8 @@ foreach($inputs as $key =>$value) {
 fclose($fp);
 
 ?>
-===DONE===
---EXPECTF--
+=?>=
+?>
 *** Testing mb_strrchr() : usage variation ***
 
 --int 0--
@@ -224,4 +224,4 @@ bool(false)
 --resource--
 Error: 2 - mb_strrchr() expects parameter 4 to be string, resource given, %s(%d)
 bool(false)
-===DONE===
+=?>=

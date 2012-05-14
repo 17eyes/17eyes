@@ -7,7 +7,7 @@ Dave Kelsey <d_kelsey@uk.ibm.com>
 if (substr(PHP_OS, 0, 3) == 'WIN') {
     die('skip Do not run on Windows');
 }
---FILE--
+?>
 <?php
 /* Prototype: int fileperms ( string $filename )
  * Description: Returns the group ID of the file, or FALSE in case of an error.
@@ -39,7 +39,7 @@ unlink($file_path."/fileperms_variation1_link.tmp");
 unlink($file_path."/fileperms_variation1.tmp");
 ?>
 
---EXPECTF--
+?>
 *** Testing fileperms() with links ***
 int(%d)
 int(%d)

@@ -5,7 +5,7 @@ Test filesize() function: usage variations - size of dir/subdir
 if (substr(PHP_OS, 0, 3) == 'WIN') {
     die('skip only valid for Linux');
 }
---FILE--
+?>
 <?php
 /* 
  Prototype   : int filesize ( string $filename );
@@ -64,7 +64,7 @@ unlink($file_path."/filesize_variation2/filesize_variation2_sub/filesize_variati
 rmdir($file_path."/filesize_variation2/filesize_variation2_sub");
 rmdir($file_path."/filesize_variation2");
 ?>
---EXPECTF--
+?>
 *** Testing filesize(): usage variations ***
 
 *** Testing size of a dir, sub-dir and file with filesize() ***

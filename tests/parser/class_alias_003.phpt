@@ -1,6 +1,6 @@
 --TEST--
 Testing declaration of alias to 'static'
---FILE--
+?>
 <?php
 
 class bar {
@@ -17,6 +17,6 @@ $a = new foo;
 var_dump($a->test());
 
 ?>
---EXPECTF--
+?>
 object(foo)#%d (0) {
 }

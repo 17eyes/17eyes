@@ -2,7 +2,7 @@
 PDO_sqlite: Testing sqliteCreateFunction()
 --SKIPIF--
 <?php if (!extension_loaded('pdo_sqlite')) print 'skip not loaded'; ?>
---FILE--
+?>
 <?php
 
 $db = new pdo('sqlite::memory:');
@@ -23,7 +23,7 @@ foreach ($db->query('SELECT testing(name) FROM foobar') as $row) {
 $db->query('DROP TABLE foobar');
 
 ?>
---EXPECTF--
+?>
 array(2) {
   ["testing(name)"]=>
   %string|unicode%(3) "php"

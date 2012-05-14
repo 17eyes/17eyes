@@ -1,6 +1,6 @@
 --TEST--
 jump 04: goto from loop (backward)
---FILE--
+?>
 <?php
 $s = "X";
 echo "1: ok\n";	
@@ -17,7 +17,7 @@ L1: if ($s != "X") {
 	echo "bug\n";	
 }
 ?>
---EXPECT--
+?>
 1: ok
 2: ok
 3: ok

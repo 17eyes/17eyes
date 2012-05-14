@@ -1,6 +1,6 @@
 --TEST--
 basic binary nowdoc syntax
---FILE--
+?>
 <?php
 
 require_once 'nowdoc.inc';
@@ -18,6 +18,6 @@ ENDOFNOWDOC;
 print "{$x}";
 
 ?>
---EXPECT--
+?>
 This is a nowdoc test.
 This is another nowdoc test.

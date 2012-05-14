@@ -4,7 +4,7 @@ Bug #54992: Stream not closed and error not returned when SSL CN_match fails
 <?php 
 if (!extension_loaded("openssl")) die("skip");
 if (!function_exists('pcntl_fork')) die("skip no fork");
---FILE--
+?>
 <?php
 $context = stream_context_create();
 
@@ -33,7 +33,7 @@ if ($pid == -1) {
 	@pcntl_wait($status);
 	@stream_socket_accept($server, 1);
 }
---EXPECTF--
+?>
 Warning: stream_socket_client(): Peer certificate CN=`bug54992.local' did not match expected CN=`buga_buga' in %s on line %d
 
 Warning: stream_socket_client(): Failed to enable crypto in %s on line %d

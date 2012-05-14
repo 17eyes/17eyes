@@ -1,6 +1,6 @@
 --TEST--
 Test ob_start() with callbacks in variables
---FILE--
+?>
 <?php 
 
 // Closure in variable
@@ -32,7 +32,7 @@ $a = 'my_strtoupper';
 ob_start($a);
 echo 'function via variable', "\n";
 ob_end_flush();
---EXPECT--
+?>
 CLOSURE IN VARIABLE
 OBJECT IN VARIABLE
 OBJECT VIA STATIC ARRAY

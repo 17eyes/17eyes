@@ -1,6 +1,6 @@
 --TEST--
 assert() - variation  - test callback options using ini_get/ini_set/assert_options 
---INI--
+?>
 assert.active = 1
 assert.warning = 0
 assert.callback = f1
@@ -70,7 +70,7 @@ echo "ini.get(\"assert.callback\") => [".ini_get("assert.callback")."]\n\n";
 var_dump($r2=assert($sa));
 echo"\n";
 
---EXPECTF--
+?>
 Initial values: assert_options(ASSERT_CALLBACK) => [f1]
 Initial values: ini.get("assert.callback") => [f1]
 f1 called

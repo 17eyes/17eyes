@@ -1,6 +1,6 @@
 --TEST--
 Passing Closure as parameter to an non-existent function
---FILE--
+?>
 <?php
 
 class foo {
@@ -17,7 +17,7 @@ class foo {
 var_dump(call_user_func(array('foo', 'teste')));
 
 ?>
---EXPECTF--
+?>
 Strict Standards: call_user_func() expects parameter 1 to be a valid callback, non-static method foo::teste() should not be called statically in %s on line %d
 %string|unicode%(1) "x"
 array(1) {

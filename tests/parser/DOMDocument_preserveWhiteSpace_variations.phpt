@@ -5,7 +5,7 @@ Lev Radin <prokurator@gmail.com>
 # TestFest 2009 NYPHP
 --SKIPIF--
 <?php require_once('skipif.inc'); ?>
---FILE--
+?>
 <?php
 
 echo "Load document with preserveWhiteSpace on\n";
@@ -21,9 +21,9 @@ $doc->load(dirname(__FILE__)."/book.xml");
 echo $doc->saveXML();
 
 ?>
---EXPECT--
+?>
 Load document with preserveWhiteSpace on
-<?xml version="1.0"?>
+XML version="1.0"?>
 <books>
  <book>
   <title>The Grapes of Wrath</title>
@@ -36,5 +36,5 @@ Load document with preserveWhiteSpace on
 </books>
 
 Load document with preserveWhiteSpace off
-<?xml version="1.0"?>
+XML version="1.0"?>
 <books><book><title>The Grapes of Wrath</title><author>John Steinbeck</author></book><book><title>The Pearl</title><author>John Steinbeck</author></book></books>

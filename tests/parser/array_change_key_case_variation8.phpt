@@ -5,7 +5,7 @@ Test array_change_key_case() function : usage variations - Different strings as 
 if (substr(PHP_OS, 0, 3) == 'WIN') {
   die("skip Output tested contains chars that are not shown the same on windows concole (ESC and co)");
 }
---FILE--
+?>
 <?php
 /* Prototype  : array array_change_key_case(array $input [, int $case])
  * Description: Retuns an array with all string keys lowercased [or uppercased] 
@@ -36,7 +36,7 @@ foreach($inputs as $input) {
 echo "Done";
 ?>
 
---EXPECTF--
+?>
 *** Testing array_change_key_case() : usage variations ***
 
 -- $case = default --

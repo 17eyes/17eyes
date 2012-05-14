@@ -23,7 +23,7 @@ fstat(fopen('sx://test', 'r'));
 $s[] = 1; //  Cannot use a scalar value as an array
 
 print_r($s);
---EXPECTF--
+?>
 Notice: Undefined property: sw::$undefined in %s on line %d
 Array
 (

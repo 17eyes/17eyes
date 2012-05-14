@@ -1,6 +1,6 @@
 --TEST--
 Closure 006: Nested lambdas
---FILE--
+?>
 <?php
 
 $getClosure = function ($v) {
@@ -14,6 +14,6 @@ $closure ();
 
 echo "Done\n";
 ?>
---EXPECT--
+?>
 Hello World: 2!
 Done

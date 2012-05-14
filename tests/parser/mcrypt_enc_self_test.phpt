@@ -6,5 +6,5 @@ mcrypt_enc_self_test
 <?php
 $td = mcrypt_module_open(MCRYPT_RIJNDAEL_256, '', MCRYPT_MODE_CBC, '');
 var_dump(mcrypt_enc_self_test($td));
---EXPECT--
+?>
 int(0)

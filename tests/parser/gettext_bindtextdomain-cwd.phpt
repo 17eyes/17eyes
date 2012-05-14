@@ -8,7 +8,7 @@ if (!extension_loaded("gettext")) {
 if (!setlocale(LC_ALL, 'en_US.UTF-8')) {
     die("skip en_US.UTF-8 locale not supported.");
 }
---FILE--
+?>
 <?php
 $base_dir = dirname(__FILE__);
 chdir($base_dir);
@@ -19,7 +19,7 @@ bindtextdomain('messages', './locale');
 var_dump(gettext('Basic test'));
 
 ?>
---EXPECTF--
+?>
 string(10) "Basic test"
 string(12) "A basic test"
 --CREDIT--

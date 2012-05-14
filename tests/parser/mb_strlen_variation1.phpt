@@ -5,7 +5,7 @@ Test mb_strlen() function : usage variations - Pass different data types as $str
 extension_loaded('mbstring') or die('skip');
 function_exists('mb_strlen') or die("skip mb_strlen() is not available in this build");
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : int mb_strlen(string $str [, string $encoding])
  * Description: Get character numbers of a string 
@@ -101,7 +101,7 @@ fclose($fp);
 
 echo "Done";
 ?>
---EXPECTF--
+?>
 *** Testing mb_strlen() : usage variations ***
 
 -- Iteration 1 --

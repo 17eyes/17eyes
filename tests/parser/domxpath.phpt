@@ -2,7 +2,7 @@
 DOMXPath Tests
 --SKIPIF--
 <?php require_once('skipif.inc'); ?>
---FILE--
+?>
 <?php
 require_once("dom_test.inc");
 
@@ -51,7 +51,7 @@ $root->appendChild($dom->createElementNS("urn::default", "testnode", 5));
 $avg = $xpath->evaluate('number(php:function("MyAverage", //def:testnode))');
 var_dump($avg);
 ?>
---EXPECT--
+?>
 myval
 float(1)
 bool(true)

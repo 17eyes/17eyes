@@ -1,6 +1,6 @@
 --TEST--
 Closure 027: Testing Closure type-hint
---FILE--
+?>
 <?php
 
 function test(closure $a) {
@@ -18,7 +18,7 @@ test($a);
 test(new stdclass);
 
 ?>
---EXPECTF--
+?>
 object(stdClass)#%d (0) {
 }
 NULL

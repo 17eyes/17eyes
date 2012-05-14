@@ -2,7 +2,7 @@
 XML parser test using closures as callbacks
 --SKIPIF--
 <?php include("skipif.inc"); ?>
---FILE--
+?>
 <?php
 chdir(dirname(__FILE__));
 
@@ -32,7 +32,7 @@ while ($data = fread($fp, 4096)) {
 xml_parser_free($xp);
 
 ?>
---EXPECT--
+?>
 <root id="elem1">
 <elem1>
 <elem2>

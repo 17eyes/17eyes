@@ -6,7 +6,7 @@ if (!extension_loaded('sockets')) {
 	die('SKIP sockets extension not available.');
 }
 
---FILE--
+?>
 <?php
 
 function test($stream, $sock) {
@@ -56,7 +56,7 @@ socket_close($sock4);
 test($stream4, $sock4);
 
 echo "Done.\n";
---EXPECTF--
+?>
 normal
 stream_set_blocking 1
 socket_set_block 1

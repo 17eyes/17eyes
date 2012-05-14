@@ -1,6 +1,6 @@
 --TEST--
 Bug #51176 (Static calling in non-static method behaves like $this->)
---FILE--
+?>
 <?php
 class Foo
 {
@@ -26,7 +26,7 @@ $foo = new Foo();
 $foo->start();
 
 ?>
---EXPECT--
+?>
 instance
 instance
 instance

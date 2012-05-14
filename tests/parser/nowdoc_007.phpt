@@ -1,6 +1,6 @@
 --TEST--
 braced and unbraced complex variable replacement test (nowdoc)
---FILE--
+?>
 <?php
 
 require_once 'nowdoc.inc';
@@ -18,6 +18,6 @@ ENDOFNOWDOC;
 print "{$x}";
 
 ?>
---EXPECT--
+?>
 This is nowdoc test #s $a, {$b}, {$c['c']}, and {$d->d}.
 This is nowdoc test #s $a, {$b}, {$c['c']}, and {$d->d}.

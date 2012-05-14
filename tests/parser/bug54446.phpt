@@ -71,7 +71,7 @@ if (file_exists($outputfile)) {
 }
 
 
---EXPECTF--
+?>
 Warning: XSLTProcessor::transformToXml(): runtime error: file %s line %s element output in %s on line %d
 
 Warning: XSLTProcessor::transformToXml(): File write for %s/bug54446test.txt refused in %s on line %s

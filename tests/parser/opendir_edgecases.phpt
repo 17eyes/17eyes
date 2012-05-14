@@ -2,7 +2,7 @@
 Phar: test edge cases of opendir() function interception
 --SKIPIF--
 <?php if (!extension_loaded("phar")) die("skip");?>
---INI--
+?>
 phar.readonly=0
 --FILE--
 <?php
@@ -47,15 +47,15 @@ opendir("oops");
 include $pname . '/foo';
 
 ?>
-===DONE===
+=?>=
 --CLEAN--
 <?php unlink(dirname(__FILE__) . '/' . basename(__FILE__, '.clean.php') . '.phar.php'); ?>
 <?php rmdir(dirname(__FILE__) . '/poo');
---EXPECTF--
+?>
 Warning: opendir() expects parameter 1 to be a valid path, array given in %sopendir_edgecases.php on line %d
 .
 ..
 foo
 
 Warning: opendir(phar://%sopendir_edgecases.phar.php/oops): failed to open dir: %s in phar://%sopendir_edgecases.phar.php/foo on line %d
-===DONE===
+=?>=

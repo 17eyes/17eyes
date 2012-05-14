@@ -8,7 +8,7 @@ TestFest 2009 - AFUP - Jean-Marc Fontaine <jmf@durcommefaire.net>
 if (!extension_loaded("curl")) exit("skip curl extension not loaded");
 if (false === getenv('PHP_CURL_HTTP_REMOTE_SERVER'))  exit("skip PHP_CURL_HTTP_REMOTE_SERVER env variable is not defined");
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : bool curl_setopt(resource ch, int option, mixed value)
  * Description: Set an option for a cURL transfer
@@ -34,8 +34,8 @@ if (false === getenv('PHP_CURL_HTTP_REMOTE_SERVER'))  exit("skip PHP_CURL_HTTP_R
   curl_exec($ch);
   curl_close($ch);
 ?>
-===DONE===
---EXPECTF--
+=?>=
+?>
 *** Testing curl_setopt($ch, CURLOPT_WRITEFUNCTION, <closure>); ***
 Data: Hello World!
-Hello World!===DONE===
+Hello World!=?>=

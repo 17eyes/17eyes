@@ -4,7 +4,7 @@ Post a file
 <?php
 include "skipif.inc"; 
 ?>
---FILE--
+?>
 <?php
 include "php_cli_server.inc";
 php_cli_server_start('var_dump($_FILES);');
@@ -47,7 +47,7 @@ HEADER
 }
 
 ?>
---EXPECTF--	
+?>	
 HTTP/1.1 200 OK
 Host: %s
 Connection: close

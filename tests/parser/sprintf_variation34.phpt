@@ -6,7 +6,7 @@ if (PHP_INT_SIZE != 4) {
 	    die("skip this test is for 32bit platform only");
 }
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : string sprintf(string $format [, mixed $arg1 [, mixed ...]])
  * Description: Return a formatted string 
@@ -57,7 +57,7 @@ foreach($integer_values as $integer_value) {
 
 echo "Done";
 ?>
---EXPECTF--
+?>
 *** Testing sprintf() : hexa formats with integer values ***
 
 -- Iteration 1 --

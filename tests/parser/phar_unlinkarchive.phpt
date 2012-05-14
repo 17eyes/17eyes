@@ -2,10 +2,10 @@
 Phar::unlinkArchive()
 --SKIPIF--
 <?php if (!extension_loaded("phar")) die("skip"); ?>
---INI--
+?>
 phar.require_hash=0
 phar.readonly=0
---FILE--
+?>
 <?php
 
 try {
@@ -76,8 +76,8 @@ $phar['another.php'] = "hi\n";
 unset($phar);
 include $pname . '/evil.php';
 ?>
-===DONE===
---CLEAN--
+=?>=
+?>
 <?php 
 unlink(dirname(__FILE__) . '/' . basename(__FILE__, '.clean.php') . '.phar.tar');
 unlink(dirname(__FILE__) . '/' . basename(__FILE__, '.clean.php') . '.phar');
@@ -85,7 +85,7 @@ unlink(dirname(__FILE__) . '/' . basename(__FILE__, '.clean.php') . '.2.phar.zip
 unlink(dirname(__FILE__) . '/' . basename(__FILE__, '.clean.php') . '.phar.zip');
 __HALT_COMPILER();
 ?>
---EXPECTF--
+?>
 Unknown phar archive ""
 Unknown phar archive "%sphar_unlinkarchive.phar"
 Unknown phar archive "%sphar_unlinkarchive.phar.tar": internal corruption of phar "%sphar_unlinkarchive.phar.tar" (truncated entry)
@@ -105,4 +105,4 @@ int(0)
 phar archive "%sphar_unlinkarchive.phar" cannot be unlinked from within itself
 string(%d) "%sphar_unlinkarchive.phar"
 hi
-===DONE===
+=?>=

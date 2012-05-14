@@ -5,7 +5,7 @@ Test mb_stristr() function : error conditions
 extension_loaded('mbstring') or die('skip');
 function_exists('mb_stristr') or die("skip mb_stristr() is not available in this build");
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : string mb_stristr(string haystack, string needle[, bool part[, string encoding]])
  * Description: Finds first occurrence of a string within another, case insensitive 
@@ -24,12 +24,12 @@ $part = true;
 var_dump( mb_stristr($haystack, $needle, $part, $encoding) );
 
 ?>
-===DONE===
---EXPECTF--
+=?>=
+?>
 *** Testing mb_stristr() : error conditions ***
 
 -- Testing mb_stristr() with unknown encoding --
 
 Warning: mb_stristr(): Unknown encoding "unknown-encoding" in %s on line %d
 bool(false)
-===DONE===
+=?>=

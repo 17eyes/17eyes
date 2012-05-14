@@ -23,5 +23,5 @@ TESTS;
 
 include(dirname(__FILE__) . '/../../../tests/quicktester.inc');
 
---EXPECT--
+?>
 OK

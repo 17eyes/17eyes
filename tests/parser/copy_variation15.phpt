@@ -14,7 +14,7 @@ if(fileowner($filename) == 0) {
 }
 unlink($filename);
 ?>
---FILE--
+?>
 <?php
 /* Prototype: bool copy ( string $source, string $dest );
    Description: Makes a copy of the file source to dest.
@@ -49,13 +49,13 @@ chmod($dir, $old_perms);
 echo "*** Done ***\n";
 ?>
 
---CLEAN--
+?>
 <?php
 unlink(dirname(__FILE__)."/copy_variation15.tmp");
 rmdir(dirname(__FILE__)."/copy_variation15");
 ?>
 
---EXPECTF--
+?>
 *** Test copy() function: Trying to create a copy of file in a dir which doesn't have write permissions ***
 Warning: copy(%s): %s
 bool(false)

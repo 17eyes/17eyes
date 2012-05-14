@@ -2,10 +2,10 @@
 Phar::setStub()
 --SKIPIF--
 <?php if (!extension_loaded("phar")) die("skip"); ?>
---INI--
+?>
 phar.require_hash=0
 phar.readonly=0
---FILE--
+?>
 <?php
 $fname = dirname(__FILE__) . '/' . basename(__FILE__, '.php') . '.phar.php';
 $pname = 'phar://' . $fname;
@@ -75,18 +75,18 @@ if (fread($fp, strlen('booya')) == 'booya') {
 fclose($fp);
 
 ?>
-===DONE===
---CLEAN--
+=?>=
+?>
 <?php 
 unlink(dirname(__FILE__) . '/' . basename(__FILE__, '.clean.php') . '.phar.php');
 unlink(dirname(__FILE__) . '/' . basename(__FILE__, '.clean.php') . '.phartmp.php');
 __HALT_COMPILER();
 ?>
---EXPECT--
+?>
 <?php echo "first stub\n"; __HALT_COMPILER(); ?>
 <?php echo "second stub\n"; __HALT_COMPILER(); ?>
 <?php echo "third stub\n"; __HALT_COMPILER(); ?>
 <?php echo "third stub\n"; __HALT_COMPILER(); ?>booya
 <?php echo "third stub\n"; __HALT_COMPILER(); ?>
 <?php echo "third stub\n"; __HALT_COMPILER(); ?>
-===DONE===
+=?>=

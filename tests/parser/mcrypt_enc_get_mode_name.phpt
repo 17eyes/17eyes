@@ -16,7 +16,7 @@ $td  = mcrypt_module_open('des', '', 'ecb', '');
 echo mcrypt_enc_get_modes_name($td) . "\n";
 $td  = mcrypt_module_open('des', '', 'cbc', '');
 echo mcrypt_enc_get_modes_name($td) . "\n";
---EXPECT--
+?>
 ECB
 CBC
 STREAM

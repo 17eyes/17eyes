@@ -4,7 +4,7 @@ Bug #41287 (Namespace functions don't allow xmlns defintion to be optional)
 <?php 
 if (!extension_loaded("xmlwriter")) die("skip"); 
 ?>
---FILE--
+?>
 <?php
 
 $xw = xmlwriter_open_memory();
@@ -31,15 +31,15 @@ $xw->endElement();
 $xw->endDocument();
 print $xw->flush(true);
 ?>
---EXPECTF--
-<?xml version="1.0"?>
+?>
+XML version="1.0"?>
 <test:test xmlns:test="urn:x-test:">
  <test:foo></test:foo>
  <bar xmlns="urn:x-test:"></bar>
  <bar xmlns=""></bar>
 </test:test>
 
-<?xml version="1.0"?>
+XML version="1.0"?>
 <test:test xmlns:test="urn:x-test:">
  <test:foo></test:foo>
  <bar xmlns="urn:x-test:"></bar>

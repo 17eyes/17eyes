@@ -1,6 +1,6 @@
 --TEST--
 Test array_diff() function : usage variations - binary safe checking
---FILE--
+?>
 <?php
 /* Prototype  : array array_diff(array $arr1, array $arr2 [, array ...])
  * Description: Returns the entries of $arr1 that have values which are 
@@ -31,7 +31,7 @@ var_dump(array_diff($array2, $array1));
 
 echo "Done";
 ?>
---EXPECTF--
+?>
 *** Testing array_diff() : usage variations ***
 array(1) {
   [0]=>

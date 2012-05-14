@@ -20,7 +20,7 @@ if(!$phpfuncxsl) {
 $proc->importStylesheet($phpfuncxsl);
 var_dump($proc->registerPHPFunctions());
 var_dump($proc->transformToXml($dom));
---EXPECTF--
+?>
 NULL
 
 Warning: XSLTProcessor::transformToXml(): Unable to call handler undefinedfunc() in %s on line %d

@@ -1,6 +1,6 @@
 --TEST--
 jump 09: goto in declare statement
---FILE--
+?>
 <?php
 a: print "ok!\n";
 goto c;
@@ -13,7 +13,7 @@ c:
     print "ok!\n";
     goto b;
 ?>
---EXPECTF--
+?>
 ok!
 ok!
 ok!

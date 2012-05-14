@@ -5,7 +5,7 @@ inet_ntop() & inet_pton() tests
 if (!function_exists("inet_ntop")) die("skip no inet_ntop()"); 
 if (!function_exists("inet_pton")) die("skip no inet_pton()"); 
 ?>
---FILE--
+?>
 <?php
 
 $packed = chr(127) . chr(0) . chr(0) . chr(1);
@@ -37,7 +37,7 @@ foreach ($array as $val) {
 
 echo "Done\n";
 ?>
---EXPECTF--	
+?>	
 %unicode|string%(9) "127.0.0.1"
 %unicode|string%(13) "255.255.255.0"
 

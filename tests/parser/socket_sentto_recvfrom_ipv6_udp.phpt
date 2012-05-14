@@ -6,7 +6,7 @@ if (!extension_loaded('sockets')) {
     die('SKIP The sockets extension is not loaded.');
 }
 require 'ipv6_skipif.inc';
---FILE--
+?>
 <?php
     $socket = socket_create(AF_INET6, SOCK_DGRAM, SOL_UDP);
     if (!$socket) {
@@ -44,7 +44,7 @@ require 'ipv6_skipif.inc';
     echo "Received $buf from remote address $from and remote port $port" . PHP_EOL;
 
     socket_close($socket);
---EXPECTF--
+?>
 Warning: socket_recvfrom(): unable to recvfrom [11]: Resource temporarily unavailable in %s on line %d
 
 Warning: Wrong parameter count for socket_sendto() in %s on line %d

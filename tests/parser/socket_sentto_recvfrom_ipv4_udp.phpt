@@ -5,7 +5,7 @@ Test if socket_recvfrom() receives data sent by socket_sendto() via IPv4 UDP
 if (!extension_loaded('sockets')) {
     die('SKIP The sockets extension is not loaded.');
 }
---FILE--
+?>
 <?php
     $socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
     if (!$socket) {
@@ -43,7 +43,7 @@ if (!extension_loaded('sockets')) {
     echo "Received $buf from remote address $from and remote port $port" . PHP_EOL;
 
     socket_close($socket);
---EXPECTF--
+?>
 Warning: socket_recvfrom(): unable to recvfrom [%d]: %a in %s on line %d
 
 Warning: Wrong parameter count for socket_sendto() in %s on line %d

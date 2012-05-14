@@ -1,6 +1,6 @@
 --TEST--
 Torture the T_END_NOWDOC rules (nowdoc)
---FILE--
+?>
 <?php
 
 require_once 'nowdoc.inc';
@@ -26,7 +26,7 @@ ENDOFNOWDOC;
 print "{$x}";
 
 ?>
---EXPECT--
+?>
 ENDOFNOWDOC    ;
     ENDOFNOWDOC;
 ENDOFNOWDOC    

@@ -1,6 +1,6 @@
 --TEST--
 Closure 020: Trying to access private property outside class
---FILE--
+?>
 <?php
 
 class foo {
@@ -22,7 +22,7 @@ $y = $foo->x();
 var_dump($y()->test);
 
 ?>
---EXPECTF--
+?>
 object(foo)#%d (2) {
   ["test":"foo":private]=>
   int(3)

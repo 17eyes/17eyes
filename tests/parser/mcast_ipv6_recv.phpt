@@ -41,7 +41,7 @@ if ($so === false) {
     die('skip protocol independent multicast API is unavailable.');
 }
 
---FILE--
+?>
 <?php
 include __DIR__."/mcast_helpers.php.inc";
 $domain = AF_INET6;
@@ -176,7 +176,7 @@ if ($i == 8) {
 }
 
 }
---EXPECTF--
+?>
 creating send socket
 resource(%d) of type (Socket)
 creating receive socket

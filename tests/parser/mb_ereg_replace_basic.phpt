@@ -5,7 +5,7 @@ Test mb_ereg_replace() function : basic
 extension_loaded('mbstring') or die('skip');
 function_exists('mb_ereg_replace') or die("skip mb_ereg_replace() is not available in this build");
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : string mb_ereg_replace(string $pattern, string $replacement, 
  * string $string [, string o$ption])
@@ -45,7 +45,7 @@ var_dump(bin2hex($result_4));
 
 echo "Done";
 ?>
---EXPECT--
+?>
 *** Testing mb_ereg_replace() : basic functionality ***
 
 -- ASCII string 1 --

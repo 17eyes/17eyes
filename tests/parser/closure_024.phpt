@@ -1,6 +1,6 @@
 --TEST--
 Closure 024: Clone the Closure object
---FILE--
+?>
 <?php
 
 $a = 1;
@@ -18,7 +18,7 @@ echo $cc(10)."\n";
 
 echo "Done.\n";
 ?>
---EXPECTF--
+?>
 11
 11
 12

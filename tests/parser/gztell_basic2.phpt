@@ -6,7 +6,7 @@ if (!extension_loaded("zlib")) {
 	print "skip - ZLIB extension not loaded"; 
 }
 ?>
---FILE--
+?>
 <?php
 $f = "temp2.txt.gz";
 $h = gzopen($f, 'w');
@@ -22,8 +22,8 @@ foreach ($sizes as $size) {
 gzclose($h);
 unlink($f);
 ?>
-===DONE===
---EXPECT--
+=?>=
+?>
 int(0)
 bytes written=7
 tell=7
@@ -39,4 +39,4 @@ bytes written=15
 tell=142
 bytes written=1000
 tell=1142
-===DONE===
+=?>=

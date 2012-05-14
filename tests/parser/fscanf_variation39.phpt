@@ -6,7 +6,7 @@ if (PHP_INT_SIZE != 4) {
 	die("skip this test is for 32bit platform only");
 }
 ?>
---FILE--
+?>
 <?php
 
 /*
@@ -86,7 +86,7 @@ $file_path = dirname(__FILE__);
 $filename = "$file_path/fscanf_variation39.tmp";
 unlink($filename);
 ?>
---EXPECTF--
+?>
 *** Test fscanf(): different unsigned int format types with different integer values ***
 
 -- iteration 1 --

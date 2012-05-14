@@ -5,7 +5,7 @@ Test krsort() function : usage variations - sort strings
 if (substr(PHP_OS, 0, 3) == 'WIN') {
   die("skip Output tested contains chars that are not shown the same on windows concole (ESC and co)");
 }
---FILE--
+?>
 <?php
 /* Prototype  : bool krsort ( array &$array [, int $sort_flags] )
  * Description: Sort an array by key in reverse order, maintaining key to data correlation
@@ -62,7 +62,7 @@ foreach ($various_arrays as $array) {
 
 echo "Done\n";
 ?>
---EXPECTF--
+?>
 *** Testing krsort() : usage variations ***
 
 -- Testing krsort() by supplying various string arrays --

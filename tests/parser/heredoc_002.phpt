@@ -1,6 +1,6 @@
 --TEST--
 basic binary heredoc syntax
---FILE--
+?>
 <?php
 
 require_once 'nowdoc.inc';
@@ -18,6 +18,6 @@ ENDOFHEREDOC;
 print "{$x}";
 
 ?>
---EXPECT--
+?>
 This is a heredoc test.
 This is another heredoc test.

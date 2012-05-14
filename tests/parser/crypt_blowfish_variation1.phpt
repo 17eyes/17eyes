@@ -6,7 +6,7 @@ if (!function_exists('crypt') || !defined("CRYPT_BLOWFISH")) {
     die("SKIP crypt()-blowfish is not available");
 }
 ?>
---FILE--
+?>
 <?php
 
 $salts = array(b'32' => b'$2a$32$CCCCCCCCCCCCCCCCCCCCCC$',
@@ -27,7 +27,7 @@ foreach($salts as $i=>$salt) {
 }
 
 ?>
---EXPECT--
+?>
 32. OK
 33. OK
 34. OK

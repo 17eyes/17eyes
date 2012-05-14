@@ -11,7 +11,7 @@ Check xsltprocessor::removeParameter with invalid parameter
 include dirname(__FILE__) .'/prepare.inc';
 $proc->importStylesheet($xsl);
 var_dump($proc->removeParameter('', 'doesnotexist'));
---EXPECT--
+?>
 bool(false)
 --CREDITS--
 Christian Weiske, cweiske@php.net

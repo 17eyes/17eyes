@@ -1,6 +1,6 @@
 --TEST--
 Reflection on closures: Segfaults with getParameters() and getDeclaringFunction()
---FILE-- 
+?> 
 <?php
 
 $closure = function($a, $b = 0) { };
@@ -18,8 +18,8 @@ unset ($parameter);
 echo $method->getName ()."\n";
 
 ?>
-===DONE===
---EXPECTF--
+=?>=
+?>
 __invoke
 __invoke
-===DONE===
+=?>=

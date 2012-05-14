@@ -1,6 +1,6 @@
 --TEST--
 Test session_set_save_handler() : incomplete implementation
---INI--
+?>
 session.save_handler=files
 session.name=PHPSESSID
 --SKIPIF--
@@ -40,7 +40,7 @@ session_write_close();
 session_unset();
 
 
---EXPECTF--
+?>
 *** Testing session_set_save_handler() : incomplete implementation ***
 
 Warning: SessionHandler::read(): Parent session handler is not open in %ssession_set_save_handler_class_005.php on line %d

@@ -104,7 +104,7 @@ function bug($db, $options = array()) {
 	}
 }
 
---EXPECT--
+?>
 Test 1
 42P18
 Test 2

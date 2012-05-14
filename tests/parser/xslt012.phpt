@@ -2,7 +2,7 @@
 Test 12: Using Associative Array of Parameters
 --SKIPIF--
 <?php require_once dirname(__FILE__) .'/skipif.inc'; ?>
---FILE--
+?>
 <?php
 echo "Test 12: Using Associative Array of Parameters";
 
@@ -41,9 +41,9 @@ print $proc->transformToXml($dom);
 print "\n";
 
 
---EXPECT--
+?>
 Test 12: Using Associative Array of Parameters
-<?xml version="1.0" encoding="iso-8859-1"?>
+XML version="1.0" encoding="iso-8859-1"?>
 <html><body>barbar
 test
 a1 b1 c1 <br/> 

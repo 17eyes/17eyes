@@ -5,7 +5,7 @@ mb_stripos()
 extension_loaded('mbstring') or die('skip');
 function_exists('mb_stripos') or die("skip mb_stripos() is not available in this build");
 ?>
---FILE--
+?>
 <?php
 // TODO: Add more encodings
 
@@ -117,7 +117,7 @@ $r = mb_stripos($euc_jp, $t_obj, 'BAD_ENCODING');
 
 ?>
 
---EXPECT--
+?>
 == POSITIVE OFFSET ==
 10
 0

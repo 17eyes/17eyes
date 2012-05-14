@@ -2,7 +2,7 @@
 mb_strpos() 
 --SKIPIF--
 <?php extension_loaded('mbstring') or die('skip mbstring not available'); ?>
---FILE--
+?>
 <?php
 // TODO: Add more encodings
 
@@ -114,7 +114,7 @@ $r = mb_strpos($euc_jp, $t_obj, 'BAD_ENCODING');
 
 ?>
 
---EXPECT--
+?>
 == POSITIVE OFFSET ==
 10
 0

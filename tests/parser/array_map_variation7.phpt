@@ -1,6 +1,6 @@
 --TEST--
 Test array_map() function : usage variations - arrays of different size
---FILE--
+?>
 <?php
 /* Prototype  : array array_map  ( callback $callback  , array $arr1  [, array $...  ] )
  * Description: Applies the callback to the elements of the given arrays 
@@ -32,7 +32,7 @@ var_dump( array_map('callback', array(), array(1, 2, 3), array('a', 'b')) );  //
 
 echo "Done";
 ?>
---EXPECTF--
+?>
 *** Testing array_map() : arrays with diff. size ***
 array(3) {
   [0]=>

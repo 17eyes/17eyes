@@ -12,7 +12,7 @@ curl_setopt($handle, CURLOPT_VERBOSE, true);
 curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
 if (!curl_setopt($handle, CURLOPT_STDERR, fopen("php://memory", "w+")))
     die("skip fopencookie not supported on this platform");
---FILE--
+?>
 <?php
 function do_stuff($url) {
     $handle=curl_init('http://127.0.0.1:37349/');
@@ -39,7 +39,7 @@ echo "\nmemory stream (leak):\n";
 leak_variable(do_stuff("php://memory"), true);
 
 echo "\nDone.\n";
---EXPECTF--
+?>
 temp stream (close after):
 About to rewind!
 * About to connect() to 127.0.0.1 port 37349%r.*%r

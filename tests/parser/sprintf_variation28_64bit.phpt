@@ -2,7 +2,7 @@
 Test sprintf() function : usage variations - octal formats with integer values
 --SKIPIF--
 <?php if (PHP_INT_SIZE != 8) die("skip this test is for 64bit platform only"); ?>
---FILE--
+?>
 <?php
 /* Prototype  : string sprintf(string $format [, mixed $arg1 [, mixed ...]])
  * Description: Return a formatted string 
@@ -53,7 +53,7 @@ foreach($integer_values as $integer_value) {
 
 echo "Done";
 ?>
---EXPECTF--
+?>
 *** Testing sprintf() : octal formats with integer values ***
 
 -- Iteration 1 --

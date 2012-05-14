@@ -5,7 +5,7 @@ Test mb_strstr() function : usage variation - different types of needle.
 extension_loaded('mbstring') or die('skip');
 function_exists('mb_strstr') or die("skip mb_strstr() is not available in this build");
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : string mb_strstr(string haystack, string needle[, bool part[, string encoding]])
  * Description: Finds first occurrence of a string within another 
@@ -117,8 +117,8 @@ foreach($inputs as $key =>$value) {
 fclose($fp);
 
 ?>
-===DONE===
---EXPECTF--
+=?>=
+?>
 *** Testing mb_strstr() : usage variation ***
 
 --int 0--
@@ -212,4 +212,4 @@ bool(false)
 --resource--
 Error: 2 - mb_strstr() expects parameter 2 to be string, resource given, %s(%d)
 bool(false)
-===DONE===
+=?>=

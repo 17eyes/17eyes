@@ -15,7 +15,7 @@ $so = socket_set_option($s, IPPROTO_IP, MCAST_JOIN_GROUP, array(
 ));
 if ($so === false)
 	die("SKIP joining group 224.0.0.23 on interface lo failed");
---FILE--
+?>
 <?php
 
 $stream = stream_socket_server("udp://0.0.0.0:58381", $errno, $errstr, STREAM_SERVER_BIND);
@@ -36,7 +36,7 @@ var_dump($so);
 stream_set_blocking($stream, 0);
 var_dump(fread($stream, strlen($m)));
 echo "Done.\n";
---EXPECTF--
+?>
 resource(%d) of type (Socket)
 bool(true)
 resource(%d) of type (Socket)

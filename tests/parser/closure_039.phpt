@@ -1,6 +1,6 @@
 --TEST--
 Closure 039: Rebinding closures, change scope, same runtime type
---FILE--
+?>
 <?php
 
 class A {
@@ -46,7 +46,7 @@ $cb = $ca->bindTo($b, NULL);
 var_dump($cb());
 
 ?>
---EXPECTF--
+?>
 int(-4)
 Testing with scope given as object
 int(21)

@@ -1,6 +1,6 @@
 --TEST--
 Bug #54268 (Double free when destroy_zend_class fails)
---INI--
+?>
 memory_limit=8M
 --SKIPIF--
 <?php
@@ -31,5 +31,5 @@ class Test
 }
 $x = new Test();
 Test::$mystatic = new DestructorCreator();
---EXPECTF--
+?>
 Fatal error: Allowed memory size of %s bytes exhausted%s(tried to allocate %s bytes) in %s on line %d

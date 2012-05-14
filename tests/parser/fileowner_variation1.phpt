@@ -7,7 +7,7 @@ Dave Kelsey <d_kelsey@uk.ibm.com>
 if (substr(PHP_OS, 0, 3) == 'WIN') {
     die('skip Do not run on Windows');
 }
---FILE--
+?>
 <?php
 /* Prototype: int fileowner ( string $filename )
  * Description: Returns the user ID of the owner of the file, or
@@ -40,7 +40,7 @@ unlink($file_path."/fileowner_variation1_link.tmp");
 unlink($file_path."/fileowner_variation1.tmp");
 ?>
 
---EXPECTF--
+?>
 *** Testing fileowner() with links ***
 int(%d)
 int(%d)

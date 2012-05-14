@@ -1,6 +1,6 @@
 --TEST--
 Testing several magic methods
---FILE--
+?>
 <?php
 
 class foo {	
@@ -39,7 +39,7 @@ var_dump((string)$a);
 unset($a->a);
 
 ?>
---EXPECT--
+?>
 call
 string(6) "sdfdsa"
 callstatic

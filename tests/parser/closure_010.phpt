@@ -1,6 +1,6 @@
 --TEST--
 Closure 010: Closure calls itself
---FILE--
+?>
 <?php
 $i = 3;
 $lambda = function ($lambda) use (&$i) {
@@ -11,7 +11,7 @@ $lambda = function ($lambda) use (&$i) {
 $lambda($lambda);
 echo "$i\n";
 ?>
---EXPECT--
+?>
 3
 2
 1

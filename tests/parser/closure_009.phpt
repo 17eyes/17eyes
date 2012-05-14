@@ -1,6 +1,6 @@
 --TEST--
 Closure 009: Using static vars inside lambda
---FILE--
+?>
 <?php
 $a = 1;
 $x = function ($x) use ($a) {
@@ -22,7 +22,7 @@ $y(4);
 $y(5);
 $y(6);
 ?>
---EXPECT--
+?>
 1:1:1
 2:2:1
 3:3:1

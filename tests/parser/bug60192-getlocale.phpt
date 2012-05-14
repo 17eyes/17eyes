@@ -15,6 +15,6 @@ class Collator2 extends Collator{
 
 $c = new Collator2();
 $c->getLocale(Locale::ACTUAL_LOCALE);
---EXPECTF--
+?>
 
 Catchable fatal error: Collator::getLocale(): Object not initialized in %s on line %d

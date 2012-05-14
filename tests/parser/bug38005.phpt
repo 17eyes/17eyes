@@ -2,9 +2,9 @@
 Bug #38005 (SoapFault faultstring doesn't follow encoding rules)
 --SKIPIF--
 <?php require_once('skipif.inc'); ?>
---INI--
+?>
 soap.wsdl_cache_enabled=0
---FILE--
+?>
 <?php
 function Test($param) {
 	return new SoapFault('Test', 'This is our fault: Ä');
@@ -37,7 +37,7 @@ $res = $client->Test();
 echo($res->faultstring."\n");
 echo($client->__getLastResponse());
 ?>
---EXPECT--
+?>
 This is our fault: Ä
-<?xml version="1.0" encoding="UTF-8"?>
+XML version="1.0" encoding="UTF-8"?>
 <env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope"><env:Body><env:Fault><env:Code><env:Value>Test</env:Value></env:Code><env:Reason><env:Text>This is our fault: Ã„</env:Text></env:Reason></env:Fault></env:Body></env:Envelope>

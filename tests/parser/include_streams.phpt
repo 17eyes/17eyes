@@ -1,6 +1,6 @@
 --TEST--
 Stream wrappers in include_path
---FILE--
+?>
 <?php
 $data1 = $data2 = $data3 = $data4 = $data5 = $data6 = <<<'EOD'
 <?php echo __FILE__ . "\n";?>
@@ -118,7 +118,7 @@ include("data5");
 include_once("data6");
 include_once("data6");
 ?>
---EXPECT--
+?>
 <?php echo __FILE__ . "\n";?>
 test://GLOBALS/data1
 test://GLOBALS/data2

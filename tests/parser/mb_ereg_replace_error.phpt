@@ -5,7 +5,7 @@ Test mb_ereg_replace() function : error conditions
 extension_loaded('mbstring') or die('skip');
 function_exists('mb_ereg_replace') or die("skip mb_ereg_replace() is not available in this build");
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : proto string mb_ereg_replace(string pattern, string replacement, string string [, string option])
  * Description: Replace regular expression for multibyte string 
@@ -32,7 +32,7 @@ var_dump( mb_ereg_replace($pattern, $replacement) );
 
 echo "Done";
 ?>
---EXPECTF--
+?>
 *** Testing mb_ereg_replace() : error conditions ***
 
 -- Testing mb_ereg_replace() function with more than expected no. of arguments --

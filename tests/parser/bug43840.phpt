@@ -5,7 +5,7 @@ Test mb_strpos() function : mb_strpos bounds check is byte count rather than a c
 extension_loaded('mbstring') or die('skip');
 function_exists('mb_strpos') or die("skip mb_strpos() is not available in this build");
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : int mb_strpos(string $haystack, string $needle [, int $offset [, string $encoding]])
  * Description: Find position of first occurrence of a string within another 
@@ -31,7 +31,7 @@ foreach($offsets as $i) {
 	var_dump(mb_strpos(b'This is na English ta', b'a', $i));
 }
 ?>
---EXPECTF--
+?>
 -- Offset is 20 --
 --Multibyte String:--
 int(20)

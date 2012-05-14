@@ -6,7 +6,7 @@ $target_dbs = array('oracledb' => true, 'timesten' => false);  // test runs on t
 require(dirname(__FILE__).'/skipif.inc');
 if (!extension_loaded("simplexml")) die ("skip no simplexml extension");
 ?> 
---FILE--
+?>
 <?php
 
 require(dirname(__FILE__).'/connect.inc');
@@ -32,7 +32,7 @@ oci_execute($s);
 
 // XML data to be inserted
 $xml =<<<EOF
-<?xml version="1.0"?>
+XML version="1.0"?>
 <Warehouse>
 <WarehouseId>1</WarehouseId>
 <WarehouseName>Southlake, Texas</WarehouseName>
@@ -107,9 +107,9 @@ $stmtarray = array(
 oci8_test_sql_execute($c, $stmtarray);
 
 ?>
-===DONE===
+=?>=
 <?php exit(0); ?>
---EXPECTF--
+?>
 Test 1 Insert new XML data using a temporary CLOB
 array(1) {
   [0]=>
@@ -164,7 +164,7 @@ object(SimpleXMLElement)#%d (10) {
   string(2) "10"
 }
 Test 3: Update changes using a temporary CLOB
-string(%d) "<?xml version="1.0"?>
+string(%d) "XML version="1.0"?>
 <Warehouse>
 %sWarehouseId>1</WarehouseId>
 %sWarehouseName>Southlake, Texas</WarehouseName>
@@ -178,4 +178,4 @@ string(%d) "<?xml version="1.0"?>
 %sVClearance>10</VClearance>
 </Warehouse>
 "
-===DONE===
+=?>=

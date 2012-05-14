@@ -5,7 +5,7 @@ Test filesize() function: usage variations - size of files
 if (substr(PHP_OS, 0, 3) != 'WIN') {
     die('skip only valid for Windows');
 }
---FILE--
+?>
 <?php
 /* 
  Prototype   : int filesize ( string $filename );
@@ -29,7 +29,7 @@ for($size = 1; $size <10000; $size = $size+1000)
 
 echo "*** Done ***\n";
 ?>
---EXPECTF--
+?>
 *** Testing filesize(): usage variations ***
 *** Checking filesize() with different size of files ***
 int(1024)

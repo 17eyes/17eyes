@@ -1,6 +1,6 @@
 --TEST--
 Test fopen and fclose() functions - usage variations - "r+t" mode 
---FILE--
+?>
 <?php
 /*
  fopen() function:
@@ -38,11 +38,11 @@ var_dump( ftell($file_handle) );  //File pointer position after write operation,
 var_dump( fclose($file_handle) );  //Check for close operation on the file handle
 var_dump( get_resource_type($file_handle) );  //Check whether resource is lost after close operation
 echo "*** Done ***\n"; 
---CLEAN--
+?>
 <?php
 unlink(dirname(__FILE__)."/007_variation10.tmp");
 ?>
---EXPECTF--
+?>
 *** Test fopen() & fclose() functions:  with 'r+t' mode ***
 resource(%d) of type (stream)
 string(6) "stream"

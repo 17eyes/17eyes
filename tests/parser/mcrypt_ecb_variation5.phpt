@@ -6,7 +6,7 @@ if (!extension_loaded("mcrypt")) {
 	print "skip - mcrypt extension not loaded"; 
 }	 
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : string mcrypt_ecb(string cipher, string key, string data, int mode, string iv)
  * Description: ECB crypt/decrypt data using key key with cipher cipher starting with iv 
@@ -119,8 +119,8 @@ foreach($inputs as $valueType =>$value) {
 fclose($fp);
 
 ?>
-===DONE===
---EXPECTF--
+=?>=
+?>
 *** Testing mcrypt_ecb() : usage variation ***
 
 --int 0--
@@ -206,5 +206,5 @@ string(32) "6438db90653c4d300909aa02fd6163c2"
 --resource--
 Error: 2 - mcrypt_ecb() expects parameter 5 to be string, resource given, %s(%d)
 string(0) ""
-===DONE===
+=?>=
 

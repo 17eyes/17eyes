@@ -4,7 +4,7 @@ XMLWriter: libxml2 XML Writer DTD Element & Attlist
 <?php 
 if (!extension_loaded("xmlwriter")) die("skip"); 
 ?>
---FILE--
+?>
 <?php 
 /* $Id: OO_008.phpt 202733 2005-12-12 21:21:11Z tony2001 $ */
 
@@ -26,8 +26,8 @@ $xw->endDocument();
 $output = $xw->flush(true);
 print $output;
 ?>
---EXPECT--
-<?xml version="1.0" encoding="UTF-8"?>
+?>
+XML version="1.0" encoding="UTF-8"?>
 <!ELEMENT sxe (elem1+, elem11, elem22*)>
 <!ATTLIST sxe id     CDATA  #implied>
 <!ELEMENT elem1 elem2*>

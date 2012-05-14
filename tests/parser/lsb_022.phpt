@@ -23,7 +23,7 @@ class B extends A {
 	}
 }
 B::foo();
---EXPECT--
+?>
 B
 B
 B

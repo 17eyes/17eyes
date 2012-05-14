@@ -9,7 +9,7 @@ foreach (mcrypt_list_algorithms() as $algo) {
 	   echo "FOUND\n";
 	}
 }
---EXPECT--
+?>
 FOUND
 FOUND
 FOUND

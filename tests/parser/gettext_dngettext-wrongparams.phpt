@@ -8,14 +8,14 @@ if (!extension_loaded("gettext")) {
 if (!setlocale(LC_ALL, 'en_US.UTF-8')) {
     die("skip en_US.UTF-8 locale not supported.");
 }
---FILE--
+?>
 <?php
 chdir(dirname(__FILE__));
 setlocale(LC_ALL, 'en_US.UTF-8');
 bindtextdomain('dngettextTest', './locale');
 
 var_dump(dngettext('dngettextTest', 'item', 'items'));
---EXPECTF--
+?>
 Warning: dngettext() expects exactly 4 parameters, 3 given in %s on line %d
 NULL
 --CREDITS--

@@ -1,6 +1,6 @@
 --TEST--
 stream_get_contents() - Testing offset out of range
---FILE--
+?>
 <?php
 
 $tmp = tmpfile();
@@ -15,7 +15,7 @@ echo stream_get_contents($tmp, 2, -1), "--\n";
 @unlink($tmp);
 
 ?>
---EXPECT--
+?>
 --
 --
 45--

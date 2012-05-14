@@ -8,5 +8,5 @@ function foo() {
 
 $x = __NAMESPACE__ . "\\foo"; 
 echo $x(),"\n";
---EXPECT--
+?>
 foo

@@ -5,7 +5,7 @@ Test copy() function: usage variations - copy data file across dirs
 if(substr(PHP_OS, 0, 3) != "WIN")
   die("skip Run only on Windows");
 ?>
---FILE--
+?>
 <?php
 /* Prototype: bool copy ( string $source, string $dest );
    Description: Makes a copy of the file source to dest.
@@ -81,7 +81,7 @@ rmdir($base_dir);
 echo "*** Done ***\n";
 ?>
 
---EXPECTF--
+?>
 *** Testing copy() function: copying data file across directories ***
 - Size of source file => int(3500)
 

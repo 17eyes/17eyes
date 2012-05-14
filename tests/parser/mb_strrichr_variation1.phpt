@@ -5,7 +5,7 @@ Test mb_strrichr() function : usage variation - various haystacks, needle won't 
 extension_loaded('mbstring') or die('skip');
 function_exists('mb_strrichr') or die("skip mb_strrichr() is not available in this build");
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : string mb_strrichr(string haystack, string needle[, bool part[, string encoding]])
  * Description: Finds the last occurrence of a character in a string within another, case insensitive 
@@ -117,8 +117,8 @@ foreach($inputs as $key =>$value) {
 fclose($fp);
 
 ?>
-===DONE===
---EXPECTF--
+=?>=
+?>
 *** Testing mb_strrichr() : usage variation ***
 
 --int 0--
@@ -204,4 +204,4 @@ bool(false)
 --resource--
 Error: 2 - mb_strrichr() expects parameter 1 to be string, resource given, %s(%d)
 bool(false)
-===DONE===
+=?>=

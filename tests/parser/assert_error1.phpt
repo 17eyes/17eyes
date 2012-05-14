@@ -1,6 +1,6 @@
 --TEST--
 assert() - error - invalid params
---INI--
+?>
 assert.active = 1
 assert.warning = 1
 assert.callback = f1
@@ -33,7 +33,7 @@ var_dump($r2=assert($sa,1));
 
 //Catch recoverable error with handler
 var_dump($rc=assert('aa=sd+as+safsafasfaçsafçsafç'));
---EXPECTF--
+?>
 Warning: assert_options() expects at most 2 parameters, 3 given in %s on line %d
 NULL
 

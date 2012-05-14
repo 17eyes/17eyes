@@ -2,7 +2,7 @@
 xmlwriter_write_attribute_ns with missing param
 --SKIPIF--
 <?php if (!extension_loaded("xmlwriter")) print "skip"; ?>
---FILE--
+?>
 <?php
 $xw = xmlwriter_open_memory();
 xmlwriter_set_indent($xw, TRUE);
@@ -25,10 +25,10 @@ print xmlwriter_output_memory($xw);
 ?>
 --CREDITS--
 Koen Kuipers koenk82@gmail.com
---EXPECTF--
+?>
 
 Warning: xmlwriter_write_attribute_ns() expects exactly %d parameters, %d given in %s on line %d
-<?xml version="1.0" encoding="UTF-8"?>
+XML version="1.0" encoding="UTF-8"?>
 <root>
  <elem1 attr1="first"/>
 </root>%wbool(false)

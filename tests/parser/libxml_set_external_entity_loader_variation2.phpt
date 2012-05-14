@@ -2,10 +2,10 @@
 libxml_set_external_entity_loader() variation: restore original handler; returning NULL
 --SKIPIF--
 <?php if (!extension_loaded('dom')) die('skip'); ?>
---CLEAN--
+?>
 <?php
 @unlink(__DIR__ . "/foobar.dtd");
---FILE--
+?>
 <?php
 chdir(__DIR__);
 $xml = <<<XML
@@ -35,7 +35,7 @@ var_dump($dd->validate());
 
 echo "Done.\n";
 
---EXPECTF--
+?>
 string(10) "-//FOO/BAR"
 string(%d) "%sfoobar.dtd"
 

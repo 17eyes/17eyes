@@ -56,5 +56,5 @@ if (false == MySQLPDOTest::detect_transactional_mysql_engine($db))
 	}
 
 	print "done!";
---EXPECT--
+?>
 done!

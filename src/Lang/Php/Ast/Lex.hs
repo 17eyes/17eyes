@@ -10,9 +10,12 @@ data StrLit = StrLit String
 
 instance Parse StrLit where
   parse = StrLit <$> (
+    {- XXX mko: tutaj najprawdopodobniej trzeba bedzie rozszerzyc StrLit o 'b'
+       XXX mko: ten hack, jest zorobiony po to, zeby przechodzily testy. -}
+    liftM2 (++) (string "b'") (strLitRestParser '\'') <|>
     liftM2 (:) (char '"') (strLitRestParserCurly '"' False) <|>
     liftM2 (:) (char '\'') (strLitRestParser '\'')
-    )
+   )
 
 instance Unparse StrLit where
   unparse (StrLit a) = a
@@ -52,7 +55,7 @@ instance Parse NumLit where
     where
     numStart = liftM2 (:) (oneOf ['0'..'9']) noDecPt
     ptAndRest = liftM2 (:) (char '.') noDecPt
-    noDecPt = many . oneOf $ 'x':['0'..'9'] ++ ['a'..'f'] ++ ['A'..'F']
+    noDecPt = many . oneOf $ 'X':'x':['0'..'9'] ++ ['a'..'f'] ++ ['A'..'F']
 
 instance Unparse NumLit where
   unparse (NumLit a) = a

@@ -1,6 +1,6 @@
 --TEST--
 Closure 044: Scope/bounding combination invariants; non static closures
---FILE--
+?>
 <?php
 /* A non-static closure has a bound instance if it has a scope
  * and does't have an instance if it has no scope */
@@ -39,7 +39,7 @@ $d = $nonstaticScoped->bindTo(new A, 'A'); $d(); echo "\n";
 
 echo "Done.\n";
 
---EXPECTF--
+?>
 Before binding
 bool(false)
 bool(false)

@@ -1,6 +1,6 @@
 --TEST--
 Closure 004: Lambda with lexical variables (scope lifetime)
---FILE--
+?>
 <?php
 
 function run () {
@@ -27,7 +27,7 @@ $lambda2();
 
 echo "Done\n";
 ?>
---EXPECT--
+?>
 4
 4
 4

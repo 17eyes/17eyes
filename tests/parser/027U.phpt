@@ -5,9 +5,9 @@ Phar: phar:// opendir
 if (!extension_loaded("phar")) die("skip");
 if (version_compare(PHP_VERSION, "6.0", "<")) die("skip Unicode support required");
 ?>
---INI--
+?>
 phar.require_hash=0
---FILE--
+?>
 <?php
 $fname = dirname(__FILE__) . '/' . basename(__FILE__, '.php') . '.phar.php';
 $pname = 'phar://' . $fname;
@@ -57,10 +57,10 @@ echo "opendir edge cases\n";
 var_dump(opendir("phar://"));
 var_dump(opendir("phar://foo.phar/hi"));
 ?>
-===DONE===
---CLEAN--
+=?>=
+?>
 <?php unlink(dirname(__FILE__) . '/' . basename(__FILE__, '.clean.php') . '.phar.php'); ?>
---EXPECTF--
+?>
 unicode(%d) "phar://*/027U.phar.php/"
 unicode(6) "/a.php"
 bool(false)
@@ -94,4 +94,4 @@ bool(false)
 Warning: opendir(phar://foo.phar/hi): failed to open dir: phar error: invalid url or non-existent phar "phar://foo.phar/hi"
 phar url "phar://foo.phar/hi" is unknown in %s027U.php on line %d
 bool(false)
-===DONE===
+=?>=

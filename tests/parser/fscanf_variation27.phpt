@@ -1,6 +1,6 @@
 --TEST--
 Test fscanf() function: usage variations - octal formats with integer values 
---FILE--
+?>
 <?php
 
 /*
@@ -85,7 +85,7 @@ $file_path = dirname(__FILE__);
 $filename = "$file_path/fscanf_variation27.tmp";
 unlink($filename);
 ?>
---EXPECTF--
+?>
 *** Test fscanf(): different octal format types with different integer values ***
 
 -- iteration 1 --

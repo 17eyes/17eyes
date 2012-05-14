@@ -1,6 +1,6 @@
 --TEST--
 028: Name ambiguity (class name & external namespace name)
---FILE--
+?>
 <?php
 require "ns_028.inc";
 
@@ -18,7 +18,7 @@ Foo\Bar();
 $x = new Foo\Foo;
 Foo\Foo::Bar();
 \Foo\Bar();
---EXPECT--
+?>
 Method - Foo::__construct
 Func   - Foo\Bar
 Method - Foo\Foo::__construct

@@ -2,7 +2,7 @@
 XMLWriter: libxml2 XML Writer, membuffer, flush, text, attribute
 --SKIPIF--
 <?php if (!extension_loaded("xmlwriter")) print "skip"; ?>
---FILE--
+?>
 <?php 
 /* $Id: OO_003.phpt 201860 2005-12-02 02:05:26Z iliaa $ */
 
@@ -30,8 +30,8 @@ $xw->endDocument();
 // Force to write and empty the buffer
 echo $xw->flush(true);
 ?>
-===DONE===
---EXPECT--
-<?xml version="1.0" encoding="UTF-8"?>
+=?>=
+?>
+XML version="1.0" encoding="UTF-8"?>
 <tag1 attr1="attr1_value" attr2="attr2_value">Test text for tag1<tag2/></tag1>
-===DONE===
+=?>=

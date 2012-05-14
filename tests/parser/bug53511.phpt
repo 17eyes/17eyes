@@ -19,7 +19,7 @@ function test() {
 
 test();
 echo "bug\n";
---EXPECTF--
+?>
 Fatal error: Uncaught exception 'Exception' with message 'ops 2' in %sbug53511.php:11
 Stack trace:
 #0 %sbug53511.php(17): test()

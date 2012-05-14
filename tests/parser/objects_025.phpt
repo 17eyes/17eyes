@@ -1,6 +1,6 @@
 --TEST--
 Testing invalid method names with __call and __callstatic
---FILE--
+?>
 <?php 
 
 class foo {
@@ -33,7 +33,7 @@ $b = NULL;
 $a->$b();
 
 ?>
---EXPECTF--
+?>
 non-static - ok
 static - ok
 non-static - ok

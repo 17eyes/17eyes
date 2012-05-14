@@ -2,7 +2,7 @@
 Phar: Phar::isValidPharFilename()
 --SKIPIF--
 <?php if (!extension_loaded("phar")) die("skip");?>
---INI--
+?>
 phar.readonly=1
 --FILE--
 <?php
@@ -71,11 +71,11 @@ var_dump(Phar::isValidPharFilename('dir.phar.php', true));
 var_dump(Phar::isValidPharFilename('dir.phar.php', false));
 
 ?>
-===DONE===
+=?>=
 --CLEAN--
 <?php
 rmdir(dirname(__FILE__) . '/.phar');
---EXPECTF--
+?>
 Warning: Phar::isValidPharFilename() expects parameter 1 to be %string, array given in %sphar_isvalidpharfilename.php on line %d
 *
 bool(false)
@@ -136,5 +136,5 @@ dir.phar.php
 bool(true)
 bool(true)
 bool(false)
-===DONE===
+=?>=
 

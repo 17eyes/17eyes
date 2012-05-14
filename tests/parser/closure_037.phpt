@@ -1,6 +1,6 @@
 --TEST--
 Closure 037: self:: and static:: within closures
---FILE--
+?>
 <?php
 class A {
 	private $x = 0;
@@ -37,7 +37,7 @@ $closure = $b->getClosure();
 $closure();
 ?>
 Done.
---EXPECTF--
+?>
 1
 42
 42

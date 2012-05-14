@@ -1,6 +1,6 @@
 --TEST--
 Closure 026: Assigning a closure object to an array in $this
---FILE--
+?>
 <?php
 
 class foo {
@@ -27,7 +27,7 @@ foreach ($x as $b => $c) {
 }
 
 ?>
---EXPECTF--
+?>
 object(foo)#%d (1) {
   ["a"]=>
   array(1) {

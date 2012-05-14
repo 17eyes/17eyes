@@ -5,7 +5,7 @@ Test mb_strtoupper() function : usage varitations - Pass different character typ
 extension_loaded('mbstring') or die('skip');
 function_exists('mb_strtoupper') or die("skip mb_strtoupper() is not available in this build");
 ?>
---FILE--
+?>
 <?php
 /* Prototype  : string mb_strtoupper(string $sourcestring [, string $encoding]
  * Description: Returns a uppercased version of $sourcestring
@@ -40,7 +40,7 @@ foreach ($lowers as $lang => $sourcestring) {
 echo "Done";
 ?>
 
---EXPECTF--
+?>
 *** Testing mb_strtoupper() : usage variations ***
 
 -- Basic Latin --
