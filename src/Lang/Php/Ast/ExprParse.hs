@@ -551,11 +551,13 @@ eptOr     = binOp BOr     tokOrP
 eptTernaryIf :: Parser ((Expr, WS) -> (Expr, WS))
 eptTernaryIf = do
   w2 <- tokQMarkP >> parse
-  (e2, w3) <- parse
+  -- then-expression is optional; when it's missing m_e2 is Nothing
+  (m_e2, w3) <- try (parse >>= \(e2, w3) -> return (Just e2, w3))
+                <|> (parse >>= \w3 -> return (Nothing, w3))
   w4 <- tokColonP >> parse
   (e3, w5) <- parse
   return $ \ (e1, w1) ->
-    (ExprTernaryIf $ TernaryIf e1 (w1, w2) e2 (w3, w4) e3, w5)
+    (ExprTernaryIf $ TernaryIf e1 (w1, w2) m_e2 (w3, w4) e3, w5)
 
 eptAndWd = binOp BAndWd tokAndWdP
 eptXorWd = binOp BXorWd tokXorWdP

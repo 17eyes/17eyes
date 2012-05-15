@@ -137,7 +137,7 @@ data OnceOrNot = Once | NotOnce
 data TernaryIf = TernaryIf {
   ternaryIfCond :: Expr,
   ternaryIfWS1  :: WS2,
-  ternaryIfThen :: Expr,
+  ternaryIfThen :: Maybe Expr, -- since PHP 5.3 this may be omitted
   ternaryIfWS2  :: WS2,
   ternaryIfElse :: Expr}
   deriving (Eq, Show, Typeable, Data)
