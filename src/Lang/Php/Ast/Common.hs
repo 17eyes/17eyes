@@ -14,6 +14,7 @@ module Lang.Php.Ast.Common (
   module Data.List,
   module Data.Maybe,
   WS, WS2, WSElem(..), WSCap(..), WSCap2, capify, wsNoNLParser, w2With,
+  discardWS,
   rePairLeft, rePairRight, swap, uncons,
   upToCharsOrEndParser) where
 
@@ -119,6 +120,9 @@ type WSCap2 a = WSCap (WSCap a)
 
 $(derive makeBinary ''WSElem)
 $(derive makeBinary ''WSCap)
+
+discardWS :: Parser ()
+discardWS = (parse :: Parser WS) >> return ()
 
 -- Following definitions are from FUtil (https://github.com/facebook/futil):
 

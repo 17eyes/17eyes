@@ -89,6 +89,11 @@ data VarMbVal = VarMbVal Var (Maybe (WS2, Expr))
 data VarEqVal a = VarEqVal a WS2 Expr
   deriving (Eq, Show, Typeable, Data)
 
+-- Differentiate between standard control flow statements and the special
+-- syntax with colons (if-endif, while-endwhile, etc.).
+data StmtSyntax = StdSyntax | AltSyntax
+  deriving (Eq, Show, Typeable, Data)
+
 data ClassStmt =
   -- this list must have at least one element.. should i make a type for that?
   CStmtVar (IC.Intercal String WS) [WSCap VarMbVal] StmtEnd |
@@ -152,8 +157,9 @@ data Catch = Catch {
   deriving (Eq, Show, Typeable, Data)
 
 data While = While {
-  whileExpr  :: WSCap2 Expr,
-  whileBlock :: BlockOrStmt}
+  whileExpr   :: WSCap2 Expr,
+  whileBlock  :: BlockOrStmt,
+  whileSyntax :: StmtSyntax}
   deriving (Eq, Show, Typeable, Data)
 
 data TopLevel = TopLevel String (Maybe (Either (WSCap Expr, StmtEnd) String))
@@ -188,4 +194,4 @@ $(derive makeBinary ''TopLevel)
 $(derive makeBinary ''VarMbVal)
 $(derive makeBinary ''VarEqVal)
 $(derive makeBinary ''While)
-
+$(derive makeBinary ''StmtSyntax)
