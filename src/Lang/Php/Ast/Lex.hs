@@ -12,7 +12,7 @@ instance Parse StrLit where
   parse = StrLit <$> (
     {- binary strings -}
     liftM2 (++) (string "b'") (strLitRestParser '\'') <|>
-    liftM2 (++) (string "b\"") (strLitRestParserCurly '"') <|>
+    liftM2 (++) (string "b\"") (strLitRestParserCurly '"' False) <|>
 
     {- normal strings -}
     liftM2 (:) (char '"') (strLitRestParserCurly '"' False) <|>
