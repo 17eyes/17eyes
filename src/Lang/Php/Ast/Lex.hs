@@ -90,16 +90,10 @@ identStartChars = ['a'..'z'] ++ ['A'..'Z'] ++ ['_']
 identEndChars :: String
 identEndChars = identStartChars ++ ['0'..'9']
 
-identXmlChars :: String
-identXmlChars = identStartChars ++ ['0'..'9'] ++ ['-']
-
 genIdentifierParser :: Parser String
 genIdentifierParser =
   liftM2 (:) (oneOf identStartChars)
              (many $ oneOf identEndChars)
-
-xmlIdentifierParser :: Parser String
-xmlIdentifierParser = many1 $ oneOf identXmlChars
 
 identifierParser :: Parser String
 identifierParser = try $ do

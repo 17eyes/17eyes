@@ -99,17 +99,7 @@ data Expr =
   ExprRef       WS (Either Expr Val) |
   ExprRVal      RVal |
   ExprStrLit    StrLit |
-  ExprTernaryIf TernaryIf |
-  -- FIXME: this fb extension should be separated to a superclass-like Lang?
-  ExprXml       Xml
-  deriving (Eq, Show, Typeable, Data)
-
-data Xml = Xml String
-  (IC.Intercal WS (String, Maybe (WS2, Either StrLit (WSCap Expr))))
-  (Maybe ([Either XmlLitOrExpr Xml], Bool))
-  deriving (Eq, Show, Typeable, Data)
-
-data XmlLitOrExpr = XmlLit String | XmlExpr (WSCap Expr)
+  ExprTernaryIf TernaryIf
   deriving (Eq, Show, Typeable, Data)
 
 data BinOp = BAnd | BAndWd | BEQ | BGE | BGT | BID | BLE | BLT | BNE |
@@ -164,6 +154,4 @@ $(derive makeBinary ''RVal)
 $(derive makeBinary ''TernaryIf)
 $(derive makeBinary ''Val)
 $(derive makeBinary ''Var)
-$(derive makeBinary ''Xml)
-$(derive makeBinary ''XmlLitOrExpr)
 

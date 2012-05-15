@@ -259,7 +259,6 @@ instance Unparse Expr where
     ExprRVal a -> unparse a
     ExprStrLit a -> unparse a
     ExprTernaryIf a -> unparse a
-    ExprXml a -> unparse a
 
 instance Unparse BinOpBy where
   unparse binOp = case binOp of
@@ -328,22 +327,6 @@ instance Unparse TernaryIf where
     tokQMark ++ unparse w2 ++ unparse e2 ++ unparse w3 ++ tokColon ++
     unparse w4 ++ unparse e3
 
-instance Unparse Xml where
-  unparse (Xml tag attrs content) = tokLT ++ tag ++
-    IC.intercalUnparser unparse
-      (\ (k, vMb) -> k ++
-        maybe "" (\ (w, v) -> w2With tokEquals w ++
-        either unparse ((tokLBrace ++) . (++ tokRBrace) . unparse) v) vMb)
-      attrs ++
-    maybe tokDiv (\ (c, hasExplicitCloseTag) ->
-      tokGT ++ concatMap unparse c ++ tokLT ++ tokDiv ++
-      if hasExplicitCloseTag then tag else "") content ++
-    tokGT
-
-instance Unparse XmlLitOrExpr where
-  unparse (XmlLit a) = a
-  unparse (XmlExpr a) = tokLBrace ++ unparse a ++ tokRBrace
-
 instance Parse (Expr, WS) where
   parse = buildExpressionParser exprParserTable simpleExprParser
 
@@ -382,8 +365,7 @@ simpleExprParser = assignOrRValParser
     funclike1Parser ExprEmpty tokEmptyP <|>
     funclike1Parser ExprEval tokEvalP <|>
     (tokIssetP >> liftM2 ExprIsset parse (issetListParser parse)) <|>
-    ExprBackticks <$> backticksParser <|>
-    ExprXml <$> parse
+    ExprBackticks <$> backticksParser
     ) parse
 
 ambigCastParser :: WS -> Parser (Expr, WS)
@@ -568,24 +550,3 @@ eptIndex = do
   e2 <- tokLBracketP >> parse
   w2 <- tokRBracketP >> parse
   return $ \ (e1, w1) -> (ExprIndex e1 w1 e2, w2)
-
-instance Parse Xml where
-  parse = tokLTP >> do
-    tag <- many1 . oneOf $
-      -- i thought _ wasn't allowed but i guess when marcel's away e will play
-      [':', '-', '_'] ++ ['a'..'z'] ++ ['A'..'Z'] ++ ['0'..'9']
-    attrs <- IC.intercalParser parse . liftM2 (,) xmlIdentifierParser $
-      Just <$> try (liftM2 (,) (liftM2 (,) parse (tokEqualsP >> parse)) $
-        (tokLBraceP >> Right <$> parse <* tokRBraceP) <|>
-        Left <$> parse) <|>
-      return Nothing
-    content <- (tokDivP >> tokGTP >> return Nothing) <|>
-      Just <$> liftM2 (,)
-        (tokGTP >> many (Right <$> try parse <|> Left <$> parse))
-        (tokLTP >> tokDivP >> ((string tag >> return True) <|> return False))
-        <* tokGTP
-    return $ Xml tag attrs content
-
-instance Parse XmlLitOrExpr where
-  parse = (tokLBraceP >> XmlExpr <$> parse <* tokRBraceP) <|>
-    XmlLit <$> many1 (satisfy (`notElem` "<{"))
