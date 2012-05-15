@@ -96,9 +96,7 @@ identXmlChars = identStartChars ++ ['0'..'9'] ++ ['-']
 genIdentifierParser :: Parser String
 genIdentifierParser =
   liftM2 (:) (oneOf identStartChars)
-    (many $ oneOf identEndChars) <|>
-  concat <$> many1
-    (liftM2 (++) tokColonP . many1 $ oneOf identXmlChars)
+             (many $ oneOf identEndChars)
 
 xmlIdentifierParser :: Parser String
 xmlIdentifierParser = many1 $ oneOf identXmlChars
