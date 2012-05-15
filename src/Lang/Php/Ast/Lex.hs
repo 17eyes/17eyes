@@ -10,9 +10,11 @@ data StrLit = StrLit String
 
 instance Parse StrLit where
   parse = StrLit <$> (
-    {- XXX mko: tutaj najprawdopodobniej trzeba bedzie rozszerzyc StrLit o 'b'
-       XXX mko: ten hack, jest zorobiony po to, zeby przechodzily testy. -}
+    {- binary strings -}
     liftM2 (++) (string "b'") (strLitRestParser '\'') <|>
+    liftM2 (++) (string "b\"") (strLitRestParserCurly '"') <|>
+
+    {- normal strings -}
     liftM2 (:) (char '"') (strLitRestParserCurly '"' False) <|>
     liftM2 (:) (char '\'') (strLitRestParser '\'')
    )
