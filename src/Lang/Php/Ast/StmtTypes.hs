@@ -127,7 +127,8 @@ data ForPart = ForPart (Either WS [WSCap Expr])
 
 data Foreach = Foreach {
   foreachHeader :: WSCap (WSCap Expr, WSCap DubArrowMb),
-  foreachBlock  :: BlockOrStmt}
+  foreachBlock  :: BlockOrStmt,
+  foreachSyntax :: StmtSyntax}
   deriving (Eq, Show, Typeable, Data)
 
 data If = If {
@@ -141,9 +142,10 @@ data IfBlock = IfBlock {
   deriving (Eq, Show, Typeable, Data)
 
 data Switch = Switch {
-  switchExpr  :: WSCap2 Expr,
-  switchWS    :: WS,
-  switchCases :: [Case]}
+  switchSyntax :: StmtSyntax,
+  switchExpr   :: WSCap2 Expr,
+  switchWS     :: WS,
+  switchCases  :: [Case]}
   deriving (Eq, Show, Typeable, Data)
 
 data Case = Case {

@@ -106,6 +106,7 @@ instance Unparse DoWhile where
     unparse block, tokWhile, unparse w1, tokLParen, unparse w2, unparse expr,
     unparse w3, tokRParen, unparse w4, unparse end]
 
+-- FIXME: for-endfor syntax does not store all whitespace in the AST
 instance Unparse For where
   unparse (For (WSCap w1 (inits, conds, incrs) w2) block StdSyntax) = concat [
     tokFor, unparse w1, tokLParen,
@@ -119,10 +120,15 @@ instance Unparse For where
 instance Unparse ForPart where
   unparse (ForPart e) = either unparse (intercalate tokComma . map unparse) e
 
+-- FIXME: foreach-endforeach syntax does not store all whitespace in the AST
 instance Unparse Foreach where
-  unparse (Foreach (WSCap w1 (expr, dubArrow) w2) block) = concat [tokForeach,
+  unparse (Foreach (WSCap w1 (expr, dubArrow) w2) block StdSyntax) = concat [tokForeach,
     unparse w1, tokLParen, unparse expr, tokAs, unparse dubArrow, tokRParen,
     unparse w2, unparse block]
+  unparse (Foreach (WSCap w1 (expr, dubArrow) w2) (Right (Block stmts)) AltSyntax) =
+    concat [tokForeach, unparse w1, tokLParen, unparse expr, tokAs, unparse dubArrow,
+            tokRParen, unparse w2, tokColon, " ", unparse stmts, tokEndforeach]
+
 
 instance Unparse Func where
   unparse (Func w1 ref name (WSCap w2 args w3) block) = concat [tokFunction,
@@ -162,9 +168,14 @@ instance Unparse VarMbVal where
     (\ (w, expr) -> w2With tokEquals w ++ unparse expr) exprMb
 
 instance Unparse Switch where
-  unparse (Switch (WSCap w1 expr w2) w3 cases) = concat [tokSwitch, unparse w1,
-    tokLParen, unparse expr, tokRParen, unparse w2, tokLBrace, unparse w3,
-    unparse cases, tokRBrace]
+  unparse (Switch syntax (WSCap w1 expr w2) w3 cases) =
+    concat [tokSwitch,
+            unparse w1, tokLParen, unparse expr, tokRParen, unparse w2,
+            left, unparse w3, unparse cases, right]
+   where
+    (left, right) = case syntax of
+        StdSyntax -> (tokLBrace, tokRBrace)
+        AltSyntax -> (tokColon, tokEndswitch)
 
 instance Unparse Case where
   unparse (Case expr stmtList) =
@@ -381,6 +392,7 @@ instance Parse DoWhile where
 instance (Parse (a, WS), Parse (b, WS)) => Parse (Either a b, WS) where
   parse = first Right <$> parse <|> first Left <$> parse
 
+-- FIXME: for-endfor syntax does not store all whitespace in the AST
 instance Parse (For, WS) where
   parse = tokForP >> do
     h <- liftM3 WSCap parse (tokLParenP >> liftM3 (,,) parse
@@ -406,12 +418,23 @@ forPartExpry :: WS -> Parser ForPart
 forPartExpry w1 = ForPart . Right <$>
   liftM2 (:) (capify w1 <$> parse) (many $ tokCommaP >> parse)
 
+-- FIXME: foreach-endforeach syntax does not store all whitespace in the AST
 instance Parse (Foreach, WS) where
   parse = tokForeachP >> do
     h <- liftM3 WSCap parse
       (tokLParenP >> liftM2 (,) parse (tokAsP >> parse) <* tokRParenP)
       parse
-    first (Foreach h) <$> parse
+    parseAltSyntax h <|> parseStdSyntax h
+   where
+    parseAltSyntax h = do
+        tokColonP >> discardWS
+        stmts <- stmtListParser
+        tokEndforeachP
+        ws <- parse
+        return (Foreach h (Right $ Block stmts) AltSyntax, ws)
+    parseStdSyntax h = do
+        (block, ws) <- parse
+        return (Foreach h block StdSyntax, ws)
 
 instance Parse Func where
   parse = tokFunctionP >> liftM5 Func parse
@@ -429,11 +452,15 @@ instance Parse IfaceStmt where
     classConstParser IfaceConst <|>
     classAbstrFuncParser IfaceFunc =<< snd <$> funcOrVarTypeToksP
 
+-- FIXME: This is (and was) buggy. See parser_bugs/switch.php.
 instance Parse Switch where
-  parse = tokSwitchP >> liftM3 Switch
-    (liftM3 WSCap parse (tokLParenP >> parse <* tokRParenP) parse)
-    (tokLBraceP >> parse)
-    parse <* tokRBraceP
+  parse = try (parseGen (Switch StdSyntax) tokLBraceP tokRBraceP)
+           <|> parseGen (Switch AltSyntax) tokColonP  tokEndswitchP
+   where
+      parseGen f left right = tokSwitchP >> liftM3 f
+        (liftM3 WSCap parse (tokLParenP >> parse <* tokRParenP) parse)
+        (left >> parse)
+        parse <* right
 
 instance Parse Case where
   parse = liftM2 Case
