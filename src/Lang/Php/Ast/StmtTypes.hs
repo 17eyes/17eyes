@@ -132,12 +132,13 @@ data Foreach = Foreach {
   deriving (Eq, Show, Typeable, Data)
 
 data If = If {
-  ifAndIfelses :: IC.Intercal IfBlock (WS, Maybe WS),
-  ifElse       :: Maybe (WS2, BlockOrStmt)}
+  ifSyntax     :: StmtSyntax,
+  ifAndIfelses :: [IfBlock],
+  ifElse       :: Maybe BlockOrStmt}
   deriving (Eq, Show, Typeable, Data)
 
 data IfBlock = IfBlock {
-  ifBlockExpr  :: WSCap2 Expr,
+  ifBlockExpr  :: Expr,
   ifBlockBlock :: BlockOrStmt}
   deriving (Eq, Show, Typeable, Data)
 
