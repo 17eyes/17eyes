@@ -6,11 +6,11 @@ fasdfasdf
 foo
 <?php endswitch; ?>
 <?php
-switch(1):
-case 0:
+/*a*/switch/*a'*/(1)/*a''*/:/*b*/
+/*c*/case 0:
     echo 'a';
     break;
 case 1:
     echo 'bar';
-    break;
-endswitch;
+    break;/*d*/
+/*e*/endswitch/*f*/;/*g*/

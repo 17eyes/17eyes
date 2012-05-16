@@ -2,6 +2,7 @@
 foo
 <?php endwhile; ?>
 <?php 
-while(false):
+/*a*/while/*b*/(false)/*c*/:/*d*/
     echo 'foo';
-endwhile;
+    echo 'foo';
+/*e*/endwhile/*f*/;/*g*/
