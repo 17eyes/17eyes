@@ -11,7 +11,7 @@ data StrLit = StrLit String
 instance Parse StrLit where
   parse = StrLit <$> (
     {- binary strings -}
-    liftM2 (++) (string "b'") (strLitRestParser '\'') <|>
+    try (liftM2 (++) (string "b'") (strLitRestParser '\'')) <|>
     liftM2 (++) (string "b\"") (strLitRestParserCurly '"' False) <|>
 
     {- normal strings -}
@@ -179,7 +179,8 @@ tokLTP = nc tokLT "<=>"
 tokShiftL = "<<"
 tokShiftLP = nc tokShiftL "<="
 tokHereDoc = "<<<"
-tokHereDocP = try $ s tokHereDoc
+tokHereDocB = "b<<<"
+tokHereDocP = (try $ s tokHereDoc) <|> (try $ s tokHereDocB)
 tokShiftLBy = "<<="
 tokShiftLByP = try $ s tokShiftLBy
 tokLE = "<="

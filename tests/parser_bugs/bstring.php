@@ -1,5 +1,6 @@
 <?php
 
- $x = '"ufo';
+ $x = b'ufo';
+ $y = b"UFO";
 
  ?>

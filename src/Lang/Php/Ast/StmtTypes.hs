@@ -13,23 +13,23 @@ data Stmt =
   StmtBreak     (Maybe (WS, Expr)) WS StmtEnd |
   StmtClass     Class                         |
   StmtContinue  (Maybe (WS, Expr)) WS StmtEnd |
-  StmtDeclare   Declare |
-  StmtDoWhile   DoWhile |
+  StmtDeclare   Declare                       |
+  StmtDoWhile   DoWhile                       |
   -- this list must have at least one element.. should i make a type for that?
-  StmtEcho      [WSCap Expr] StmtEnd     |
+  StmtEcho      [WSCap Expr] StmtEnd          |
   StmtExpr      Expr WS StmtEnd               |
-  StmtFor       For |
-  StmtForeach   Foreach |
+  StmtFor       For                           |
+  StmtForeach   Foreach                       |
   StmtFuncDef   Func                          |
   -- this list must have at least one element.. should i make a type for that?
   StmtGlobal    [WSCap Var] StmtEnd           |
-  StmtIf        If |
+  StmtIf        If                            |
   StmtInterface Interface                     |
   StmtNothing   StmtEnd                       |
   StmtReturn    WS (Maybe (Expr, WS)) StmtEnd |
   -- this list must have at least one element.. should i make a type for that?
   StmtStatic    [WSCap VarMbVal] StmtEnd      |
-  StmtSwitch    Switch |
+  StmtSwitch    Switch                        |
   StmtThrow     (WSCap Expr) StmtEnd          |
   StmtTry       (WSCap (Block Stmt)) (IC.Intercal Catch WS) |
   StmtUnset     (WSCap [WSCap LRVal]) StmtEnd   |

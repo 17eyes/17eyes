@@ -331,7 +331,12 @@ instance Parse (Expr, WS) where
   parse = buildExpressionParser exprParserTable simpleExprParser
 
 simpleExprParser :: Parser (Expr, WS)
-simpleExprParser = assignOrRValParser
+simpleExprParser = 
+    try (liftM2 (,) (ExprStrLit <$> parse) parse)
+  <|>
+    try (liftM2 (,) (ExprHereDoc <$> parse) parse)
+  <|>
+    assignOrRValParser
   <|> do
     ws1 <- tokLParenP >> parse
     ambigCastParser ws1 <|> castOrParenParser ws1
@@ -358,9 +363,7 @@ simpleExprParser = assignOrRValParser
         ExprNew _ _ _ -> return (ExprRef w (Left e), wEnd)
         _ -> fail "Expecting a Val or ExprNew."
   <|> liftM2 (,) (
-    ExprStrLit <$> parse <|>
     ExprNumLit <$> parse <|>
-    ExprHereDoc <$> parse <|>
     (tokArrayP >> liftM2 ExprArray parse (arrListParser parse)) <|>
     funclike1Parser ExprEmpty tokEmptyP <|>
     funclike1Parser ExprEval tokEvalP <|>
