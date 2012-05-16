@@ -1,0 +1,8 @@
+<?php switch(0) { ?>
+<?php case 0: ?>
+foo
+<?php break; ?>
+<?php case 1: ?>
+bar
+<?php break; ?>
+<?php } ?>
