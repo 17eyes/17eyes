@@ -139,19 +139,7 @@ argsUnparser :: (Unparse t, Unparse s) => Either t [s] -> String
 argsUnparser = either unparse (intercalate tokComma . map unparse)
 
 instance Unparse If where
-  unparse (If ifAndIfelses theElse) = tokIf ++ unparse theIf ++
-    concatMap doIfelse ifelses ++
-    maybe [] (\ (w1, block) -> w2With tokElse w1 ++ unparse block) theElse
-    where
-    (theIf, ifelses) = IC.breakStart ifAndIfelses
-    doElsery Nothing = tokElseif
-    doElsery (Just ws) = tokElse ++ unparse ws ++ tokIf
-    doIfelse ((ws, elsery), condAndBlock) =
-      unparse ws ++ doElsery elsery ++ unparse condAndBlock
-
-instance Unparse IfBlock where
-  unparse (IfBlock (WSCap w1 expr w2) block) = concat [unparse w1, tokLParen,
-    unparse expr, tokRParen, unparse w2, unparse block]
+  unparse _ = undefined -- FIXME: not implemented
 
 instance Unparse Interface where
   unparse (Interface name extends block) = concat [tokInterface, unparse name,
@@ -231,44 +219,41 @@ simpleStmtParser =
     parse
 
 instance Parse (If, WS) where
-  parse = tokIfP >> do
-    (b, w) <- parse
-    ifRestP $ IC.Interend (b, w)
-
-ifRestP :: IC.Intercal (IfBlock, WS) (Maybe WS) -> Parser (If, WS)
-ifRestP a = elseifContP a <|> elseContP a <|> return (If a' Nothing, w) where
-  (a', w) = ifReconstr a
-
-elseifContP :: IC.Intercal (IfBlock, WS) (Maybe WS) -> Parser (If, WS)
-elseifContP a = tokElseifP >> do
-  a' <- (\ x -> IC.append Nothing x a) <$> parse
-  ifRestP a'
-
-elseContP :: IC.Intercal (IfBlock, WS) (Maybe WS) -> Parser (If, WS)
-elseContP a = tokElseP >> do
-  w <- parse
-  elseIfContP a w <|> elseEndP a w
-
-elseIfContP :: IC.Intercal (IfBlock, WS) (Maybe WS) -> WS -> Parser (If, WS)
-elseIfContP a w = tokIfP >> do
-  a' <- (\ x -> IC.append (Just w) x a) <$> parse
-  ifRestP a'
-
-elseEndP :: IC.Intercal (IfBlock, WS) (Maybe WS) -> WS -> Parser (If, WS)
-elseEndP a w2 = do
-  let (a', w1) = ifReconstr a
-  (block, wEnd) <- parse
-  return (If a' $ Just ((w1, w2), block), wEnd)
-
-ifReconstr :: IC.Intercal (IfBlock, WS) (Maybe WS) ->
-  (IC.Intercal IfBlock (WS, Maybe WS), WS)
-ifReconstr a = (IC.unbreakEnd (map rePairRight main) ifBlockLast, w) where
-  (main, (ifBlockLast, w)) = IC.breakEnd a
-
-instance Parse (IfBlock, WS) where
   parse = do
-    e <- liftM3 WSCap parse (tokLParenP >> parse <* tokRParenP) parse
-    first (IfBlock e) <$> parse
+    tokIfP >> discardWS
+    e <- parenExprP
+    syn <- option StdSyntax ((lookAhead tokColonP) >> return AltSyntax)
+    block <- blockP syn
+    elseifs <- many (elseifP syn)
+    elseBlock <- optionMaybe (tokElseP >> discardWS >> blockP syn)
+    if syn == AltSyntax then tokEndifP >> return () else return ()
+    ws <- parse
+    return (If syn ((IfBlock e block):elseifs) elseBlock, ws)
+   where
+    elseifP :: StmtSyntax -> Parser IfBlock
+    elseifP syn = do
+        tokElseifP >> discardWS
+        e <- parenExprP
+        block <- blockP syn
+        return (IfBlock e block)
+
+    parenExprP :: Parser Expr
+    parenExprP = do
+        tokLParenP >> discardWS
+        (e, _) <- parse :: Parser (Expr, WS)
+        tokRParenP >> discardWS
+        return e
+
+    blockP :: StmtSyntax -> Parser BlockOrStmt
+    blockP StdSyntax = do
+        (block, _) <- parse :: Parser (BlockOrStmt, WS)
+        return block
+
+    blockP AltSyntax = do
+        tokColonP >> discardWS
+        stmts <- stmtListParser
+        lookAhead (tokEndifP <|> tokElseP <|> tokElseifP)
+        return (Right $ Block stmts)
 
 tryParser :: Parser (Stmt, WS)
 tryParser = tokTryP >> do
