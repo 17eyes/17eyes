@@ -118,7 +118,8 @@ data Declare = Declare {
 
 data For = For {
   forHeader :: WSCap (ForPart, ForPart, ForPart),
-  forBlock  :: BlockOrStmt}
+  forBlock  :: BlockOrStmt,
+  forSyntax :: StmtSyntax}
   deriving (Eq, Show, Typeable, Data)
 
 data ForPart = ForPart (Either WS [WSCap Expr])

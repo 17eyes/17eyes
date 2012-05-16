@@ -107,10 +107,14 @@ instance Unparse DoWhile where
     unparse w3, tokRParen, unparse w4, unparse end]
 
 instance Unparse For where
-  unparse (For (WSCap w1 (inits, conds, incrs) w2) block) = concat [
+  unparse (For (WSCap w1 (inits, conds, incrs) w2) block StdSyntax) = concat [
     tokFor, unparse w1, tokLParen,
     intercalate tokSemi $ map unparse [inits, conds, incrs],
     tokRParen, unparse w2, unparse block]
+  unparse (For (WSCap w1 (inits, conds, incrs) w2) (Right (Block stmts)) AltSyntax) =
+    concat [tokFor, unparse w1, tokLParen,
+        intercalate tokSemi $ map unparse [inits, conds, incrs],
+        tokRParen, unparse w2, tokColon, " ", unparse stmts, tokEndfor]
 
 instance Unparse ForPart where
   unparse (ForPart e) = either unparse (intercalate tokComma . map unparse) e
@@ -381,7 +385,17 @@ instance Parse (For, WS) where
   parse = tokForP >> do
     h <- liftM3 WSCap parse (tokLParenP >> liftM3 (,,) parse
       (tokSemiP >> parse <* tokSemiP) parse <* tokRParenP) parse
-    first (For h) <$> parse
+    (do -- try parsing for-endfor combination
+        tokColonP >> discardWS
+        stmts <- stmtListParser
+        tokEndforP
+        ws <- parse
+        return (For h (Right $ Block stmts) AltSyntax, ws)
+     ) <|> (do
+        -- standard for(...) {...}
+        (block, ws) <- parse
+        return (For h block StdSyntax, ws)
+     )
 
 instance Parse ForPart where
   parse = do
