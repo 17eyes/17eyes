@@ -9,4 +9,4 @@ main = do
     input <- getContents
     case runParser parse () "<stdin>" input :: Either ParseError Ast of
         (Left err) -> error (show err ++ "\n")
-        (Right ast) -> putStrLn (show ast)
+        (Right ast) -> putStrLn (unparse ast)
