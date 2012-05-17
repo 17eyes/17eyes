@@ -6,7 +6,7 @@ import Lang.Php.Ast.Common
 import Lang.Php.Ast.ExprTypes
 import qualified Data.Intercal as IC
 
-type StmtList = IC.Intercal WS Stmt
+type StmtList = IC.Intercal WS (StoredPos Stmt)
 
 data Stmt =
   StmtBlock     (Block Stmt)                  |
@@ -38,7 +38,7 @@ data Stmt =
 
 -- a block has {}'s, so one-liner's are not considered blocks
 -- and a (Block Stmt) is not the same as a StmtList tho it has the same ast
-data Block a = Block (IC.Intercal WS a)
+data Block a = Block (IC.Intercal WS (StoredPos a))
   deriving (Eq, Show, Typeable, Data)
 
 data Func = Func {
@@ -172,7 +172,7 @@ data TopLevel = TopLevel String (Maybe (Either (WSCap Expr, StmtEnd) String))
 data StmtEnd = StmtEndSemi | StmtEndClose TopLevel
   deriving (Eq, Show, Typeable, Data)
 
-type BlockOrStmt = Either Stmt (Block Stmt)
+type BlockOrStmt = Either (StoredPos Stmt) (Block Stmt)
 
 $(derive makeBinary ''AbstrFunc)
 $(derive makeBinary ''Block)

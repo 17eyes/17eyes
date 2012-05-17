@@ -14,7 +14,7 @@ module Lang.Php.Ast.Common (
   module Data.List,
   module Data.Maybe,
   WS, WS2, WSElem(..), WSCap(..), WSCap2, capify, wsNoNLParser, w2With,
-  discardWS,
+  discardWS, StoredPos,
   rePairLeft, rePairRight, swap, uncons,
   upToCharsOrEndParser) where
 
@@ -28,7 +28,31 @@ import Data.Data hiding (Prefix, Infix)
 import Data.DeriveTH
 import Data.List
 import Data.Maybe
+import Text.Parsec.Pos(newPos)
 import qualified Data.Intercal as IC
+
+-- | Allows to wrap AST elements with additional information about position in
+-- the source code. Thanks to several instance declarations, decorating parts
+-- of the AST with the position should be as painless as possible.
+data StoredPos a = StoredPos SourcePos a
+  deriving (Show, Eq, Typeable, Data)
+
+-- Since we want to derive Binary for StoredPos, we need to define it for
+-- SourcePos somehow.
+instance Binary SourcePos where
+  put x = put (sourceName x, sourceLine x, sourceColumn x)
+  get = do
+    (name, line, column) <- get
+    return (newPos name line column)
+
+instance Parse (a, WS) => Parse (StoredPos a, WS) where
+  parse = do
+    pos <- getPosition
+    (x, ws) <- parse
+    return (StoredPos pos x, ws)
+
+instance Unparse a => Unparse (StoredPos a) where
+  unparse (StoredPos _ x) = unparse x
 
 type WS = [WSElem]
 
@@ -120,6 +144,7 @@ type WSCap2 a = WSCap (WSCap a)
 
 $(derive makeBinary ''WSElem)
 $(derive makeBinary ''WSCap)
+$(derive makeBinary ''StoredPos)
 
 discardWS :: Parser ()
 discardWS = (parse :: Parser WS) >> return ()
