@@ -198,6 +198,7 @@ instance Parse (Stmt, WS) where
 
 simpleStmtParser :: Parser Stmt
 simpleStmtParser =
+---  StmtGoto <$> parse <|>
   StmtBlock <$> parse <|>
   breaklikeParser StmtBreak tokBreakP <|>
   StmtClass <$> parse <|>
@@ -216,7 +217,13 @@ simpleStmtParser =
   liftM2 StmtThrow (tokThrowP >> parse) parse <|>
   liftM2 StmtUnset
     (tokUnsetP >> liftM3 WSCap parse (issetListParser parse) parse)
-    parse
+    parse  {-- <|>
+  StmtLabel <$> parse --}
+
+--instance Parse (Goto, WS) where
+--  parse = undefined
+      
+        
 
 instance Parse (If, WS) where
   parse = do
