@@ -4,7 +4,6 @@ module Lang.Php.Ast (
   module Lang.Php.Ast.Common,
   module Lang.Php.Ast.Expr,
   module Lang.Php.Ast.Lex,
-  module Lang.Php.Ast.Stmt,
   Ast
   ) where
 
@@ -16,7 +15,7 @@ import Data.Char
 import Lang.Php.Ast.Common
 import Lang.Php.Ast.Expr
 import Lang.Php.Ast.Lex
-import Lang.Php.Ast.Stmt
+import Lang.Php.Ast.Types
 import qualified Data.ByteString as BS
 import qualified Data.Intercal as IC
 

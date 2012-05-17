@@ -78,7 +78,7 @@ instance Parse WSElem where
         setPosition . setSourceColumn pos $ sourceColumn pos - 2
       return $ LineComment isSlash c
 
--- yikes, these can't be in Lex.hs currently, reorg needed?
+-- FIXME: yikes, these can't be in Lex.hs currently, reorg needed?
 tokStartComment = "/*"
 tokStartCommentP = try $ string tokStartComment
 tokLineComment = "//";

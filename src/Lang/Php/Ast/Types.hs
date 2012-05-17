@@ -84,6 +84,7 @@ data Expr =
   ExprBinOp     BinOp Expr WS2 Expr |
   -- we're lazy so just String here instead of like PhpType
   ExprCast      (WSCap String) WS Expr |
+  ExprClosure   Func |
   ExprEmpty     WS (WSCap LRVal) |
   ExprEval      WS (WSCap Expr) |
   ExprExit      Bool (Maybe (WS, Either WS (WSCap Expr))) |
@@ -140,26 +141,6 @@ data TernaryIf = TernaryIf {
 data DubArrowMb = DubArrowMb (Maybe (Expr, WS2)) Expr
   deriving (Eq, Show, Typeable, Data)
 
-$(derive makeBinary ''BinOp)
-$(derive makeBinary ''BinOpBy)
-$(derive makeBinary ''Const)
-$(derive makeBinary ''DubArrowMb)
-$(derive makeBinary ''DynConst)
-$(derive makeBinary ''Expr)
-$(derive makeBinary ''IncOrReq)
-$(derive makeBinary ''LOnlyVal)
-$(derive makeBinary ''LRVal)
-$(derive makeBinary ''LVal)
-$(derive makeBinary ''Memb)
-$(derive makeBinary ''OnceOrNot)
-$(derive makeBinary ''PostOp)
-$(derive makeBinary ''PreOp)
-$(derive makeBinary ''ROnlyVal)
-$(derive makeBinary ''RVal)
-$(derive makeBinary ''TernaryIf)
-$(derive makeBinary ''Val)
-$(derive makeBinary ''Var)
-
 ---
 ---  STATEMENTS
 --- 
@@ -204,7 +185,7 @@ data Block a = Block (IC.Intercal WS (StoredPos a))
 data Func = Func {
   funcWS    :: WS,
   funcRef   :: Maybe WS,
-  funcName  :: String,
+  funcName  :: Maybe String,
   funcArgs  :: WSCap (Either WS [WSCap FuncArg]),
   funcBlock :: Block Stmt}
   deriving (Eq, Show, Typeable, Data)
@@ -339,6 +320,10 @@ data StmtEnd = StmtEndSemi | StmtEndClose TopLevel
 
 type BlockOrStmt = Either (StoredPos Stmt) (Block Stmt)
 
+---
+--- makeBinary
+---
+
 $(derive makeBinary ''AbstrFunc)
 $(derive makeBinary ''Block)
 $(derive makeBinary ''Case)
@@ -365,3 +350,22 @@ $(derive makeBinary ''VarMbVal)
 $(derive makeBinary ''VarEqVal)
 $(derive makeBinary ''While)
 $(derive makeBinary ''StmtSyntax)
+$(derive makeBinary ''BinOp)
+$(derive makeBinary ''BinOpBy)
+$(derive makeBinary ''Const)
+$(derive makeBinary ''DubArrowMb)
+$(derive makeBinary ''DynConst)
+$(derive makeBinary ''Expr)
+$(derive makeBinary ''IncOrReq)
+$(derive makeBinary ''LOnlyVal)
+$(derive makeBinary ''LRVal)
+$(derive makeBinary ''LVal)
+$(derive makeBinary ''Memb)
+$(derive makeBinary ''OnceOrNot)
+$(derive makeBinary ''PostOp)
+$(derive makeBinary ''PreOp)
+$(derive makeBinary ''ROnlyVal)
+$(derive makeBinary ''RVal)
+$(derive makeBinary ''TernaryIf)
+$(derive makeBinary ''Val)
+$(derive makeBinary ''Var)

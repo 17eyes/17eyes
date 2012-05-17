@@ -84,8 +84,19 @@ hereDocRestParser s =
 lineParser :: Parser String
 lineParser = liftM2 (++) (many $ satisfy (/= '\n')) ((:[]) <$> newline)
 
+---
+--- As PHP Language Reference says:
+---
+--- Variable names follow the same rules as other labels in PHP. A valid
+--- variable name starts with a letter or underscore, followed by any number
+--- of letters, numbers, or underscores. As a regular expression, it would be
+--- expressed thus: '[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*' 
+---
+--- Source : http://www.php.net/manual/en/language.variables.basics.php
+---
+
 identStartChars :: String
-identStartChars = ['a'..'z'] ++ ['A'..'Z'] ++ ['_']
+identStartChars = ['a'..'z'] ++ ['A'..'Z'] ++ ['_'] ++ ['\x7f'..'\xff']
 
 identEndChars :: String
 identEndChars = identStartChars ++ ['0'..'9']
