@@ -28,8 +28,10 @@ instance Unparse Stmt where
     StmtFuncDef a -> unparse a
     StmtGlobal a end -> tokGlobal ++
       intercalate tokComma (map unparse a) ++ unparse end
+    StmtGoto a -> unparse a
     StmtIf a -> unparse a
     StmtInterface a -> unparse a
+    StmtLabel a -> unparse a
     StmtNothing end -> unparse end
     StmtReturn rMb w end -> tokReturn ++ unparse rMb ++ unparse w ++
       unparse end
@@ -151,6 +153,9 @@ instance Unparse IfaceStmt where
   unparse (IfaceConst vars) = cStmtConstUnparser vars
   unparse (IfaceFunc a) = unparse a
 
+instance Unparse Label where
+  unparse (Label a) = a
+
 instance Unparse VarMbVal where
   unparse (VarMbVal var exprMb) = unparse var ++ maybe []
     (\ (w, expr) -> w2With tokEquals w ++ unparse expr) exprMb
@@ -184,6 +189,7 @@ instance Unparse While where
     concat [tokWhile, unparse w1, tokLParen, unparse expr, tokRParen,
             unparse w2, tokColon, unparse stmts, " ", tokEndwhile, " "]
 
+
 stmtListParser :: Parser StmtList
 stmtListParser = liftM2 IC.unbreakStart parse parse
 
@@ -198,7 +204,7 @@ instance Parse (Stmt, WS) where
 
 simpleStmtParser :: Parser Stmt
 simpleStmtParser =
----  StmtGoto <$> parse <|>
+  try (StmtLabel <$> parse <* tokColonP) <|>
   StmtBlock <$> parse <|>
   breaklikeParser StmtBreak tokBreakP <|>
   StmtClass <$> parse <|>
@@ -213,17 +219,12 @@ simpleStmtParser =
   StmtNothing <$> parse <|>
   liftM3 StmtReturn (tokReturnP >> parse) (optionMaybe parse) parse <|>
   liftM2 StmtStatic (tokStaticP >> sepBy1 parse tokCommaP) parse <|>
+  liftM StmtGoto (tokGotoP >> parse) <|>
   StmtSwitch <$> parse <|>
   liftM2 StmtThrow (tokThrowP >> parse) parse <|>
   liftM2 StmtUnset
     (tokUnsetP >> liftM3 WSCap parse (issetListParser parse) parse)
-    parse  {-- <|>
-  StmtLabel <$> parse --}
-
---instance Parse (Goto, WS) where
---  parse = undefined
-      
-        
+    parse 
 
 instance Parse (If, WS) where
   parse = do
@@ -289,6 +290,9 @@ breaklikeParser constr p = p >> do
       Just (e, w2) -> (Just (w1, e), w2)
       _ -> (Nothing, w1)
   constr eMb' w <$> parse
+
+instance Parse Label where
+  parse = Label <$> identifierParser
 
 instance Parse Class where
   parse = liftM5 Class

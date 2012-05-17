@@ -23,10 +23,10 @@ data Stmt =
   StmtFuncDef   Func                          |
   -- this list must have at least one element.. should i make a type for that?
   StmtGlobal    [WSCap Var] StmtEnd           |
-  StmtGoto      Goto                          |
+  StmtGoto      (WSCap Label)                 |
   StmtIf        If                            |
   StmtInterface Interface                     |
-  StmtLabel     Label                         |
+  StmtLabel     (WSCap Label)                 |
   StmtNothing   StmtEnd                       |
   StmtReturn    WS (Maybe (Expr, WS)) StmtEnd |
   -- this list must have at least one element.. should i make a type for that?
@@ -41,16 +41,6 @@ data Stmt =
 -- a block has {}'s, so one-liner's are not considered blocks
 -- and a (Block Stmt) is not the same as a StmtList tho it has the same ast
 data Block a = Block (IC.Intercal WS (StoredPos a))
-  deriving (Eq, Show, Typeable, Data)
-
-data Goto = Goto {
-  gotoLabel :: Label
-  }
-  deriving (Eq, Show, Typeable, Data)
-
-data Label = Label {
-  labelName :: WSCap String
-  } 
   deriving (Eq, Show, Typeable, Data)
 
 data Func = Func {
@@ -70,6 +60,10 @@ data Interface = Interface {
 data IfaceStmt =
   IfaceConst [WSCap (VarEqVal Const)] |
   IfaceFunc AbstrFunc
+  deriving (Eq, Show, Typeable, Data)
+
+data Label =
+  Label String
   deriving (Eq, Show, Typeable, Data)
 
 data AbstrFunc = AbstrFunc {
@@ -200,7 +194,6 @@ $(derive makeBinary ''ForPart)
 $(derive makeBinary ''Foreach)
 $(derive makeBinary ''Func)
 $(derive makeBinary ''FuncArg)
-$(derive makeBinary ''Goto)
 $(derive makeBinary ''If)
 $(derive makeBinary ''IfaceStmt)
 $(derive makeBinary ''IfBlock)
