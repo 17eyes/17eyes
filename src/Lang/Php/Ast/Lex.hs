@@ -106,6 +106,11 @@ genIdentifierParser =
   liftM2 (:) (oneOf identStartChars)
              (many $ oneOf identEndChars)
 
+-- FIXME: ugly hack
+-- this parser is used for parsing namespace names
+namespaceParser :: Parser String
+namespaceParser = try $ many $ oneOf $ identEndChars ++ ['\\']
+
 identifierParser :: Parser String
 identifierParser = try $ do
   i <- genIdentifierParser

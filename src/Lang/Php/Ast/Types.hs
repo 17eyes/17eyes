@@ -162,11 +162,12 @@ data Stmt =
   StmtFuncDef   Func                          |
   -- this list must have at least one element.. should i make a type for that?
   StmtGlobal    [WSCap Var] StmtEnd           |
-  StmtGoto      (WSCap Label)                 |
+  StmtGoto      (WSCap Label) StmtEnd         |
   StmtIf        If                            |
   StmtInterface Interface                     |
   StmtLabel     (WSCap Label)                 |
   StmtNothing   StmtEnd                       |
+  StmtNamespace Namespace                     |
   StmtReturn    WS (Maybe (Expr, WS)) StmtEnd |
   -- this list must have at least one element.. should i make a type for that?
   StmtStatic    [WSCap VarMbVal] StmtEnd      |
@@ -199,6 +200,11 @@ data Interface = Interface {
 data IfaceStmt =
   IfaceConst [WSCap (VarEqVal Const)] |
   IfaceFunc AbstrFunc
+  deriving (Eq, Show, Typeable, Data)
+
+data Namespace = Namespace {
+    nsName :: WSCap String,
+    nsBlock :: WSCap BlockOrStmt}
   deriving (Eq, Show, Typeable, Data)
 
 data Label =
@@ -258,7 +264,7 @@ data DoWhile = DoWhile {
 
 data Declare = Declare {
   declareHeader  :: WSCap (WSCap Const, WSCap Expr),
-  declareStmtEnd :: StmtEnd}
+  declareBlock   :: WSCap BlockOrStmt}
   deriving (Eq, Show, Typeable, Data)
 
 data For = For {
@@ -342,6 +348,7 @@ $(derive makeBinary ''IfaceStmt)
 $(derive makeBinary ''IfBlock)
 $(derive makeBinary ''Interface)
 $(derive makeBinary ''Label)
+$(derive makeBinary ''Namespace)
 $(derive makeBinary ''Stmt)
 $(derive makeBinary ''StmtEnd)
 $(derive makeBinary ''Switch)
