@@ -7,6 +7,6 @@ main :: IO ()
 main = do
     hSetEncoding stdin latin1
     input <- getContents
-    case runParser parse () "<stdin>" input :: Either ParseError Ast of
+    case runParser (parse <* eof) () "<stdin>" input :: Either ParseError Ast of
         (Left err) -> error (show err ++ "\n")
         (Right ast) -> putStrLn $ show ast
