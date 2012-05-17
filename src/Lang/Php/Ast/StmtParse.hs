@@ -156,10 +156,10 @@ instance Unparse VarMbVal where
     (\ (w, expr) -> w2With tokEquals w ++ unparse expr) exprMb
 
 instance Unparse Switch where
-  unparse (Switch syntax (WSCap w1 expr w2) w3 cases) =
+  unparse (Switch syntax (WSCap w1 expr w2) w3 cases tl) =
     concat [tokSwitch,
             unparse w1, tokLParen, unparse expr, tokRParen, unparse w2,
-            left, unparse w3, unparse cases, right]
+            left, unparse w3, unparse tl, unparse cases, right]
    where
     (left, right) = case syntax of
         StdSyntax -> (tokLBrace, tokRBrace)
@@ -442,10 +442,12 @@ instance Parse Switch where
   parse = try (parseGen (Switch StdSyntax) tokLBraceP tokRBraceP)
            <|> parseGen (Switch AltSyntax) tokColonP  tokEndswitchP
    where
-      parseGen f left right = tokSwitchP >> liftM3 f
+      parseGen f left right = tokSwitchP >> liftM4 f
         (liftM3 WSCap parse (tokLParenP >> parse <* tokRParenP) parse)
         (left >> parse)
-        parse <* right
+        -- (return Nothing) -- (optionMaybe $ try $ tokClosePhpP >> parse)
+        (optionMaybe $ try $ tokClosePhpP >> parse <* discardWS)
+        (parse <* right)
 
 instance Parse Case where
   parse = liftM2 Case

@@ -143,11 +143,12 @@ data IfBlock = IfBlock {
   deriving (Eq, Show, Typeable, Data)
 
 data Switch = Switch {
-  switchSyntax :: StmtSyntax,
-  switchExpr   :: WSCap2 Expr,
-  switchWS     :: WS,
-  switchCases  :: [Case]}
-  deriving (Eq, Show, Typeable, Data)
+  switchSyntax  :: StmtSyntax,
+  switchExpr    :: WSCap2 Expr,
+  switchWS      :: WS,
+  switchTL      :: Maybe TopLevel, -- allows for '?>' before first case
+  switchCases   :: [Case]
+ } deriving (Eq, Show, Typeable, Data)
 
 data Case = Case {
   caseExpr     :: Either WS (WSCap Expr),
