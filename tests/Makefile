@@ -8,7 +8,7 @@ OUTLOG=.tests.out
 test: clean stamp $(TESTFILESS) summary
 
 %.phptest:
-	@(cat $(@:.phptest=) | phpsa > /dev/null 2> /dev/null && echo "$@ : OK" || echo "$@ : FAIL") >> $(OUTLOG) 
+	@(cat $(@:.phptest=) | phpsa --dump-ast > /dev/null 2> /dev/null && echo "$@ : OK" || echo "$@ : FAIL") >> $(OUTLOG) 
 
 
 stamp:
