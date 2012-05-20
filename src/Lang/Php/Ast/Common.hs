@@ -14,7 +14,7 @@ module Lang.Php.Ast.Common (
   module Data.List,
   module Data.Maybe,
   WS, WS2, WSElem(..), WSCap(..), WSCap2, capify, wsNoNLParser, w2With,
-  discardWS, StoredPos,
+  discardWS, StoredPos(..),
   rePairLeft, rePairRight, swap, uncons,
   upToCharsOrEndParser) where
 
