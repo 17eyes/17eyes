@@ -38,3 +38,33 @@ instance (Unparse a) => Unparse [a] where
 instance (Unparse a) => Unparse (Maybe a) where
   unparse = maybe "" unparse
 
+-- issues, severities, issue classes, etc.
+
+data IssueKind = IssueKind {
+    issueKindAnalysis :: String,
+    issueKindBug :: String
+ } deriving (Show, Eq)
+
+data IssueSeverity = ISCritical | ISMayHarm | ISNitpicking | ISStyle deriving (Show, Eq)
+
+data IssueConfidence = ICSure | ICLikely | ICPossible deriving (Show, Eq)
+
+data Issue = Issue {
+    issueTitle :: String,
+    issueMessage :: String,
+    issueFileName :: FilePath,
+    issueClassName :: Maybe String,
+    issueFunctionName :: Maybe String,
+    issueLineNumber :: Int,
+    issueKind :: IssueKind,
+    issueSeverity :: IssueSeverity,
+    issueConfidence :: IssueConfidence,
+    issueContext :: [String] -- to identify the same issue even when sources change slightly
+ } deriving Show
+
+issueSame :: Issue -> Issue -> Bool
+issueSame x y = foldl (\b f -> b && f x y) True checks
+  where
+    q f = \x y -> f x == f y
+    checks = [q issueFileName, q issueClassName, q issueFunctionName,
+              q issueKind, q issueSeverity, q issueContext]
