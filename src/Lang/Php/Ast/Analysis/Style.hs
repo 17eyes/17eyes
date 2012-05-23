@@ -6,8 +6,8 @@ import Common
 
 mkKind = IssueKind "Lang.Php.Analysis.Style"
 
-dummyAnalysis :: Expr -> TraverseState () Expr
-dummyAnalysis x = do
+dummyAnalysis :: AstAnalysis
+dummyAnalysis = AstAnalysis () $ \x -> do
     emitIssue $ Issue {
         issueTitle = "<title>",
         issueMessage = "<message>",
@@ -19,4 +19,4 @@ dummyAnalysis x = do
         issueConfidence = ICSure,
         issueContext = [] -- FIXME
     }
-    return x
+    return (x :: Expr)

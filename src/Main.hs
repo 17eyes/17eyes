@@ -3,6 +3,8 @@ import System.IO
 import System.Console.GetOpt
 
 import Lang.Php.Ast
+import Lang.Php.Ast.Traversal
+import Lang.Php.Ast.Analysis
 import Codebase
 
 data Options = Options {
@@ -14,7 +16,7 @@ data Options = Options {
 defaultOptions = Options {
     optCodebaseDir = "www",
     optInputFile   = "www/index.php",
-    optAction      = printIncludes
+    optAction      = astAnalyses
 }
 
 options :: [OptDescr (Options -> Options)]
@@ -37,11 +39,14 @@ parseString name input = case runParser (parse <* eof) () name input of
 (dumpAst, parseUnparse) = (work show, work unparse)
  where work f _ = getContents >>= parseString "<stdin>" >>= putStrLn . f
 
-printIncludes :: Options -> IO ()
-printIncludes opts = do
-    codebase <- scanCodebase (optCodebaseDir opts)
-    putStrLn $ (show $ length $ codebasePaths codebase) ++ " source files"
-    -- TODO: implement
+astAnalyses :: Options -> IO ()
+astAnalyses opts = do
+    text <- readFile (optInputFile opts)
+    let east = runParser (parse :: Parser Ast) () "" text
+    let issues = case east of
+                    (Left err)  -> error (show err ++ "\n")
+                    (Right ast) -> map (runAstAnalysis ast) allAstAnalyses
+    putStrLn (show issues)
 
 main :: IO ()
 main = do

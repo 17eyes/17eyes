@@ -1,7 +1,7 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving, FlexibleInstances, MultiParamTypeClasses, RankNTypes #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving, FlexibleInstances, MultiParamTypeClasses, RankNTypes, ExistentialQuantification #-}
 
 module Lang.Php.Ast.Traversal (
-    TraverseState, getSourceLine, traverse, emitIssue, runAstAnalysis
+    TraverseState, getSourceLine, traverse, emitIssue, runAstAnalysis, AstAnalysis(..)
 ) where
 
 import Data.Generics
@@ -34,8 +34,10 @@ instance MS.MonadState s (TraverseState s) where
     get = MkTS $ esState <$> MS.get
     put x = MkTS $ MS.modify (\es -> es { esState = x })
 
-runAstAnalysis :: Typeable b => (b -> TraverseState st b) -> st -> Ast -> [Issue]
-runAstAnalysis f init_state ast@(Ast fp _ _) =
+data AstAnalysis = forall a st. Typeable a => AstAnalysis st (a -> TraverseState st a)
+
+runAstAnalysis :: Ast -> AstAnalysis -> [Issue]
+runAstAnalysis ast@(Ast fp _ _) (AstAnalysis init_state f) =
     esIssues $ snd $ MS.runState (toState $ traverse (mkM f) ast)
                                  (initialExtState fp init_state)
 
