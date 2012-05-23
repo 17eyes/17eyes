@@ -4,7 +4,8 @@ module Lang.Php.Ast (
   module Lang.Php.Ast.Common,
   module Lang.Php.Ast.Expr,
   module Lang.Php.Ast.Lex,
-  Ast
+  module Lang.Php.Ast.Types,
+  Ast(..)
   ) where
 
 import Common
@@ -19,14 +20,15 @@ import Lang.Php.Ast.Types
 import qualified Data.ByteString as BS
 import qualified Data.Intercal as IC
 
-data Ast = Ast TopLevel StmtList
+data Ast = Ast FilePath TopLevel StmtList
   deriving (Eq, Show, Typeable, Data)
 
 instance Unparse Ast where
-  unparse (Ast t s) = unparse t ++ unparse s
+  unparse (Ast _ t s) = unparse t ++ unparse s
 
 instance Parse Ast where
-  parse = liftM2 Ast parse stmtListParser
+  parse = liftM3 Ast fname parse stmtListParser
+   where fname = sourceName <$> getPosition
 
 $(derive makeBinary ''Ast)
 

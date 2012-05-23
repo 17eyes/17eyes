@@ -2,6 +2,7 @@
 
 module Common (
   module Text.ParserCombinators.Parsec,
+  Issue(..), IssueSeverity(..), IssueKind(..), IssueConfidence(..), issueSame,
   Oper, Parse(..), Unparse(..)) where
 
 import Control.Applicative hiding (many, (<|>))
@@ -52,10 +53,9 @@ data IssueConfidence = ICSure | ICLikely | ICPossible deriving (Show, Eq)
 data Issue = Issue {
     issueTitle :: String,
     issueMessage :: String,
-    issueFileName :: FilePath,
-    issueClassName :: Maybe String,
+    issueFileName :: Maybe FilePath,
     issueFunctionName :: Maybe String,
-    issueLineNumber :: Int,
+    issueLineNumber :: Maybe Int,
     issueKind :: IssueKind,
     issueSeverity :: IssueSeverity,
     issueConfidence :: IssueConfidence,
@@ -66,5 +66,5 @@ issueSame :: Issue -> Issue -> Bool
 issueSame x y = foldl (\b f -> b && f x y) True checks
   where
     q f = \x y -> f x == f y
-    checks = [q issueFileName, q issueClassName, q issueFunctionName,
+    checks = [q issueFileName, q issueFunctionName,
               q issueKind, q issueSeverity, q issueContext]

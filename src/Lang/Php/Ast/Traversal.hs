@@ -1,7 +1,7 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving, FlexibleInstances, MultiParamTypeClasses, RankNTypes #-}
 
 module Lang.Php.Ast.Traversal (
-    TraverseState, runTraverseState, getSourceLine, traverse
+    TraverseState, getSourceLine, traverse, emitIssue, runAstAnalysis
 ) where
 
 import Data.Generics
@@ -10,15 +10,20 @@ import Data.Data
 import qualified Control.Monad.State as MS
 
 import Lang.Php.Ast
+import Common
 
 data ExtState st = MkExtState {
+    esSourceFile :: FilePath,
     esSourceLine :: Int,
+    esIssues :: [Issue],
     esState :: st
  }
 
-initialExtState :: st -> ExtState st
-initialExtState x = MkExtState {
+initialExtState :: FilePath -> st -> ExtState st
+initialExtState fp x = MkExtState {
+                        esSourceFile = fp,
                         esSourceLine = 0,
+                        esIssues = [],
                         esState = x
                     }
 
@@ -29,9 +34,10 @@ instance MS.MonadState s (TraverseState s) where
     get = MkTS $ esState <$> MS.get
     put x = MkTS $ MS.modify (\es -> es { esState = x })
 
-runTraverseState :: (Data a, Typeable b) => (b -> TraverseState st b) -> st -> a -> (a, st)
-runTraverseState f init_state ast = second esState $
-    MS.runState (toState $ traverse (mkM f) ast) (initialExtState init_state)
+runAstAnalysis :: Typeable b => (b -> TraverseState st b) -> st -> Ast -> [Issue]
+runAstAnalysis f init_state ast@(Ast fp _ _) =
+    esIssues $ snd $ MS.runState (toState $ traverse (mkM f) ast)
+                                 (initialExtState fp init_state)
 
 traverse :: GenericM (TraverseState s) -> GenericM (TraverseState s)
 traverse f x = do
@@ -45,3 +51,13 @@ traverse f x = do
 
 getSourceLine :: TraverseState s Int
 getSourceLine = MkTS $ MS.get >>= return . esSourceLine
+
+emitIssue :: Issue -> TraverseState s ()
+emitIssue issue = do
+    es <- MkTS $ MS.get
+    let issue' = issue {
+        issueFileName = (issueFileName issue) `mplus` (Just $ esSourceFile es),
+        issueLineNumber = (issueLineNumber issue) `mplus` (Just $ esSourceLine es)
+    }
+    MkTS $ MS.put $ es { esIssues = issue':(esIssues es) }
+    return ()
