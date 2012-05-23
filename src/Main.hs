@@ -42,11 +42,14 @@ parseString name input = case runParser (parse <* eof) () name input of
 astAnalyses :: Options -> IO ()
 astAnalyses opts = do
     text <- readFile (optInputFile opts)
-    let east = runParser (parse :: Parser Ast) () "" text
+    let east = runParser (parse :: Parser Ast) () (optInputFile opts) text
     let issues = case east of
                     (Left err)  -> error (show err ++ "\n")
-                    (Right ast) -> map (runAstAnalysis ast) allAstAnalyses
-    putStrLn (show issues)
+                    (Right ast) -> concatMap (runAstAnalysis ast) allAstAnalyses
+    forM_ issues $ \is -> do
+        let loc = (maybe "?" id $ issueFileName is) ++ ":" ++
+                  (maybe "?" show $ issueLineNumber is) ++ " "
+        putStrLn (loc ++ issueTitle is)
 
 main :: IO ()
 main = do
