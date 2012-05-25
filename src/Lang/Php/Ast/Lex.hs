@@ -62,13 +62,30 @@ instance Parse NumLit where
 instance Unparse NumLit where
   unparse (NumLit a) = a
 
+data NewDoc = NewDoc String
+  deriving (Eq, Show, Typeable, Data)
+
+instance Parse NewDoc where
+  parse = NewDoc <$> try (
+    do 
+    ws <- tokNewDocP >> wsNoNLParser
+    s <- char '\'' >> genIdentifierParser <* char '\''
+    nl <- newline
+    rest <- hereDocRestParser s
+    return (ws ++ s ++ [nl] ++ rest)
+    )
+
+instance Unparse NewDoc where
+  unparse (NewDoc a) = tokHereDoc ++ a
+
 data HereDoc = HereDoc String
   deriving (Eq, Show, Typeable, Data)
 
 instance Parse HereDoc where
   parse = HereDoc <$> do
     ws <- tokHereDocP >> wsNoNLParser
-    s <- genIdentifierParser
+    s <- genIdentifierParser <|> 
+      (char '"' >> genIdentifierParser <* char '"')
     nl <- newline
     rest <- hereDocRestParser s
     return (ws ++ s ++ [nl] ++ rest)
@@ -197,6 +214,7 @@ tokShiftLP = nc tokShiftL "<="
 tokHereDoc = "<<<"
 tokHereDocB = "b<<<"
 tokHereDocP = (try $ s tokHereDoc) <|> (try $ s tokHereDocB)
+tokNewDocP = tokHereDocP
 tokShiftLBy = "<<="
 tokShiftLByP = try $ s tokShiftLBy
 tokLE = "<="
@@ -449,6 +467,7 @@ tokAttribute = "attribute"
 tokAttributeP = identCI tokAttribute
 
 $(derive makeBinary ''HereDoc)
+$(derive makeBinary ''NewDoc)
 $(derive makeBinary ''NumLit)
 $(derive makeBinary ''StrLit)
 

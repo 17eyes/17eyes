@@ -835,6 +835,8 @@ simpleExprParser :: Parser (Expr, WS)
 simpleExprParser = 
     try (liftM2 (,) (ExprStrLit <$> parse) parse)
   <|>
+    try (liftM2 (,) (ExprNewDoc <$> parse) parse)
+  <|>
     try (liftM2 (,) (ExprHereDoc <$> parse) parse)
   <|>
     assignOrRValParser
