@@ -216,12 +216,12 @@ simpleStmtParser =
   StmtDoWhile <$> parse <|>
   liftM2 StmtEcho (tokEchoP >> sepBy1 parse tokCommaP) parse <|>
   try (StmtFuncDef <$> parse) <|>
+  try (liftM2 StmtStatic (tokStaticP >> sepBy1 parse tokCommaP) parse) <|>
   liftM2 (uncurry StmtExpr) parse parse <|>
   liftM2 StmtGlobal (tokGlobalP >> sepBy1 parse tokCommaP) parse <|>
   StmtInterface <$> parse <|>
   StmtNothing <$> parse <|>
   liftM3 StmtReturn (tokReturnP >> parse) (optionMaybe parse) parse <|>
-  liftM2 StmtStatic (tokStaticP >> sepBy1 parse tokCommaP) parse <|>
   liftM2 StmtGoto (tokGotoP >> parse) parse <|>
   StmtNamespace <$> parse <|>
   StmtSwitch <$> parse <|>
@@ -598,7 +598,9 @@ dynConstOrConstParser :: Parser (Either DynConst Const, WS)
 dynConstOrConstParser = do
   (statics, cOrD) <-
     first (map (\ ((a, b), c) -> (a, (b, c)))) <$>
-    parseABPairsUntilAOrC (liftM2 (,) identifierParser parse)
+    parseABPairsUntilAOrC (liftM2 (,) 
+      -- FIXME: static case should be resolved in more general way.
+      (tokStaticP <|> identifierParser) parse)
     (tokDubColonP >> parse) parse
   return $ case cOrD of
     Left c -> first (Right . Const statics) c
