@@ -96,6 +96,7 @@ data Expr =
   ExprInstOf    Expr WS2 (Either LRVal Const) |
   ExprIsset     WS [WSCap LRVal] |
   ExprNew       WS RVal (Maybe (WS, Either WS [WSCap Expr])) |
+  ExprNewDoc    NewDoc |
   ExprNumLit    NumLit |
   ExprParen     (WSCap Expr) |
   ExprPostOp    PostOp Expr WS |
