@@ -8,7 +8,7 @@ import Lang.Php.Ast
 import Lang.Php.Ast.Traversal
 import Common
 
-allAnalyses = [finishPhp, styleIncludeRequire, stringLiterals]
+allAnalyses = [finishPhp, styleIncludeRequire, stringLiterals, functionCalls]
 
 mkKind = IssueKind "Lang.Php.Analysis.Style"
 
@@ -121,3 +121,25 @@ stringLiterals = AstAnalysis () $ \lit@(StrLit x) -> do
         ++ "literals, it might be better to put them in single quotes ('...'). "
         ++ "This helps avoiding unintended expansion of variables inside "
         ++ "string literals."
+
+functionCalls :: AstAnalysis
+functionCalls = AstAnalysis () analysis
+ where
+    analysis x@(ROnlyValFunc _ [] _) = return x
+    analysis x@(ROnlyValFunc _ _ _) = (emitIssue $ Issue {
+        issueTitle = "there should be no space before parenthesis in function calls",
+        issueMessage = msg,
+        issueFileName = Nothing, -- filled by emitIssue
+        issueFunctionName = Nothing,
+        issueLineNumber = Nothing, -- filled by emitIssue
+        issueKind = mkKind "functionCalls",
+        issueSeverity = ISStyle,
+        issueConfidence = ICSure,
+        issueContext = [unparse x]
+    }) >> return x
+    analysis x = return x
+
+    msg = "The usual convention is to put no whitespace between the function "
+       ++ "name and the opening parenthesis in a function call. This helps "
+       ++ "visually distinguish function calls from statements like \"if\" "
+       ++ "or \"while\"."
