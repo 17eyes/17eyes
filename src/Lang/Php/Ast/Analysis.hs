@@ -1,5 +1,5 @@
 module Lang.Php.Ast.Analysis(allAstAnalyses) where
 
-import Lang.Php.Ast.Analysis.Style
+import qualified Lang.Php.Ast.Analysis.Style as Style
 
-allAstAnalyses = [dummyAnalysis]
+allAstAnalyses = Style.allAnalyses
