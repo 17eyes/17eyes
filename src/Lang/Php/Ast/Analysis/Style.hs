@@ -8,7 +8,14 @@ import Lang.Php.Ast
 import Lang.Php.Ast.Traversal
 import Common
 
-allAnalyses = [finishPhp, styleIncludeRequire, stringLiterals, functionCalls]
+allAnalyses = [
+      finishPhp
+    , styleIncludeRequire
+    , stringLiterals
+    , functionCalls
+    , classDeclaration
+    , functionDeclaration
+ ]
 
 mkKind = IssueKind "Lang.Php.Analysis.Style"
 
@@ -143,3 +150,39 @@ functionCalls = AstAnalysis () analysis
        ++ "name and the opening parenthesis in a function call. This helps "
        ++ "visually distinguish function calls from statements like \"if\" "
        ++ "or \"while\"."
+
+classDeclaration :: AstAnalysis
+functionDeclaration :: AstAnalysis
+(classDeclaration, functionDeclaration) = (AstAnalysis () aClass, AstAnalysis () aFunc)
+ where
+    aClass stmt@(StmtClass cls) =
+        (check (wsCapPost $ className cls) "class"
+                                           [wsCapMain $ className cls])
+        >> return stmt
+    aClass x = return x
+
+    aFunc :: Stmt -> TraverseState () Stmt
+    aFunc stmt@(StmtFuncDef func) =
+        (check (wsCapPost $ funcArgs func) "function"
+                                           [show $ funcName func])
+        >> return stmt
+    aFunc x = return x
+
+    check ws f_or_c ctx = do
+        let has_nl = any (elem '\n') [xs | (WS xs) <- ws]
+        if has_nl then return () else emitIssue $ Issue {
+            issueTitle = f_or_c ++ " declarations should have their opening brace on a new line",
+            issueMessage = msg,
+            issueFileName = Nothing, -- filled by emitIssue
+            issueFunctionName = Nothing,
+            issueLineNumber = Nothing, -- filled by emitIssue
+            issueKind = mkKind $ f_or_c ++ "Declaration",
+            issueSeverity = ISStyle,
+            issueConfidence = ICSure,
+            issueContext = ctx
+        }
+
+    msg = "By convention the opening brace after class and function declarations "
+       ++ "is usually in the next line. This serves as a visual aid to "
+       ++ "distinguish these declarations from statements like \"if\" or "
+       ++ "\"switch\"."
