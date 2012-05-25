@@ -8,7 +8,7 @@ import Lang.Php.Ast
 import Lang.Php.Ast.Traversal
 import Common
 
-allAnalyses = [finishPhp, styleIncludeRequire]
+allAnalyses = [finishPhp, styleIncludeRequire, stringLiterals]
 
 mkKind = IssueKind "Lang.Php.Analysis.Style"
 
@@ -89,3 +89,35 @@ styleIncludeRequire = AstAnalysis () $ \ast@(Ast _ _ sl) -> do
         "inclusion fails. This is usually the desired behavior of include " ++
         "statements inside functions and control structures (e.g. those " ++
         "used to load plugins)."
+
+stringLiterals :: AstAnalysis
+stringLiterals = AstAnalysis () $ \lit@(StrLit x) -> do
+    case x of
+        ('"':xs) -> if trivial xs then emit x else return ()
+        _        -> return ()
+    return lit
+ where
+    emit x = emitIssue $ Issue {
+        issueTitle = "simple string literals should be single-quoted",
+        issueMessage = msg,
+        issueFileName = Nothing, -- filled by emitIssue
+        issueFunctionName = Nothing,
+        issueLineNumber = Nothing, -- filled by emitIssue
+        issueKind = mkKind "stringLiterals",
+        issueSeverity = ISStyle,
+        issueConfidence = ICSure,
+        issueContext = [x]
+    }
+
+    trivial [] = True
+    trivial ('\\':'$':xs) = trivial xs
+    trivial ('\\':'\\':xs) = trivial xs
+    trivial ('\\':'"':xs) = trivial xs
+    trivial ('\\':_:_) = False
+    trivial ('$':_) = False
+    trivial (_:xs) = trivial xs
+
+    msg = "If you don't use variables or special escapes inside string "
+        ++ "literals, it might be better to put them in single quotes ('...'). "
+        ++ "This helps avoiding unintended expansion of variables inside "
+        ++ "string literals."
