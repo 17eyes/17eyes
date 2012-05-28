@@ -11,6 +11,8 @@ import Lang.Php.Ast.Traversal
 allAnalyses = [
       backwardGotoAnalysisFunc
     , backwardGotoAnalysisTL
+    , labelAnalysisFunc
+    , labelAnalysisTL
  ]
 
 data Entry = ELabel SourcePos String
@@ -55,6 +57,65 @@ detectBackwardGoto = mapM_ $ \entry -> case entry of
     msg = "This goto statement jumps backwards. Although this is correct, "
        ++ "such control flow may sometimes be not very obvious and would "
        ++ "be better expressed as a loop (while or do-while)."
+
+-- check for missing or redundant goto labels
+
+labelAnalysisTL :: AstAnalysis
+labelAnalysisTL = AstAnalysis () $ \ast@(Ast _ _ st) -> do
+    detectBadLabels (extract st)
+    return ast
+
+labelAnalysisFunc :: AstAnalysis
+labelAnalysisFunc = AstAnalysis () $ \func@(Func _ _ _ _ block) -> do
+    detectBadLabels (extract block)
+    return func
+
+detectBadLabels :: [Entry] -> TraverseState () ()
+detectBadLabels es = do
+    let gotos = allGotos es
+    let labs = allLabels es
+    let missing_lab = filter (\(x,_) -> maybe True (const False) $ lookup x labs) gotos
+    let redundant_lab = filter (\(x,_) -> maybe True (const False) $ lookup x gotos) labs
+    forM_ missing_lab $ \(lab,pos) -> emitIssue $ Issue {
+        issueTitle = "goto to a missing label " ++ show lab,
+        issueMessage = msg_missing,
+        issueFileName = Just (sourceName pos),
+        issueFunctionName = Nothing, -- FIXME
+        issueLineNumber = Just (sourceLine pos),
+        issueKind = mkKind "detectBadLabels/missing",
+        issueSeverity = ISCritical,
+        issueConfidence = ICSure,
+        issueContext = [lab]
+    }
+    forM_ redundant_lab $ \(lab,pos) -> emitIssue $ Issue {
+        issueTitle = "unused label " ++ show lab,
+        issueMessage = msg_redundant,
+        issueFileName = Just (sourceName pos),
+        issueFunctionName = Nothing, -- FIXME
+        issueLineNumber = Just (sourceLine pos),
+        issueKind = mkKind "detectBadLabels/redundant",
+        issueSeverity = ISStyle,
+        issueConfidence = ICSure,
+        issueContext = [lab]
+    }
+  where
+    msg_redundant = "This label was declared but there is not goto statement "
+                 ++ "referencing it. This may indicate a possible problem "
+                 ++ "(a typo maybe?)."
+    msg_missing = "This goto statement references a nonexistent label. This "
+                 ++ "will trigger a runtime error when executed."
+
+allGotos :: [Entry] -> [(String, SourcePos)]
+allGotos = concatMap $ \x -> case x of
+    (EGoto pos lab) -> [(lab,pos)]
+    (ELoop xs) -> allGotos xs
+    _ -> []
+
+allLabels :: [Entry] -> [(String, SourcePos)]
+allLabels = concatMap $ \x -> case x of
+    (ELabel pos lab) -> [(lab,pos)]
+    (ELoop xs) -> allGotos xs
+    _ -> []
 
 -- generating [Entry] from the AST of a single function (or function-like block)
 
