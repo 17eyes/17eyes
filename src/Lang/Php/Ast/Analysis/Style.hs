@@ -15,6 +15,7 @@ allAnalyses = [
     , functionCalls
     , classDeclaration
     , functionDeclaration
+    , shortTags
  ]
 
 mkKind = IssueKind "Lang.Php.Analysis.Style"
@@ -186,3 +187,27 @@ functionDeclaration :: AstAnalysis
        ++ "is usually in the next line. This serves as a visual aid to "
        ++ "distinguish these declarations from statements like \"if\" or "
        ++ "\"switch\"."
+
+shortTags :: AstAnalysis
+shortTags = AstAnalysis () analysis
+ where
+    analysis x@(TopLevel _ (Just (Right opentag))) = do
+      if opentag == "php" then return x else (emitIssue $ Issue {
+          issueTitle = "short tags might be not supported by the interpreter",
+          issueMessage = msg,
+          issueFileName = Nothing, -- filled by emitIssue
+          issueFunctionName = Nothing,
+          issueLineNumber = Nothing, -- filled by emitIssue
+          issueKind = mkKind "shortTags",
+          issueSeverity = ISStyle,
+          issueConfidence = ICSure,
+          issueContext = [unparse x]
+      }) >> return x
+
+    analysis x = return x
+
+    -- FIXME: something better?
+    msg = "Short tags <? and <?= might be not supported by the PHP "
+       ++ "interpreter, thus using short tags on some servers may lead to "
+       ++ "information leak. It's recommended to use long tags, since they're "
+       ++ "supported by all PHP versions."
