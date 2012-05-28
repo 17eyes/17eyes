@@ -44,7 +44,9 @@ data Var =
   VarDynExpr WS (WSCap Expr)   -- "${$a . '_'}"
   deriving (Eq, Show, Typeable, Data)
 
-data DynConst = DynConst [(String, WS2)] Var -- "a::$a"
+data DynConst = 
+  -- "$a::$a" etc.
+  DynConst [WSCap (Either String Var)] (WSCap (Either String Var))
   deriving (Eq, Show, Typeable, Data)
 
 data LRVal =
@@ -60,7 +62,7 @@ data LOnlyVal =
   LOnlyValMemb   LOnlyVal WS2 Memb          -- "$a[]->a"
   deriving (Eq, Show, Typeable, Data)
 
-data Const = Const [(String, WS2)] String -- "a::a"
+data Const = Const [WSCap String] (WSCap String) -- "a::a"
   deriving (Eq, Show, Typeable, Data)
 
 data ROnlyVal =

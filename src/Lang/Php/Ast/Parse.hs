@@ -10,6 +10,7 @@ import Lang.Php.Ast.Lex
 import Lang.Php.Ast.Types
 import Text.ParserCombinators.Parsec.Expr
 import qualified Data.Intercal as IC
+import Data.Either
 
 --
 -- STATEMENTS
@@ -524,12 +525,12 @@ instance Unparse Var where
     unparse expr ++ tokRBrace
 
 instance Unparse Const where
-  unparse (Const statics s) = concatMap (\ (s, (ws1, ws2)) -> s ++
-    unparse ws1 ++ tokDubColon ++ unparse ws2) statics ++ s
+  unparse (Const statics s) = concatMap (\s -> unparse s ++ tokDubColon)
+    statics ++ unparse s
 
 instance Unparse DynConst where
-  unparse (DynConst statics var) = concatMap (\ (s, (ws1, ws2)) -> s ++
-    unparse ws1 ++ tokDubColon ++ unparse ws2) statics ++ unparse var
+  unparse (DynConst statics var) = concatMap (\s -> unparse s  ++ tokDubColon)
+    statics ++ unparse var
 
 instance Unparse LRVal where
   unparse (LRValVar a) = unparse a
@@ -587,24 +588,30 @@ instance Parse (Var, WS) where
       first (VarDyn ws) <$> parse <|> first (VarDynExpr ws) <$> liftM2 (,)
         (tokLBraceP >> parse <* tokRBraceP) parse
 
-parseABPairsUntilAOrC :: Parser a -> Parser b -> Parser c ->
-  Parser ([(a, b)], Either a c)
-parseABPairsUntilAOrC a b c = (,) [] . Right <$> c <|> do
-  aR <- a
-  (b >>= \ bR -> first ((aR, bR):) <$> parseABPairsUntilAOrC a b c) <|>
-    return ([], Left aR)
+identifierOrVarParser :: Parser (Either String Var)
+identifierOrVarParser = 
+  (try (Left <$> (tokStaticP <|> identifierParser))
+    <|> ( do
+      (v, w) <- parse :: Parser (Var, WS)
+      return (Right v)
+      ))
 
 dynConstOrConstParser :: Parser (Either DynConst Const, WS)
-dynConstOrConstParser = do
-  (statics, cOrD) <-
-    first (map (\ ((a, b), c) -> (a, (b, c)))) <$>
-    parseABPairsUntilAOrC (liftM2 (,) 
-      -- FIXME: static case should be resolved in more general way.
-      (tokStaticP <|> identifierParser) parse)
-    (tokDubColonP >> parse) parse
-  return $ case cOrD of
-    Left c -> first (Right . Const statics) c
-    Right d -> first (Left . DynConst statics) d
+dynConstOrConstParser =
+  try (do 
+    (c, w) <- parse :: Parser (Const, WS)
+    return (Right c, w)
+  ) <|> do
+    (c, w) <- parse :: Parser (DynConst, WS)
+    return (Left $ c, w)
+
+instance Parse (DynConst, WS) where
+  parse = liftM2 (,) stmts parse where
+    stmts = do
+      initIdent <- many $ try (liftM3 WSCap parse identifierOrVarParser
+        (parse <* tokDubColonP))
+      lastIdent <- liftM3 WSCap parse identifierOrVarParser parse
+      return $ DynConst initIdent lastIdent
 
 exprOrLValParser :: Parser (Either Expr LVal, WS)
 exprOrLValParser = try (first Left <$> parse) <|> first Right <$> parse
@@ -656,7 +663,8 @@ valExtend :: (Val, WS) -> Parser (Val, WS)
 valExtend v@(state, ws) = case state of
   ValLOnlyVal a ->
     do
-      ws2 <- tokArrowP >> parse
+      ws2 <- (tokArrowP >> parse) <|>
+             (tokDubColonP >> parse)
       (memb, wsEnd) <- parse
       valExtend (ValLOnlyVal $ LOnlyValMemb a (ws, ws2) memb, wsEnd)
     <|> valExtendIndApp (LValLOnlyVal a) (ValLOnlyVal . LOnlyValInd a ws) ws
@@ -699,20 +707,13 @@ valExtendIndApp lVal mkVal ws = tokLBracketP >> do
     mkVal . capify ws2 <$> (parse <* tokRBracketP)
   valExtend =<< (,) st <$> parse
 
-varOrStringParser :: Parser (Either Var String, WS)
-varOrStringParser = first Left <$> parse <|>
-  liftM2 (,) (Right <$> identifierParser) parse
-
-instance Parse (DynConst, WS) where
-  parse = do
-    statics <- many . liftM2 (,) identifierParser . liftM2 (,) parse $
-      tokDubColonP >> parse
-    first (DynConst statics) <$> parse
-
 instance Parse (Const, WS) where
-  parse = first (uncurry Const) . rePairLeft . first (map rePairRight) .
-    IC.breakEnd <$> IC.intercalParser (liftM2 (,) identifierParser parse)
-    (tokDubColonP >> parse)
+  parse = liftM2 (,) stmts parse where
+    stmts = do
+      initIdent <- many (try $ liftM3 WSCap parse identifierParser
+        (parse <* tokDubColonP))
+      lastIdent <- liftM3 WSCap parse identifierParser parse
+      return $ Const initIdent lastIdent
 
 lRValOrConstParser :: Parser (Either LRVal Const, WS)
 lRValOrConstParser = do

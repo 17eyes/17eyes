@@ -36,6 +36,9 @@ instance (Unparse a, Unparse b) => Unparse (a, b) where
 instance (Unparse a) => Unparse [a] where
   unparse = concatMap unparse
 
+instance Unparse Char where
+  unparse = show
+
 instance (Unparse a) => Unparse (Maybe a) where
   unparse = maybe "" unparse
 
