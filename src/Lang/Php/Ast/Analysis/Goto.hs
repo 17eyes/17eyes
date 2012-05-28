@@ -13,6 +13,8 @@ allAnalyses = [
     , backwardGotoAnalysisTL
     , labelAnalysisFunc
     , labelAnalysisTL
+    , loopJumpAnalysisFunc
+    , loopJumpAnalysisTL
  ]
 
 data Entry = ELabel SourcePos String
@@ -114,8 +116,60 @@ allGotos = concatMap $ \x -> case x of
 allLabels :: [Entry] -> [(String, SourcePos)]
 allLabels = concatMap $ \x -> case x of
     (ELabel pos lab) -> [(lab,pos)]
-    (ELoop xs) -> allGotos xs
+    (ELoop xs) -> allLabels xs
     _ -> []
+
+-- warn about gotos to an inside of a loop
+
+loopJumpAnalysisTL :: AstAnalysis
+loopJumpAnalysisTL = AstAnalysis () $ \ast@(Ast _ _ st) -> do
+    detectLoopJump (extract st)
+    return ast
+
+loopJumpAnalysisFunc :: AstAnalysis
+loopJumpAnalysisFunc = AstAnalysis () $ \func@(Func _ _ _ _ block) -> do
+    detectLoopJump (extract block)
+    return func
+
+detectLoopJump :: [Entry] -> TraverseState () ()
+detectLoopJump = mapM_ (check []) . window
+ where
+    check :: [String] -> ([Entry], Entry, [Entry]) -> TraverseState () ()
+    check ctx (pre, EGoto pos lab, post) = do
+        if lab `elem` (ctx ++ inLoops pre ++ inLoops post)
+         then emit pos lab
+         else return ()
+    check ctx (pre, ELabel _ _, post) = return ()
+    check ctx (pre, ELoop xs, post) = mapM_ (check (ctx ++ inLoops pre ++ inLoops post)) $ window xs
+
+    emit pos lab = emitIssue $ Issue {
+        issueTitle = "goto to an inside of a loop",
+        issueMessage = msg,
+        issueFileName = Just (sourceName pos),
+        issueFunctionName = Nothing, -- FIXME
+        issueLineNumber = Just (sourceLine pos),
+        issueKind = mkKind "detectLoopJump",
+        issueSeverity = ISCritical,
+        issueConfidence = ICSure,
+        issueContext = [lab]
+    }
+
+    msg = "This goto statement jumps to an inside of a loop. This is "
+       ++ "prohibited in PHP and will result in a runtime error."
+
+inLoops :: [Entry] -> [String]
+inLoops = concatMap $ \x -> case x of
+    (ELoop x) -> allLabels x
+    _ -> []
+ where
+    allLabels ((ELabel _ x):xs) = x:(allLabels xs)
+    allLabels ((EGoto _ _):xs) = allLabels xs
+    allLabels ((ELoop xs):xs') = allLabels xs ++ allLabels xs'
+    allLabels [] = []
+
+window :: [a] -> [([a],a,[a])]
+window [] = []
+window (x:xs) = ([],x,xs):[((x:pre),y,post) | (pre,y,post) <- window xs]
 
 -- generating [Entry] from the AST of a single function (or function-like block)
 
