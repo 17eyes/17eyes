@@ -3,23 +3,63 @@
 module Lang.Php.Ast.Analysis.Goto(allAnalyses) where
 
 import qualified Data.Intercal as IC
+import Control.Monad.State(get,put,modify)
 
-import Text.Parsec.Pos(SourcePos)
-import Lang.Php.Ast
+import Lang.Php.Ast hiding (get,put)
 import Lang.Php.Ast.Traversal
 
-allAnalyses = [gotoAnalysis]
+allAnalyses = [
+      backwardGotoAnalysisFunc
+    , backwardGotoAnalysisTL
+ ]
 
 data Entry = ELabel SourcePos String
            | EGoto SourcePos String
            | ELoop [Entry]
     deriving Show
 
+mkKind = IssueKind "Lang.Php.Analysis.Goto"
+
+-- detecting backward goto (loop-like)
+
+backwardGotoAnalysisTL :: AstAnalysis
+backwardGotoAnalysisTL = AstAnalysis [] $ \ast@(Ast _ _ st) -> do
+    detectBackwardGoto (extract st)
+    return ast
+
+backwardGotoAnalysisFunc :: AstAnalysis
+backwardGotoAnalysisFunc = AstAnalysis [] $ \func@(Func _ _ _ _ block) -> do
+    detectBackwardGoto (extract block)
+    return func
+
+detectBackwardGoto :: [Entry] -> TraverseState [String] ()
+detectBackwardGoto = mapM_ $ \entry -> case entry of
+    (ELabel _ lab) -> modify (lab:)
+    (ELoop xs) -> detectBackwardGoto xs
+    (EGoto pos lab) -> do
+        past <- get
+        if lab `elem` past
+          then emitIssue $ Issue {
+            issueTitle = "goto instead of structural loop",
+            issueMessage = msg,
+            issueFileName = Just (sourceName pos),
+            issueFunctionName = Nothing, -- FIXME
+            issueLineNumber = Just (sourceLine pos),
+            issueKind = mkKind "detectBackwardGoto",
+            issueSeverity = ISStyle,
+            issueConfidence = ICLikely,
+            issueContext = [lab]
+          }
+          else return ()
+ where
+    msg = "This goto statement jumps backwards. Although this is correct, "
+       ++ "such control flow may sometimes be not very obvious and would "
+       ++ "be better expressed as a loop (while or do-while)."
+
+-- generating [Entry] from the AST of a single function (or function-like block)
+
 class EntryExtractable a where
     extract :: a -> [Entry]
-
-gotoAnalysis :: AstAnalysis
-gotoAnalysis = undefined
 
 instance EntryExtractable a => EntryExtractable (IC.Intercal WS a) where
     extract = concatMap extract . map snd . fst . IC.breakEnd
