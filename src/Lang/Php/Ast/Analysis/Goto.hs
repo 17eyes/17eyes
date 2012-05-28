@@ -10,7 +10,10 @@ import Lang.Php.Ast.Traversal
 
 allAnalyses = [gotoAnalysis]
 
-data Entry = ELabel SourcePos String | EGoto SourcePos String deriving Show
+data Entry = ELabel SourcePos String
+           | EGoto SourcePos String
+           | ELoop [Entry]
+    deriving Show
 
 class EntryExtractable a where
     extract :: a -> [Entry]
@@ -38,6 +41,10 @@ instance EntryExtractable (StoredPos Stmt) where
     extract (StoredPos _ (StmtSwitch s)) = extract s
     extract (StoredPos _ (StmtTry wbl catches)) = extract wbl ++ extract catches
     extract (StoredPos _ (StmtNamespace n)) = extract n
+    extract (StoredPos _ (StmtDoWhile x)) = extract x
+    extract (StoredPos _ (StmtFor x)) = extract x
+    extract (StoredPos _ (StmtForeach x)) = extract x
+    extract (StoredPos _ (StmtWhile x)) = extract x
     extract _ = []
 
 getLabel :: WSCap Label -> String
@@ -74,4 +81,16 @@ instance EntryExtractable Catch where
 instance EntryExtractable Namespace where
     extract (Namespace _ b) = extract b
 
--- TODO: loops: dowhile for foreach, while
+-- loops: dowhile for, foreach, and while
+
+instance EntryExtractable DoWhile where
+    extract (DoWhile block _ _) = [ELoop (extract block)]
+
+instance EntryExtractable For where
+    extract (For _ block _) = [ELoop (extract block)]
+
+instance EntryExtractable Foreach where
+    extract (Foreach _ block _) = [ELoop (extract block)]
+
+instance EntryExtractable While where
+    extract (While _ block _) = [ELoop (extract block)]
