@@ -8,14 +8,11 @@ import Control.Monad.State(get,put,modify)
 import Lang.Php.Ast hiding (get,put)
 import Lang.Php.Ast.Traversal
 
-allAnalyses = [
-      backwardGotoAnalysisFunc
-    , backwardGotoAnalysisTL
-    , labelAnalysisFunc
-    , labelAnalysisTL
-    , loopJumpAnalysisFunc
-    , loopJumpAnalysisTL
- ]
+allAnalyses = mkAnalyses detectBackwardGoto []
+           ++ mkAnalyses detectBadLabels ()
+           ++ mkAnalyses detectLoopJump ()
+
+type GotoAnalysis st = [Entry] -> TraverseState st ()
 
 data Entry = ELabel SourcePos String
            | EGoto SourcePos String
@@ -24,17 +21,18 @@ data Entry = ELabel SourcePos String
 
 mkKind = IssueKind "Lang.Php.Analysis.Goto"
 
+mkAnalyses :: GotoAnalysis st -> st -> [AstAnalysis]
+mkAnalyses f init = [top_level, func]
+ where
+    top_level = AstAnalysis init $ \ast@(Ast _ _ st) -> do
+        f (extract st)
+        return ast
+
+    func = AstAnalysis init $ \func@(Func _ _ _ _ block) -> do
+        f (extract block)
+        return func
+
 -- detecting backward goto (loop-like)
-
-backwardGotoAnalysisTL :: AstAnalysis
-backwardGotoAnalysisTL = AstAnalysis [] $ \ast@(Ast _ _ st) -> do
-    detectBackwardGoto (extract st)
-    return ast
-
-backwardGotoAnalysisFunc :: AstAnalysis
-backwardGotoAnalysisFunc = AstAnalysis [] $ \func@(Func _ _ _ _ block) -> do
-    detectBackwardGoto (extract block)
-    return func
 
 detectBackwardGoto :: [Entry] -> TraverseState [String] ()
 detectBackwardGoto = mapM_ $ \entry -> case entry of
@@ -61,16 +59,6 @@ detectBackwardGoto = mapM_ $ \entry -> case entry of
        ++ "be better expressed as a loop (while or do-while)."
 
 -- check for missing or redundant goto labels
-
-labelAnalysisTL :: AstAnalysis
-labelAnalysisTL = AstAnalysis () $ \ast@(Ast _ _ st) -> do
-    detectBadLabels (extract st)
-    return ast
-
-labelAnalysisFunc :: AstAnalysis
-labelAnalysisFunc = AstAnalysis () $ \func@(Func _ _ _ _ block) -> do
-    detectBadLabels (extract block)
-    return func
 
 detectBadLabels :: [Entry] -> TraverseState () ()
 detectBadLabels es = do
@@ -120,16 +108,6 @@ allLabels = concatMap $ \x -> case x of
     _ -> []
 
 -- warn about gotos to an inside of a loop
-
-loopJumpAnalysisTL :: AstAnalysis
-loopJumpAnalysisTL = AstAnalysis () $ \ast@(Ast _ _ st) -> do
-    detectLoopJump (extract st)
-    return ast
-
-loopJumpAnalysisFunc :: AstAnalysis
-loopJumpAnalysisFunc = AstAnalysis () $ \func@(Func _ _ _ _ block) -> do
-    detectLoopJump (extract block)
-    return func
 
 detectLoopJump :: [Entry] -> TraverseState () ()
 detectLoopJump = mapM_ (check []) . window
