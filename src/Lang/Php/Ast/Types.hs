@@ -52,7 +52,7 @@ data DynConst =
 data LRVal =
   LRValVar  DynConst |
   LRValInd  RVal WS (WSCap Expr) | -- "$a->a[0]"
-  LRValMemb RVal WS2 Memb -- $a->a
+  LRValMemb RVal WS2 Memb -- "$a->a"
   deriving (Eq, Show, Typeable, Data)
 
 data LOnlyVal =
