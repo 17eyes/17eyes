@@ -6,6 +6,7 @@ import Lang.Php.Ast
 import Lang.Php.Ast.Traversal
 import Lang.Php.Ast.Analysis
 import Codebase
+import Pipeline
 
 data Options = Options {
     optCodebaseDir :: String,
@@ -41,15 +42,15 @@ parseString name input = case runParser (parse <* eof) () name input of
 
 astAnalyses :: Options -> IO ()
 astAnalyses opts = do
-    text <- readFile (optInputFile opts)
-    let east = runParser (parse :: Parser Ast) () (optInputFile opts) text
-    let issues = case east of
-                    (Left err)  -> error (show err ++ "\n")
-                    (Right ast) -> concatMap (runAstAnalysis ast) allAstAnalyses
+    let fn = optInputFile opts
+    issues <- analyzeFile fn <$> readFile fn
     forM_ issues $ \is -> do
         let loc = (maybe "?" id $ issueFileName is) ++ ":" ++
                   (maybe "?" show $ issueLineNumber is) ++ " "
         putStrLn (loc ++ issueTitle is)
+        putStrLn (take 78 $ repeat '-')
+        putStrLn (issueMessage is)
+        putStrLn ""
 
 main :: IO ()
 main = do
