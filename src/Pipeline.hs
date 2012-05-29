@@ -7,13 +7,16 @@ import Text.Parsec.Error
 import Lang.Php.Ast
 import Lang.Php.Ast.Traversal
 import Lang.Php.Ast.Analysis
+import qualified CharAnalysis
 import Common
 
 -- | Perform all file-level analyses.
 analyzeFile :: FilePath -> String -> [Issue]
-analyzeFile file_name source = case parseOnly file_name source of
-    (Left xs) -> xs
-    (Right ast) -> astAnalyses ast
+analyzeFile file_name source =
+    (CharAnalysis.runAnalyses file_name source) ++
+    case parseOnly file_name source of
+        (Left xs) -> xs
+        (Right ast) -> astAnalyses ast
 
 parseOnly :: FilePath -> String -> Either [Issue] Ast
 parseOnly file_name source =
