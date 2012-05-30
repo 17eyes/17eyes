@@ -1,0 +1,12 @@
+import TestHelper
+
+tests = assertIssue (IssueKind "CharAnalysis" "tabsVsSpaces")
+
+================================= BEGIN TEST =================================
+<?php
+
+if(false) {
+	echo 'tabs';
+} else {
+    echo 'spaces';
+}

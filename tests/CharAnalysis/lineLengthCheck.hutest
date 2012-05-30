@@ -1,0 +1,29 @@
+import TestHelper
+
+tests = assertIssue $
+    (IssueKind "CharAnalysis" "lineLengthCheck/tooLong") `atLine` 20
+
+================================= BEGIN TEST =================================
+<?php
+
+# this line is short
+# this line is short
+# this line is short
+# this line is short
+# this line is short
+# this line is short
+# this line is short
+# this line is short
+# this line is short
+# this line is short
+# this line is short
+# this line is vvvvvvvvvvvvveeeeeeeeeeeeeeeeeeeeeeeeeerrrrrrrrrrrrryyyyyyyyyyyyy long
+# this line is short
+# this line is short
+# this line is short
+# this line is short
+# this line is short
+# this line is short
+# this line is short
+# this line is short
+# this line is short
