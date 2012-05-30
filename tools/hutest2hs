@@ -1,0 +1,28 @@
+#!/usr/bin/env runhaskell
+
+-- Converts .hutest files to valid Haskell sources. Basically, strips
+-- everything after "== BEGIN TEST ==" line and adds whole file as a top-level
+-- String definition. Additional definitions glued to the output can be
+-- specified in 'otherDefs'.
+
+import System.Environment(getArgs)
+import Data.Functor((<$>))
+import Text.Regex.Posix
+
+main = do
+    file <- head <$> getArgs
+    all_lines <- lines <$> readFile file
+    let hs_lines = takeWhile (not . isDelimiter) all_lines
+    let def_line = "thisSource = " ++ (show $ unlines all_lines)
+    let output = unlines (hs_lines ++ otherDefs ++ [def_line])
+    writeFile (file ++ ".hs") output
+
+isDelimiter :: String -> Bool
+isDelimiter = (=~ regex)
+ where regex = "^\\s*=+\\s*BEGIN TEST\\s*=+\\s*$"
+
+otherDefs = [
+	"(assertIssue, assertNoIssue) = createIssueAsserts thisSource"
+ ]
+
+-- vim:set syntax=haskell:

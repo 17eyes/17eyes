@@ -3,19 +3,31 @@ TESTFILES=$(shell find . -type f -name "*.php*")
 TESTFILESS=$(TESTFILES:=.phptest)
 OUTLOG=.tests.out
 
+# HUnit-enabled tests: They can be executed separately using 'make test_hunit_only'
+# and are run using ghc after preprocessing with tools/hutest2hs.
+HUTESTFILES=$(shell find . -type f -name "*.hutest")
+HUTESTFILESS=$(HUTESTFILES:=.hutesttest)
+HUNIT_LOG=".hunit.out"
+
 .PHONY: test clean summary failed
 
 test: clean stamp $(TESTFILESS) summary
+test_hunit_only: clean stamp $(HUTESTFILESS) summary
 
 %.phptest:
-	@(cat $(@:.phptest=) | phpsa --dump-ast > /dev/null 2> /dev/null && echo "$@ : OK" || echo "$@ : FAIL") >> $(OUTLOG) 
+	@(cat $(@:.phptest=) | phpsa --dump-ast > /dev/null 2> /dev/null && echo "$@ : OK" || echo "$@ : FAIL") >> $(OUTLOG)
 
+%.hutesttest:
+	@echo "====== $@" >> $(HUNIT_LOG)
+	@../tools/hutest2hs "$(@:.hutesttest=)"
+	@(ghc -i../src:../tools -fobject-code -e "runTests tests" "$(@:.hutesttest=.hs)" >> $(HUNIT_LOG) 2>> $(HUNIT_LOG) && echo "$@ : OK" || echo "$@ : FAIL") >> $(OUTLOG)
+	@rm "$(@:.hutesttest=.hs)"
 
 stamp:
 	@echo "TESTID=$(TESTID)" >> $(OUTLOG)
 
 clean:
-	@rm -f $(OUTLOG)
+	@rm -f $(OUTLOG) $(HUNIT_LOG)
 
 summary:
 	@echo "ID: "`grep "TESTID=" $(OUTLOG)`

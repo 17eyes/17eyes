@@ -1,3 +1,7 @@
 dist
 www
 tests/.tests.out
+tests/.hunit.out
+
+*.hi
+*.o
