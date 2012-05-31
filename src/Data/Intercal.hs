@@ -72,6 +72,13 @@ unbreakEnd :: [(a, b)] -> a -> Intercal a b
 unbreakEnd [] xEnd = Interend xEnd
 unbreakEnd ((x, y):xys) xEnd = Intercal x y $ unbreakEnd xys xEnd
 
+toList1 :: Intercal a b -> [a]
+toList1 ic = case breakStart ic of
+    (x, xs) -> x:(Prelude.map snd xs)
+
+toList2 :: Intercal a b -> [b]
+toList2 = Prelude.map snd . fst . breakEnd
+
 rePairStart :: a -> [(b, a)] -> ([(a, b)], a)
 rePairStart x0 [] = ([], x0)
 rePairStart x0 ((y, x):yxs) = first ((x0, y):) $ rePairStart x yxs

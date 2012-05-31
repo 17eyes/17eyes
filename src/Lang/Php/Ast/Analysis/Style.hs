@@ -22,8 +22,7 @@ mkKind = IssueKind "Lang.Php.Analysis.Style"
 
 finishPhp :: AstAnalysis
 finishPhp = AstAnalysis () $ \ast@(Ast _ _ sl) -> do
-    let stmts = map snd $ fst $ IC.breakEnd sl
-    case reverse stmts of
+    case reverse (IC.toList2 sl) of
         (StoredPos pos (StmtNothing (StmtEndClose (TopLevel text Nothing)))):_ ->
              if all isSpace text then emit pos else return ()
         _ -> return ()
@@ -48,8 +47,7 @@ finishPhp = AstAnalysis () $ \ast@(Ast _ _ sl) -> do
 
 styleIncludeRequire :: AstAnalysis
 styleIncludeRequire = AstAnalysis () $ \ast@(Ast _ _ sl) -> do
-    let stmts = map snd $ fst $ IC.breakEnd sl
-    mapM_ top_lvl_stmt stmts
+    mapM_ top_lvl_stmt (IC.toList2 sl)
     return ast
  where
     top_lvl_stmt (StoredPos pos (StmtExpr (inc@(ExprInclude _ _ _ _)) _ _)) = top_lvl_inc pos inc

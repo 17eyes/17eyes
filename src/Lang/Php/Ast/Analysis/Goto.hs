@@ -155,10 +155,10 @@ class EntryExtractable a where
     extract :: a -> [Entry]
 
 instance EntryExtractable a => EntryExtractable (IC.Intercal WS a) where
-    extract = concatMap extract . map snd . fst . IC.breakEnd
+    extract = concatMap extract . IC.toList2
 
 instance EntryExtractable a => EntryExtractable (IC.Intercal a WS) where
-    extract = concatMap extract . map fst . fst . IC.breakEnd
+    extract = concatMap extract . IC.toList1
 
 instance EntryExtractable a => EntryExtractable (WSCap a) where
     extract = extract . wsCapMain
