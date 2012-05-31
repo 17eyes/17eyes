@@ -1,0 +1,109 @@
+import Data.List
+import Data.Char(toUpper)
+import TestHelper
+
+tests = map (assertIssue . atLine kind) (markerLines "UNREACHABLE" thisSource)
+     ++ map (assertNoIssue . atLine kind) (markerLines "NORMAL" thisSource)
+ where
+    kind = IssueKind "Lang.Php.Ast.Analysis.Reachability" "unreachableCode"
+
+================================= BEGIN TEST =================================
+<?php
+
+function foo()
+{
+    return;
+    echo 'UNREACHABLE';
+}
+
+function bar()
+{
+    if(rand() % 2) {
+        echo 'NORMAL';
+        return;
+    } else {
+        return;
+    }
+
+    echo 'UNREACHABLE';
+}
+
+function boringLoops()
+{
+    while(rand() % 2) {
+        break;
+        echo 'UNREACHABLE';
+    }
+
+    do {
+        break;
+        echo 'UNREACHABLE';
+    } while(rand() % 2);
+
+    for($i = 0; $i < 10; $i++) {
+        break;
+        echo 'UNREACHABLE';
+    }
+
+    foreach(array(1,2,3) as $x) {
+        break;
+        echo 'UNREACHABLE';
+    }
+}
+
+function aSwitch()
+{
+    switch(rand() % 2) {
+        case 0:
+            break;
+            echo 'UNREACHABLE';
+
+        default:
+            break;
+            echo 'UNREACHABLE';
+    }
+}
+
+function breakParam()
+{
+    while(true) {
+        while(true) {
+            while(true) {
+                break 2;
+            }
+            echo 'UNREACHABLE';
+        }
+        echo 'NORMAL';
+    }
+    echo 'NORMAL';
+}
+
+function ifNoElse()
+{
+    if(rand() % 2) {
+        return;
+    }
+    echo 'NORMAL';
+}
+
+function exceptions()
+{
+    try {
+        throw new Exception();
+        echo 'UNREACHABLE';
+    } catch(Exception $e) {
+        echo 'NORMAL';
+    }
+    echo 'NORMAL'; // reachable, since we can return here from the catch-block
+}
+
+function reporting()
+{
+    return;
+    echo 'UNREACHABLE'; // we detect this but omit following instructions
+    echo 'NORMAL';
+    echo 'NORMAL';
+}
+
+return; // yes, you can return from top-level code
+echo 'UNREACHABLE';

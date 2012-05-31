@@ -13,11 +13,13 @@ module TestHelper(
     module Test.HUnit,
     module Common,
     runTests,
-    IssueQuery(..), createIssueAsserts, atLine
+    IssueQuery(..), createIssueAsserts, atLine,
+    isDelimiter, markerLines
 ) where
 
 import Test.HUnit
 import System.Exit(exitFailure,exitSuccess)
+import Text.Regex.Posix
 
 import Lang.Php.Ast
 import Pipeline
@@ -55,6 +57,29 @@ createIssueAsserts source = (assertIssue, assertNoIssue)
 
     msg_no_issue q = "Expected to find *no* issue such that:\n"
                ++ (unlines $ map ("\t* "++) (iqRequirements q))
+
+
+-- | True, if a given line is the '=== BEGIN CODE ===' delimiter.
+isDelimiter :: String -> Bool
+isDelimiter = (=~ regex)
+ where regex = "^\\s*=+\\s*BEGIN TEST\\s*=+\\s*$"
+
+-- | Returns a list of all line numbers in the input that contain a given
+-- string and are in the '=== BEGIN CODE ===' section.
+markerLines :: String -> String -> [Int]
+markerLines marker text =
+    map (+ (idx+2)) $ findIndices (marker `isInfixOf`) (drop (idx+1) xs)
+ where
+    xs = lines text
+    idx = maybe (error "No '== BEGIN CODE ==' marker in the file.")
+                id
+                (findIndex isDelimiter xs)
+
+markerLine :: String -> String -> Int
+markerLine marker source = case markerLines marker source of
+    [x] -> x
+    []  -> error "No marker present."
+    _   -> error "More than one marker occurrence."
 
 runTests tests = do
     x <- runTestTT (test tests)
