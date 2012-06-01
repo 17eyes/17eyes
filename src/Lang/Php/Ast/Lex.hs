@@ -5,48 +5,6 @@ module Lang.Php.Ast.Lex where
 import Lang.Php.Ast.Common
 import qualified Data.Set as Set
 
-data StrLit = StrLit String
-  deriving (Eq, Show, Typeable, Data)
-
-instance Parse StrLit where
-  parse = StrLit <$> (
-    {- binary strings -}
-    try (liftM2 (++) (string "b'") (strLitRestParser '\'')) <|>
-    liftM2 (++) (string "b\"") (strLitRestParserCurly '"' False) <|>
-
-    {- normal strings -}
-    liftM2 (:) (char '"') (strLitRestParserCurly '"' False) <|>
-    liftM2 (:) (char '\'') (strLitRestParser '\'')
-   )
-
-instance Unparse StrLit where
-  unparse (StrLit a) = a
-
-strLitRestParser :: Char -> Parser String
-strLitRestParser end = anyChar >>= \ c -> (c:) <$>
-  if c == end then return [] else if c == '\\'
-    then liftM2 (:) anyChar (strLitRestParser end)
-    else strLitRestParser end
-
--- "{$a["{$a}"]}" e.g. is a legal single string literal in php..
-strLitRestParserCurly :: Char -> Bool -> Parser String
-strLitRestParserCurly end haveCurly = anyChar >>= \ c -> (c:) <$>
-  if c == end then return [] else if c == '\\'
-    then liftM2 (:) anyChar (strLitRestParserCurly end False)
-    else
-      if c == '{'
-        then strLitRestParserCurly end True
-        else
-          if haveCurly && c == '$'
-            then
-              liftM2 (++)
-                (strLitRestParserCurly '}' False)
-                (strLitRestParserCurly end False)
-            else strLitRestParserCurly end False
-
-backticksParser :: Parser String
-backticksParser = liftM2 (:) (char '`') (strLitRestParserCurly '`' False)
-
 data NumLit = NumLit String
   deriving (Eq, Show, Typeable, Data)
 
@@ -61,42 +19,6 @@ instance Parse NumLit where
 
 instance Unparse NumLit where
   unparse (NumLit a) = a
-
-data NewDoc = NewDoc String
-  deriving (Eq, Show, Typeable, Data)
-
-instance Parse NewDoc where
-  parse = NewDoc <$> try (
-    do 
-    ws <- tokNewDocP >> wsNoNLParser
-    s <- char '\'' >> genIdentifierParser <* char '\''
-    nl <- newline
-    rest <- hereDocRestParser s
-    return (ws ++ s ++ [nl] ++ rest)
-    )
-
-instance Unparse NewDoc where
-  unparse (NewDoc a) = tokHereDoc ++ a
-
-data HereDoc = HereDoc String
-  deriving (Eq, Show, Typeable, Data)
-
-instance Parse HereDoc where
-  parse = HereDoc <$> do
-    ws <- tokHereDocP >> wsNoNLParser
-    s <- genIdentifierParser <|> 
-      (char '"' >> genIdentifierParser <* char '"')
-    nl <- newline
-    rest <- hereDocRestParser s
-    return (ws ++ s ++ [nl] ++ rest)
-
-instance Unparse HereDoc where
-  unparse (HereDoc a) = tokHereDoc ++ a
-
-hereDocRestParser :: String -> Parser String
-hereDocRestParser s =
-  try (string s <* notFollowedBy (satisfy (\ c -> c /= '\n' && c /= ';'))) <|>
-  liftM2 (++) lineParser (hereDocRestParser s)
 
 lineParser :: Parser String
 lineParser = liftM2 (++) (many $ satisfy (/= '\n')) ((:[]) <$> newline)
@@ -466,8 +388,4 @@ tokChildrenP = identCI tokChildren
 tokAttribute = "attribute"
 tokAttributeP = identCI tokAttribute
 
-$(derive makeBinary ''HereDoc)
-$(derive makeBinary ''NewDoc)
 $(derive makeBinary ''NumLit)
-$(derive makeBinary ''StrLit)
-

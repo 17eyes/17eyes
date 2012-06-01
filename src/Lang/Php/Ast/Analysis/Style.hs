@@ -97,10 +97,10 @@ styleIncludeRequire = AstAnalysis () $ \ast@(Ast _ _ sl) -> do
         "used to load plugins)."
 
 stringLiterals :: AstAnalysis
-stringLiterals = AstAnalysis () $ \lit@(StrLit x) -> do
-    case x of
-        ('"':xs) -> if trivial xs then emit x else return ()
-        _        -> return ()
+stringLiterals = AstAnalysis () $ \lit -> do
+    case strLitAsSimple lit of
+        Just ('"':xs) -> if trivial xs then emit ('"':xs) else return ()
+        _             -> return ()
     return lit
  where
     emit x = emitIssue $ Issue {

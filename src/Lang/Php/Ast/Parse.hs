@@ -507,6 +507,102 @@ instance Parse StmtEnd where
   parse = (tokSemiP >> return StmtEndSemi) <|>
     (tokClosePhpP >> StmtEndClose <$> parse)
 
+--
+-- STRING LITERALS
+--
+-- Since they can contain parsable expressions (like "Hello, $name!") we need
+-- to deal with them here.
+
+instance Parse StrLit where
+  parse = fmap StrLit $
+    -- binary strings
+    try (IC.Interend <$> liftM2 (++) (string "b'") (strLitRestParser '\'')) <|>
+    liftM2 icGlue (string "b\"") (strLitRestParserExpr '"') <|>
+
+    -- normal strings
+    (char '"' >> strLitRestParserExpr '"' >>= return . icGlue "\"") <|>
+    (IC.Interend <$> liftM2 (:) (char '\'') (strLitRestParser '\''))
+
+instance Unparse StrLit where
+  unparse (StrLit ic) = start ++ concatMap f xs
+   where
+    (start, xs) = IC.breakStart ic
+    f ((SLEComplex, e), str) = "{" ++ unparse e ++ "}" ++ str
+    f ((SLENormal, e), str) = unparse e ++ str
+
+strLitRestParser :: Char -> Parser String
+strLitRestParser end = anyChar >>= \ c -> (c:) <$>
+  if c == end then return [] else if c == '\\'
+    then liftM2 (:) anyChar (strLitRestParser end)
+    else strLitRestParser end
+
+-- | Concatenation-like operation for Data.Intercal
+icGlue :: String -> IC.Intercal String a -> IC.Intercal String a
+icGlue g (IC.Interend xs) = IC.Interend (g ++ xs)
+icGlue g (IC.Intercal xs ys ic) = IC.Intercal (g ++ xs) ys ic
+
+-- Parses strings that can contain expressions (like "Hello, $name!" or more
+-- complex things like "{$a["{$a}"]}" that actually affect the lexical
+-- structure of the program).
+strLitRestParserExpr :: Char -> Parser (IC.Intercal String (StrLitExprStyle, RVal))
+strLitRestParserExpr end = do
+    -- stupid hack: for '$' we don't want to consume the input
+    c <- lookAhead anyChar
+    if c /= '$' then anyChar >> return () else return ()
+    case c of
+        '\\' -> liftM2 (\x -> icGlue ['\\',x]) anyChar (strLitRestParserExpr end)
+        '$'  -> try parseNormal <|> (anyChar >> icGlue "$" <$> strLitRestParserExpr end)
+        '{'  -> parseComplex
+        c    -> if c == end
+                  then return (IC.Interend [end])
+                  else icGlue [c] <$> strLitRestParserExpr end
+ where
+    parseComplex = do
+        c <- lookAhead anyChar
+        if c /= '$'
+          then icGlue ['{',c] <$> strLitRestParserExpr end
+          else do
+            (expr, ws) <- parse :: Parser (RVal, WS)
+            tokRBraceP
+            IC.Intercal "" (SLEComplex, expr) <$> icGlue (unparse ws) <$> strLitRestParserExpr end
+
+    parseNormal = do
+        (expr, ws) <- parse :: Parser (RVal, WS)
+        IC.Intercal "" (SLENormal, expr) <$> icGlue (unparse ws) <$> strLitRestParserExpr end
+
+backticksParser :: Parser StrLit
+backticksParser = char '`' >> StrLit <$> icGlue "`" <$> strLitRestParserExpr '`'
+
+instance Parse NewDoc where
+  parse = NewDoc <$> try (
+    do
+    ws <- tokNewDocP >> wsNoNLParser
+    s <- char '\'' >> genIdentifierParser <* char '\''
+    nl <- newline
+    rest <- hereDocRestParser s
+    return (ws ++ s ++ [nl] ++ rest)
+    )
+
+instance Unparse NewDoc where
+  unparse (NewDoc a) = tokHereDoc ++ a
+
+instance Parse HereDoc where
+  parse = HereDoc <$> do
+    ws <- tokHereDocP >> wsNoNLParser
+    s <- genIdentifierParser <|> 
+      (char '"' >> genIdentifierParser <* char '"')
+    nl <- newline
+    rest <- hereDocRestParser s
+    return (ws ++ s ++ [nl] ++ rest)
+
+instance Unparse HereDoc where
+  unparse (HereDoc a) = tokHereDoc ++ a
+
+hereDocRestParser :: String -> Parser String
+hereDocRestParser s =
+  try (string s <* notFollowedBy (satisfy (\ c -> c /= '\n' && c /= ';'))) <|>
+  liftM2 (++) lineParser (hereDocRestParser s)
+
 ---
 --- EXPRESSIONS
 ---
@@ -589,10 +685,10 @@ instance Parse (Var, WS) where
         (tokLBraceP >> parse <* tokRBraceP) parse
 
 identifierOrVarParser :: Parser (Either String Var)
-identifierOrVarParser = 
+identifierOrVarParser =
   (try (Left <$> (tokStaticP <|> identifierParser))
     <|> ( do
-      (v, w) <- parse :: Parser (Var, WS)
+      (v, w) <- parse :: Parser (Var, WS) -- FIXME: eats whitespace
       return (Right v)
       ))
 
@@ -733,7 +829,7 @@ instance Unparse Expr where
         maybe id (flip (++) . (:[]) . unparse) wEnd $ map unparse elems
     ExprAssign o v w e -> unparse v ++ w2With (unparse o ++ tokEquals) w ++
       unparse e
-    ExprBackticks a -> a
+    ExprBackticks a -> unparse a
     ExprBinOp o e1 (w1, w2) e2 -> unparse e1 ++ unparse w1 ++ unparse o ++
       unparse w2 ++ unparse e2
     ExprCast (WSCap w1 t w2) w e -> tokLParen ++ unparse w1 ++ t ++

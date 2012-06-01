@@ -27,6 +27,22 @@ import qualified Data.Intercal as IC
 -- Var's, LVal's, and RVal's that we desire to make the AST nice for
 -- refactoring.
 
+data StrLitExprStyle = SLENormal | SLEComplex -- | "$foo" vs "{$foo}"
+  deriving (Eq, Show, Typeable, Data)
+
+data StrLit = StrLit (IC.Intercal String (StrLitExprStyle, RVal))
+  deriving (Eq, Show, Typeable, Data)
+
+strLitAsSimple :: StrLit -> Maybe String
+strLitAsSimple (StrLit (IC.Interend x)) = Just x
+strLitAsSimple _ = Nothing
+
+data NewDoc = NewDoc String
+  deriving (Eq, Show, Typeable, Data)
+
+data HereDoc = HereDoc String
+  deriving (Eq, Show, Typeable, Data)
+
 data Val = ValLOnlyVal LOnlyVal | ValROnlyVal ROnlyVal | ValLRVal LRVal
   deriving (Eq, Show, Typeable, Data)
 
@@ -82,7 +98,7 @@ data Memb =
 data Expr =
   ExprArray     WS (Either WS ([WSCap DubArrowMb], Maybe WS)) |
   ExprAssign    (Maybe BinOpBy) LVal WS2 Expr |
-  ExprBackticks String |
+  ExprBackticks StrLit |
   ExprBinOp     BinOp Expr WS2 Expr |
   -- we're lazy so just String here instead of like PhpType
   ExprCast      (WSCap String) WS Expr |
@@ -379,3 +395,7 @@ $(derive makeBinary ''RVal)
 $(derive makeBinary ''TernaryIf)
 $(derive makeBinary ''Val)
 $(derive makeBinary ''Var)
+$(derive makeBinary ''StrLitExprStyle)
+$(derive makeBinary ''StrLit)
+$(derive makeBinary ''HereDoc)
+$(derive makeBinary ''NewDoc)
