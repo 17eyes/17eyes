@@ -28,7 +28,7 @@ function bar()
     echo 'UNREACHABLE';
 }
 
-function boringLoops()
+function loopsBreak()
 {
     while(rand() % 2) {
         break;
@@ -51,6 +51,29 @@ function boringLoops()
     }
 }
 
+function loopContinue()
+{
+    while(rand() % 2) {
+        continue;
+        echo 'UNREACHABLE';
+    }
+
+    do {
+        continue;
+        echo 'UNREACHABLE';
+    } while(rand() % 2);
+
+    for($i = 0; $i < 10; $i++) {
+        continue;
+        echo 'UNREACHABLE';
+    }
+
+    foreach(array(1,2,3) as $x) {
+        continue;
+        echo 'UNREACHABLE';
+    }
+}
+
 function aSwitch()
 {
     switch(rand() % 2) {
@@ -58,10 +81,28 @@ function aSwitch()
             break;
             echo 'UNREACHABLE';
 
+        case 1:
+            return;
+            break; // NORMAL
+
         default:
             break;
             echo 'UNREACHABLE';
     }
+    echo 'NORMAL';
+
+    switch(rand() % 2) {
+        case 0: break;
+        case 1: break;
+        default: break;
+    }
+    echo 'NORMAL';
+
+    // switch without 'default' can always return
+    switch(rand() % 2) {
+        case 0: return;
+    }
+    echo 'NORMAL';
 }
 
 function breakParam()
@@ -70,6 +111,20 @@ function breakParam()
         while(true) {
             while(true) {
                 break 2;
+            }
+            echo 'UNREACHABLE';
+        }
+        echo 'NORMAL';
+    }
+    echo 'NORMAL';
+}
+
+function continueParam()
+{
+    while(true) {
+        while(true) {
+            while(true) {
+                continue 2;
             }
             echo 'UNREACHABLE';
         }

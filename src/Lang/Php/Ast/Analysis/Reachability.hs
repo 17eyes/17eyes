@@ -54,16 +54,19 @@ minBreakLevelIC ic = foldM f 0 (IC.toList2 ic)
                                           else minBreakLevel stmt
 
     mkIssue pos stmt = emitIssue $ Issue {
-        issueTitle = "unreachable code",
-        issueMessage = "TODO", -- FIXME
+        issueTitle = "possibly unreachable code",
+        issueMessage = msg,
         issueLineNumber = Just (sourceLine pos),
         issueFunctionName = Nothing,
         issueFileName = Just (sourceName pos),
         issueKind = IssueKind "Lang.Php.Ast.Analysis.Reachability" "unreachableCode",
         issueSeverity = ISNitpicking,
-        issueConfidence = ICSure,
+        issueConfidence = ICPossible,
         issueContext = [unparse stmt]
     }
+
+    msg = "It might be possible that this code will never get executed. " ++
+          "This may be an indicator of a bug or some sort of redundancy."
 
 minBreakLevelBlockOrStmt :: BlockOrStmt -> TraverseState () BreakLevel
 minBreakLevelBlockOrStmt (Left (StoredPos _ stmt)) = minBreakLevel stmt
@@ -80,6 +83,9 @@ minBreakLevel (StmtThrow _ _) = return infinity
 minBreakLevel (StmtBreak (Just (_, ExprNumLit (NumLit x))) _ _) = return (read x)
 minBreakLevel (StmtBreak _ _ _) = return 1 -- safe, this argument cannot be < 1
 
+-- surprisingly, continue works just like break
+minBreakLevel (StmtContinue x y z) = minBreakLevel (StmtBreak x y z)
+
 minBreakLevel (StmtIf (If _ ifblocks ifelse)) = do
     let xs = map ifBlockBlock ifblocks
     ifblock_levels <- mapM minBreakLevelBlockOrStmt xs
@@ -89,8 +95,13 @@ minBreakLevel (StmtIf (If _ ifblocks ifelse)) = do
     return (foldl1 min (ifelse_level:ifblock_levels))
 
 minBreakLevel (StmtSwitch (Switch _ _ _ _ cases)) = do
-    levels <- mapM minBreakLevelIC (map caseStmtList cases)
-    return (foldl1 min levels)
+    if not hasDefault
+     then return 0 -- switch without 'default' can always return
+     else do
+        levels <- mapM minBreakLevelIC (map caseStmtList cases)
+        return $ max 0 ((foldl1 min levels)-1)
+ where
+    hasDefault = any (either (const True) (const False) . caseExpr) cases
 
 minBreakLevel (StmtWhile (While _ bs _)) = handleLoop bs
 minBreakLevel (StmtDoWhile (DoWhile wsbs _ _)) = handleLoop (wsCapMain wsbs)
