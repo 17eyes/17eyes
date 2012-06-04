@@ -205,7 +205,7 @@ instance EntryExtractable If where
 
 instance EntryExtractable Switch where
     extract (Switch _ _ _ _ cases) = do
-        (Case _ sl) <- cases
+        (StoredPos _ (Case _ sl)) <- cases
         extract sl
 
 instance EntryExtractable Catch where

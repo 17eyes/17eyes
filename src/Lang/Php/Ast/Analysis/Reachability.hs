@@ -98,10 +98,11 @@ minBreakLevel (StmtSwitch (Switch _ _ _ _ cases)) = do
     if not hasDefault
      then return 0 -- switch without 'default' can always return
      else do
-        levels <- mapM minBreakLevelIC (map caseStmtList cases)
+        levels <- mapM minBreakLevelIC (map caseStmtList nakedCases)
         return $ max 0 ((foldl1 min levels)-1)
  where
-    hasDefault = any (either (const True) (const False) . caseExpr) cases
+    hasDefault = any (either (const True) (const False) . caseExpr) nakedCases
+    nakedCases = [x | (StoredPos _ x) <- cases]
 
 minBreakLevel (StmtWhile (While _ bs _)) = handleLoop bs
 minBreakLevel (StmtDoWhile (DoWhile wsbs _ _)) = handleLoop (wsCapMain wsbs)

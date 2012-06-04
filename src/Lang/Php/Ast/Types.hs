@@ -317,7 +317,7 @@ data Switch = Switch {
   switchExpr    :: WSCap2 Expr,
   switchWS      :: WS,
   switchTL      :: Maybe TopLevel, -- allows for '?>' before first case
-  switchCases   :: [Case]
+  switchCases   :: [StoredPos Case]
  } deriving (Eq, Show, Typeable, Data)
 
 data Case = Case {

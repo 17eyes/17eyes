@@ -51,6 +51,9 @@ instance Parse (a, WS) => Parse (StoredPos a, WS) where
     (x, ws) <- parse
     return (StoredPos pos x, ws)
 
+instance Parse a => Parse (StoredPos a) where
+  parse = liftM2 StoredPos getPosition parse
+
 instance Unparse a => Unparse (StoredPos a) where
   unparse (StoredPos _ x) = unparse x
 
