@@ -160,5 +160,22 @@ function reporting()
     echo 'NORMAL';
 }
 
+function unreachBreak()
+{
+    // These breaks are in fact unreachable, but it is somewhat a good practice
+    // to put a 'break' at the end of each 'case' block regardless of its
+    // reachability.
+
+    switch(rand() % 2) {
+        case 0:
+            return 0;
+            break; // NORMAL
+
+        default:
+            return 1;
+            break; // NORMAL
+    }
+}
+
 return; // yes, you can return from top-level code
 echo 'UNREACHABLE';

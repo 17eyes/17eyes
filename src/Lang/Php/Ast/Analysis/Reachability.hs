@@ -48,8 +48,15 @@ minBreakLevelIC :: IC.Intercal WS (StoredPos Stmt) -> TraverseState () BreakLeve
 minBreakLevelIC ic = foldM f 0 (IC.toList2 ic)
  where
     f :: BreakLevel -> StoredPos Stmt -> TraverseState () BreakLevel
+
     f bk (StoredPos _ (StmtLabel _)) = return 0 -- even if bk > 0
     f bk (StoredPos _ (StmtNothing _)) = return bk -- don't emit any issues
+
+    -- We don't care if StmtBreak is unreachable (since it is sometimes considered
+    -- a good practice to put one at the end of 'case', even when it's not
+    -- necessary.
+    f bk (StoredPos _ (stmt@(StmtBreak _ _ _))) = minBreakLevel stmt
+
     f bk (StoredPos pos stmt) = if bk > 0 then mkIssue pos stmt >> return 0 -- TODO: break here
                                           else minBreakLevel stmt
 
