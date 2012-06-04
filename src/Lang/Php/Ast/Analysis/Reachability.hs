@@ -35,6 +35,8 @@ infinity = 2^64
 
 allAnalyses = [checkTL, checkFunc]
 
+mkKind = IssueKind "Lang.Php.Ast.Analysis.Reachability"
+
 checkTL = AstAnalysis () $ \ast@(Ast _ _ st) -> do
     minBreakLevelIC st
     return ast
@@ -66,7 +68,7 @@ minBreakLevelIC ic = foldM f 0 (IC.toList2 ic)
         issueLineNumber = Just (sourceLine pos),
         issueFunctionName = Nothing,
         issueFileName = Just (sourceName pos),
-        issueKind = IssueKind "Lang.Php.Ast.Analysis.Reachability" "unreachableCode",
+        issueKind = mkKind "unreachableCode",
         issueSeverity = ISNitpicking,
         issueConfidence = ICPossible,
         issueContext = [unparse stmt]
@@ -102,11 +104,11 @@ minBreakLevel (StmtIf (If _ ifblocks ifelse)) = do
     return (foldl1 min (ifelse_level:ifblock_levels))
 
 minBreakLevel (StmtSwitch (Switch _ _ _ _ cases)) = do
+    levels <- mapM minBreakLevelIC (map caseStmtList nakedCases)
+    checkSwitchFallthrough (zip [pos | StoredPos pos _ <- cases] levels)
     if not hasDefault
-     then return 0 -- switch without 'default' can always return
-     else do
-        levels <- mapM minBreakLevelIC (map caseStmtList nakedCases)
-        return $ max 0 ((foldl1 min levels)-1)
+     then return 0 -- assume that switch without 'default' can always return
+     else return $ max 0 ((foldl1 min levels)-1)
  where
     hasDefault = any (either (const True) (const False) . caseExpr) nakedCases
     nakedCases = [x | (StoredPos _ x) <- cases]
@@ -128,3 +130,43 @@ minBreakLevel _ = return 0
 handleLoop bs = do
     bl <- minBreakLevelBlockOrStmt bs
     return (max 0 (bl-1))
+
+-- Check whether each 'case' block has a break level > 0. If this occurs in the
+-- last block, it probably is a mistake. Otherwise, it might be the desired
+-- behaviour so emit a different kind of issue.
+checkSwitchFallthrough :: [(SourcePos, BreakLevel)] -> TraverseState () ()
+checkSwitchFallthrough levels = case reverse levels of
+    [] -> return ()
+    ((lpos, llev):xs) -> do
+        when (llev < 1) (emitLast lpos)
+        forM_ xs $ \(pos, lev) -> when (lev < 1) (emitNormal pos)
+ where
+    emitNormal pos = emitIssue $ Issue {
+        issueTitle = "'case' block without 'break'",
+        issueMessage = "This 'case' block lacks a 'break' statement and will "
+                    ++ "pass control to the next one. Note that sometimes "
+                    ++ "this is the desired behavior.",
+        issueLineNumber = Just (sourceLine pos),
+        issueFunctionName = Nothing,
+        issueFileName = Just (sourceName pos),
+        issueKind = mkKind "switchFallthrough",
+        issueSeverity = ISStyle,
+        issueConfidence = ICPossible,
+        issueContext = []
+
+    }
+
+    emitLast pos = emitIssue $ Issue {
+        issueTitle = "last 'case' block without 'break'",
+        issueMessage = "This 'case' block is the last one and contains no "
+                    ++ "'break'. This doesn't affect the behavior in any way, "
+                    ++ "but if another 'case' is going to be added at the end, "
+                    ++ "care must be taken to avoid unintentional fallthrough.",
+        issueLineNumber = Just (sourceLine pos),
+        issueFunctionName = Nothing,
+        issueFileName = Just (sourceName pos),
+        issueKind = mkKind "switchLastFallthrough",
+        issueSeverity = ISMayHarm,
+        issueConfidence = ICSure,
+        issueContext = []
+    }

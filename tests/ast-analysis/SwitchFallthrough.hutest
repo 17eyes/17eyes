@@ -1,0 +1,65 @@
+import TestHelper
+
+tests = checkFor "switchFallthrough" ++ checkFor "switchLastFallthrough"
+
+checkFor name = map (assertIssue . atLine (mkKind name))
+                    (markerLines ("__" ++ name ++ "__") thisSource)
+             ++ map (assertNoIssue . atLine (mkKind name))
+                    (markerLines ("__no_" ++ name ++ "__") thisSource)
+
+mkKind = IssueKind "Lang.Php.Ast.Analysis.Reachability"
+
+================================= BEGIN TEST =================================
+<?php
+
+switch(rand() % 2) {
+case 1: // __switchFallthrough__
+    echo 'hello';
+
+default:
+    break;
+}
+
+switch(rand() % 2) {
+case 1: // __switchFallthrough__
+    echo 'hello';
+
+case 0:
+    break;
+}
+
+switch(rand() % 2) {
+case 0:
+    break;
+
+case 1: // __switchLastFallthrough__
+    echo 'hello';
+}
+
+switch(rand() % 2) {
+case 0:
+    break;
+
+default: // __switchLastFallthrough__
+    echo 'hello';
+}
+
+switch(rand() % 2) {
+case 0: echo '0'; // __switchFallthrough__
+case 1: echo '1'; // __switchFallthrough__
+default: echo 'default'; // __switchLastFallthrough__
+}
+
+switch(rand() % 2) {
+case 0: // __no_switchFallthrough__
+case 1: // __no_switchLastFallthrough__
+    echo '1';
+    break;
+}
+
+switch(rand() % 2) {
+case 0: // __no_switchFallthrough__
+default: // __no_switchLastFallthrough__
+    echo '1';
+    break;
+}
