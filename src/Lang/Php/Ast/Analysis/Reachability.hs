@@ -105,7 +105,7 @@ minBreakLevel (StmtIf (If _ ifblocks ifelse)) = do
 
 minBreakLevel (StmtSwitch (Switch _ _ _ _ cases)) = do
     levels <- mapM minBreakLevelIC (map caseStmtList nakedCases)
-    checkSwitchFallthrough (zip [pos | StoredPos pos _ <- cases] levels)
+    checkSwitchFallthrough (zip cases levels)
     if not hasDefault
      then return 0 -- assume that switch without 'default' can always return
      else return $ max 0 ((foldl1 min levels)-1)
@@ -134,13 +134,20 @@ handleLoop bs = do
 -- Check whether each 'case' block has a break level > 0. If this occurs in the
 -- last block, it probably is a mistake. Otherwise, it might be the desired
 -- behaviour so emit a different kind of issue.
-checkSwitchFallthrough :: [(SourcePos, BreakLevel)] -> TraverseState () ()
+checkSwitchFallthrough :: [(StoredPos Case, BreakLevel)] -> TraverseState () ()
 checkSwitchFallthrough levels = case reverse levels of
     [] -> return ()
-    ((lpos, llev):xs) -> do
+    ((StoredPos lpos _, llev):xs) -> do
         when (llev < 1) (emitLast lpos)
-        forM_ xs $ \(pos, lev) -> when (lev < 1) (emitNormal pos)
+        forM_ xs $ \(StoredPos pos cs, lev) ->
+            -- we don't warn about fallthrough from "empty" cases
+            when (lev < 1 && not (isEmpty cs)) (emitNormal pos)
  where
+    isEmpty :: Case -> Bool
+    isEmpty cs = case caseStmtList cs of
+        IC.Interend _ -> True
+        _ -> False
+
     emitNormal pos = emitIssue $ Issue {
         issueTitle = "'case' block without 'break'",
         issueMessage = "This 'case' block lacks a 'break' statement and will "
