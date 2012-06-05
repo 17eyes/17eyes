@@ -1,0 +1,108 @@
+import TestHelper
+
+tests = map (assertIssue . atLine kind) (markerLines "__UNDECLARED__" thisSource)
+     ++ map (assertNoIssue . atLine kind) (markerLines "__DECLARED__" thisSource)
+ where
+    kind = IssueKind "Lang.Php.Ast.Analysis.LocalScope" "undeclaredVariable"
+
+================================= BEGIN TEST =================================
+<?php
+
+$bar = 10;
+
+function simple()
+{
+    global $bar;
+
+    var_dump($foo); // __UNDECLARED__
+    $foo = '5';
+    var_dump($foo); // __DECLARED__
+
+    var_dump($bar); // __DECLARED__
+}
+
+function branch()
+{
+    if(rand() % 2) {
+        $foo = 5;
+        var_dump(foo); // __DECLARED__
+    }
+
+    var_dump($foo); // __UNDECLARED__
+}
+
+function loops($arr)
+{
+    while(rand() % 2) {
+        $foo_while = 5;
+        var_dump($foo_while); // __DECLARED__
+    }
+    var_dump($foo_while); // __UNDECLARED__
+
+    for($i = 0; rand() % 2; $i++) { // __DECLARED__
+        var_dump($i); // __DECLARED__
+        $foo_for = 5;
+        var_dump($foo_for); // __DECLARED__
+    }
+    var_dump($foo_for); // __UNDECLARED__
+
+    foreach($arr as $x) { // __DECLARED__
+        var_dump($x); // __DECLARED__
+        $foo_foreach = 5;
+        var_dump($foo_foreach); // __DECLARED__
+    }
+    var_dump($foo_foreach); // __UNDECLARED__
+
+    do {
+        $foo_dowhile = 5;
+        var_dump($foo_dowhile); // __DECLARED__
+    } while(rand() % 2);
+    var_dump($foo_dowhile); // __DECLARED__
+}
+
+class Foo
+{
+    function meth() {
+        var_dump($foo); // __UNDECLARED__
+    }
+}
+
+function inStrings()
+{
+    $bar = 10;
+
+    echo "aaaa $foo bbbb"; // __UNDECLARED__
+    echo "aaaa {$foo} bbbb"; // __UNDECLARED__
+
+    echo "aaaa {$bar} bbbb"; // __DECLARED__
+    echo "aaaa {$bar[$foo]} bbbb"; // __UNDECLARED__
+    echo "aaaa {$bar->$foo} bbbb"; // __UNDECLARED__
+
+    echo "aaaa $bar bbbb"; // __DECLARED__
+    echo "aaaa $bar[$foo] bbbb"; // __UNDECLARED__
+    echo "aaaa $bar->$foo bbbb"; // __UNDECLARED__
+
+    echo "aaaa $barista bbbb"; // __UNDECLARED__
+}
+
+function testIsset()
+{
+    // we should ignore case like this
+    isset($foo); // __DECLARED__
+}
+
+function inLVal()
+{
+    $foo = array(1,2,3);
+    $foo[$nada] = 5; // __UNDECLARED__
+
+    // PHP does not emit a NOTICE in a following situation:
+    $nada[5] = 5; // __DECLARED__
+    // This creates a one-element array [5]=>int(5). Maybe we should warn about
+    // it because it's a rather bad practice to do things like that?
+
+    // Similar situation like the above but PHP emits a runtime warning while
+    // creating a default object. Maybe we should emit a different kind of
+    // issue for this?
+    $nic->x = 5; // __DECLARED__
+}

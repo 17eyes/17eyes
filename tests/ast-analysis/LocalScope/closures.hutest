@@ -1,0 +1,51 @@
+import TestHelper
+
+tests = map (assertIssue . atLine kind) (markerLines "__UNDECLARED__" thisSource)
+     ++ map (assertNoIssue . atLine kind) (markerLines "__DECLARED__" thisSource)
+ where
+    kind = IssueKind "Lang.Php.Ast.Analysis.LocalScope" "undeclaredVariable"
+
+================================= BEGIN TEST =================================
+<?php
+
+function inher()
+{
+    $x = 'Hello';
+    $f = function($y) use ($x) {
+        var_dump($nada); // __UNDECLARED__
+        return $x . ', ' . $y; // __DECLARED__
+    };
+    echo($f('world')); // __DECLARED__
+}
+
+function inher_str()
+{
+    $x = 'Hello';
+    $f = function($y) use ($x) {
+        return "$x, $y"; // __DECLARED__
+    };
+}
+
+function use_missing()
+{
+    $f = function($y) use ($nada) { // __UNDECLARED__
+        var_dump($nada); // __DECLARED__
+    };
+}
+
+function recur()
+{
+    $f = function() use ($f) { // __UNDECLARED__
+        $f(); // __DECLARED__
+    };
+}
+
+function multilevel()
+{
+    $top = 'elo';
+    return function() use ($top) { // __DECLARED__
+        return function() use ($top) { // __DECLARED__
+            echo($top); // __DECLARED__
+        };
+    };
+}
