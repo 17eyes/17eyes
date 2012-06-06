@@ -1,7 +1,7 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving, FlexibleInstances, MultiParamTypeClasses, RankNTypes, ExistentialQuantification #-}
 
 module Lang.Php.Ast.Traversal (
-    TraverseState, getSourceLine, traverse, emitIssue, runAstAnalysis, AstAnalysis(..)
+    TraverseState, getSourceLine, traverse, emitIssue, runAstAnalysis, AstAnalysis(..), withSourcePos
 ) where
 
 import Data.Generics
@@ -11,6 +11,9 @@ import qualified Control.Monad.State as MS
 
 import Lang.Php.Ast
 import Common
+
+import qualified Issue
+import Issue(Issue(Issue))
 
 data ExtState st = MkExtState {
     esSourceFile :: FilePath,
@@ -54,12 +57,24 @@ traverse f x = do
 getSourceLine :: TraverseState s Int
 getSourceLine = MkTS $ MS.get >>= return . esSourceLine
 
-emitIssue :: Issue -> TraverseState s ()
-emitIssue issue = do
+emitIssue :: (Issue.Kind a) -> [String] -> a -> TraverseState s ()
+emitIssue kind context payload = do
     es <- MkTS $ MS.get
-    let issue' = issue {
-        issueFileName = (issueFileName issue) `mplus` (Just $ esSourceFile es),
-        issueLineNumber = (issueLineNumber issue) `mplus` (Just $ esSourceLine es)
-    }
-    MkTS $ MS.put $ es { esIssues = issue':(esIssues es) }
+    let issue = Issue kind (Just $ esSourceFile es) (Just $ esSourceLine es)
+                      context payload
+    MkTS $ MS.put $ es { esIssues = issue:(esIssues es) }
     return ()
+
+withSourcePos :: SourcePos -> TraverseState s a -> TraverseState s a
+withSourcePos pos action = do
+    es <- MkTS $ MS.get
+    MkTS $ MS.modify $ \es' -> es' {
+        esSourceLine = sourceLine pos,
+        esSourceFile = sourceName pos
+    }
+    result <- action
+    MkTS $ MS.modify $ \es' -> es' {
+        esSourceLine = esSourceLine es,
+        esSourceFile = esSourceFile es
+    }
+    return result

@@ -1,7 +1,6 @@
 import TestHelper
 
-tests = assertIssue $
-    (IssueKind "CharAnalysis" "lineLengthCheck/tooLong") `atLine` 20
+tests = assertIssue ("lineLength" `atLine` 19)
 
 ================================= BEGIN TEST =================================
 <?php

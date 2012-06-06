@@ -24,6 +24,7 @@ import Control.Monad(foldM, mapM)
 import qualified Data.Intercal as IC
 import Lang.Php.Ast
 import Lang.Php.Ast.Traversal
+import qualified Kinds
 
 -- | Since PHP interpreter seems to expect the argument to "brake" to be a
 -- 32-bit signed integer (possibly 64-bit for some systems), we keep break
@@ -34,8 +35,6 @@ infinity :: BreakLevel
 infinity = 2^64
 
 allAnalyses = [checkTL, checkFunc]
-
-mkKind = IssueKind "Lang.Php.Ast.Analysis.Reachability"
 
 checkTL = AstAnalysis () $ \ast@(Ast _ _ st) -> do
     minBreakLevelIC st
@@ -62,17 +61,7 @@ minBreakLevelIC ic = foldM f 0 (IC.toList2 ic)
     f bk (StoredPos pos stmt) = if bk > 0 then mkIssue pos stmt >> return 0 -- TODO: break here
                                           else minBreakLevel stmt
 
-    mkIssue pos stmt = emitIssue $ Issue {
-        issueTitle = "possibly unreachable code",
-        issueMessage = msg,
-        issueLineNumber = Just (sourceLine pos),
-        issueFunctionName = Nothing,
-        issueFileName = Just (sourceName pos),
-        issueKind = mkKind "unreachableCode",
-        issueSeverity = ISNitpicking,
-        issueConfidence = ICPossible,
-        issueContext = [unparse stmt]
-    }
+    mkIssue pos stmt = withSourcePos pos $ emitIssue Kinds.unreachableCode [unparse stmt] ()
 
     msg = "It might be possible that this code will never get executed. " ++
           "This may be an indicator of a bug or some sort of redundancy."
@@ -138,42 +127,13 @@ checkSwitchFallthrough :: [(StoredPos Case, BreakLevel)] -> TraverseState () ()
 checkSwitchFallthrough levels = case reverse levels of
     [] -> return ()
     ((StoredPos lpos _, llev):xs) -> do
-        when (llev < 1) (emitLast lpos)
+        when (llev < 1) $ withSourcePos lpos $ emitIssue Kinds.switchLastFallthrough [] ()
         forM_ xs $ \(StoredPos pos cs, lev) ->
             -- we don't warn about fallthrough from "empty" cases
-            when (lev < 1 && not (isEmpty cs)) (emitNormal pos)
+            when (lev < 1 && not (isEmpty cs))
+                 (withSourcePos pos $ emitIssue Kinds.switchFallthrough [] ())
  where
     isEmpty :: Case -> Bool
     isEmpty cs = case caseStmtList cs of
         IC.Interend _ -> True
         _ -> False
-
-    emitNormal pos = emitIssue $ Issue {
-        issueTitle = "'case' block without 'break'",
-        issueMessage = "This 'case' block lacks a 'break' statement and will "
-                    ++ "pass control to the next one. Note that sometimes "
-                    ++ "this is the desired behavior.",
-        issueLineNumber = Just (sourceLine pos),
-        issueFunctionName = Nothing,
-        issueFileName = Just (sourceName pos),
-        issueKind = mkKind "switchFallthrough",
-        issueSeverity = ISStyle,
-        issueConfidence = ICPossible,
-        issueContext = []
-
-    }
-
-    emitLast pos = emitIssue $ Issue {
-        issueTitle = "last 'case' block without 'break'",
-        issueMessage = "This 'case' block is the last one and contains no "
-                    ++ "'break'. This doesn't affect the behavior in any way, "
-                    ++ "but if another 'case' is going to be added at the end, "
-                    ++ "care must be taken to avoid unintentional fallthrough.",
-        issueLineNumber = Just (sourceLine pos),
-        issueFunctionName = Nothing,
-        issueFileName = Just (sourceName pos),
-        issueKind = mkKind "switchLastFallthrough",
-        issueSeverity = ISMayHarm,
-        issueConfidence = ICSure,
-        issueContext = []
-    }

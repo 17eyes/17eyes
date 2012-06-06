@@ -2,10 +2,10 @@ import Data.List
 import Data.Char(toUpper)
 import TestHelper
 
-tests = map (assertIssue . atLine kind) (markerLines "UNREACHABLE" thisSource)
-     ++ map (assertNoIssue . atLine kind) (markerLines "NORMAL" thisSource)
+tests = map (assertIssue . atLine kind_id) (markerLines "UNREACHABLE" thisSource)
+     ++ map (assertNoIssue . atLine kind_id) (markerLines "NORMAL" thisSource)
  where
-    kind = IssueKind "Lang.Php.Ast.Analysis.Reachability" "unreachableCode"
+    kind_id = "unreachableCode"
 
 ================================= BEGIN TEST =================================
 <?php

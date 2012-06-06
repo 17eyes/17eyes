@@ -2,12 +2,10 @@ import TestHelper
 
 tests = checkFor "switchFallthrough" ++ checkFor "switchLastFallthrough"
 
-checkFor name = map (assertIssue . atLine (mkKind name))
+checkFor name = map (assertIssue . atLine name)
                     (markerLines ("__" ++ name ++ "__") thisSource)
-             ++ map (assertNoIssue . atLine (mkKind name))
+             ++ map (assertNoIssue . atLine name)
                     (markerLines ("__no_" ++ name ++ "__") thisSource)
-
-mkKind = IssueKind "Lang.Php.Ast.Analysis.Reachability"
 
 ================================= BEGIN TEST =================================
 <?php
