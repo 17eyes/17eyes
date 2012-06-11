@@ -19,7 +19,7 @@ main = do
 
 isDelimiter :: String -> Bool
 isDelimiter = (=~ regex)
- where regex = "^\\s*=+\\s*BEGIN TEST\\s*=+\\s*$"
+ where regex = "^[ ]*=+[ ]*BEGIN TEST[ ]*=+[ ]*$"
 
 otherDefs = [
 	"(assertIssue, assertNoIssue) = createIssueAsserts thisSource"
