@@ -1,6 +1,6 @@
 import TestHelper
 
-tests = assertIssue (IssueKind "CharAnalysis" "tabsVsSpaces")
+tests = assertIssue "tabsVsSpaces"
 
 ================================= BEGIN TEST =================================
 <?php

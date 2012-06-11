@@ -1,4 +1,4 @@
-{-# LANGUAGE Rank2Types, ImpredicativeTypes #-}
+{-# LANGUAGE Rank2Types, ImpredicativeTypes, FlexibleInstances #-}
 
 -- | This module provides helper functions to the .hutest tests. All tests
 -- can use 'assertIssue' and 'assertNoIssue' assertions predefined using
@@ -25,13 +25,16 @@ import Lang.Php.Ast
 import Pipeline
 import Common
 
+import qualified Issue
+import Issue(Issue)
+
 class IssueQuery a where
     iqMatches :: a -> Issue -> Bool -- | does issue match this query
     iqRequirements :: a -> [String] -- | helpful messages emitted in case of error
 
-instance IssueQuery IssueKind where
-    iqMatches ik issue = ik == issueKind issue
-    iqRequirements ik = ["issueKind is equal to " ++ show ik]
+instance IssueQuery [Char] where
+    iqMatches ikid issue = ikid == Issue.issueKindId issue
+    iqRequirements ik = ["issue's kind Id is `" ++ ik ++ "'"]
 
 type IssueAssertion = IssueQuery a => a -> Assertion
 
@@ -40,7 +43,7 @@ atLine q x = MkLineQuery x q -- handy alias
 
 instance IssueQuery aq => IssueQuery (LineQuery aq) where
     iqMatches (MkLineQuery line q) issue =
-        (issueLineNumber issue == Just line) && (iqMatches q issue)
+        (Issue.issueLineNumber issue == Just line) && (iqMatches q issue)
 
     iqRequirements (MkLineQuery line q) =
         ("issue was found at line " ++ show line):(iqRequirements q)

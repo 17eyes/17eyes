@@ -10,6 +10,10 @@ import Lang.Php.Ast.Analysis
 import qualified CharAnalysis
 import Common
 
+import qualified Kinds
+import qualified Issue
+import Issue(Issue(..))
+
 -- | Perform all file-level analyses.
 analyzeFile :: FilePath -> String -> [Issue]
 analyzeFile file_name source =
@@ -22,17 +26,11 @@ parseOnly :: FilePath -> String -> Either [Issue] Ast
 parseOnly file_name source =
     case runParser (parse :: Parser Ast) () file_name source of
         (Right ast) -> Right ast
-        (Left err) -> Left $ [Issue {
-            issueTitle = "parse error",
-            issueMessage = show err,
-            issueFileName = Just file_name,
-            issueFunctionName = Nothing,
-            issueLineNumber = Just $ sourceLine $ errorPos err,
-            issueKind = IssueKind "Pipeline" "parseError",
-            issueSeverity = ISCritical,
-            issueConfidence = ICLikely,
-            issueContext = map messageString (errorMessages err)
-        }]
+        (Left err) -> Left $ [Issue Kinds.parseError
+                                    (Just file_name)
+                                    (Just (sourceLine $ errorPos err))
+                                    (map messageString (errorMessages err))
+                                    (show err)]
 
 astAnalyses :: Ast -> [Issue]
 astAnalyses ast = concatMap (runAstAnalysis ast) allAstAnalyses

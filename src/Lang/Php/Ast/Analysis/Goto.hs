@@ -8,6 +8,9 @@ import Control.Monad.State(get,put,modify)
 import Lang.Php.Ast hiding (get,put)
 import Lang.Php.Ast.Traversal
 
+import qualified Kinds
+import qualified Issue
+
 allAnalyses = mkAnalyses detectBackwardGoto []
            ++ mkAnalyses detectBadLabels ()
            ++ mkAnalyses detectLoopJump ()
@@ -18,8 +21,6 @@ data Entry = ELabel SourcePos String
            | EGoto SourcePos String
            | ELoop [Entry]
     deriving Show
-
-mkKind = IssueKind "Lang.Php.Analysis.Goto"
 
 mkAnalyses :: GotoAnalysis st -> st -> [AstAnalysis]
 mkAnalyses f init = [top_level, func]
@@ -41,22 +42,8 @@ detectBackwardGoto = mapM_ $ \entry -> case entry of
     (EGoto pos lab) -> do
         past <- get
         if lab `elem` past
-          then emitIssue $ Issue {
-            issueTitle = "goto instead of structural loop",
-            issueMessage = msg,
-            issueFileName = Just (sourceName pos),
-            issueFunctionName = Nothing, -- FIXME
-            issueLineNumber = Just (sourceLine pos),
-            issueKind = mkKind "detectBackwardGoto",
-            issueSeverity = ISStyle,
-            issueConfidence = ICLikely,
-            issueContext = [lab]
-          }
+          then withSourcePos pos $ emitIssue Kinds.backwardGoto [lab] ()
           else return ()
- where
-    msg = "This goto statement jumps backwards. Although this is correct, "
-       ++ "such control flow may sometimes be not very obvious and would "
-       ++ "be better expressed as a loop (while or do-while)."
 
 -- check for missing or redundant goto labels
 
@@ -66,34 +53,10 @@ detectBadLabels es = do
     let labs = allLabels es
     let missing_lab = filter (\(x,_) -> maybe True (const False) $ lookup x labs) gotos
     let redundant_lab = filter (\(x,_) -> maybe True (const False) $ lookup x gotos) labs
-    forM_ missing_lab $ \(lab,pos) -> emitIssue $ Issue {
-        issueTitle = "goto to a missing label " ++ show lab,
-        issueMessage = msg_missing,
-        issueFileName = Just (sourceName pos),
-        issueFunctionName = Nothing, -- FIXME
-        issueLineNumber = Just (sourceLine pos),
-        issueKind = mkKind "detectBadLabels/missing",
-        issueSeverity = ISCritical,
-        issueConfidence = ICSure,
-        issueContext = [lab]
-    }
-    forM_ redundant_lab $ \(lab,pos) -> emitIssue $ Issue {
-        issueTitle = "unused label " ++ show lab,
-        issueMessage = msg_redundant,
-        issueFileName = Just (sourceName pos),
-        issueFunctionName = Nothing, -- FIXME
-        issueLineNumber = Just (sourceLine pos),
-        issueKind = mkKind "detectBadLabels/redundant",
-        issueSeverity = ISStyle,
-        issueConfidence = ICSure,
-        issueContext = [lab]
-    }
-  where
-    msg_redundant = "This label was declared but there is not goto statement "
-                 ++ "referencing it. This may indicate a possible problem "
-                 ++ "(a typo maybe?)."
-    msg_missing = "This goto statement references a nonexistent label. This "
-                 ++ "will trigger a runtime error when executed."
+    forM_ missing_lab $ \(lab,pos) ->
+        withSourcePos pos $ emitIssue Kinds.badLabelsMissing [lab] lab
+    forM_ redundant_lab $ \(lab,pos) ->
+        withSourcePos pos $ emitIssue Kinds.badLabelsRedundant [lab] lab
 
 allGotos :: [Entry] -> [(String, SourcePos)]
 allGotos = concatMap $ \x -> case x of
@@ -115,25 +78,10 @@ detectLoopJump = mapM_ (check []) . window
     check :: [String] -> ([Entry], Entry, [Entry]) -> TraverseState () ()
     check ctx (pre, EGoto pos lab, post) = do
         if lab `elem` (ctx ++ inLoops pre ++ inLoops post)
-         then emit pos lab
+         then withSourcePos pos $ emitIssue Kinds.loopGoto [lab] ()
          else return ()
     check ctx (pre, ELabel _ _, post) = return ()
     check ctx (pre, ELoop xs, post) = mapM_ (check (ctx ++ inLoops pre ++ inLoops post)) $ window xs
-
-    emit pos lab = emitIssue $ Issue {
-        issueTitle = "goto to an inside of a loop",
-        issueMessage = msg,
-        issueFileName = Just (sourceName pos),
-        issueFunctionName = Nothing, -- FIXME
-        issueLineNumber = Just (sourceLine pos),
-        issueKind = mkKind "detectLoopJump",
-        issueSeverity = ISCritical,
-        issueConfidence = ICSure,
-        issueContext = [lab]
-    }
-
-    msg = "This goto statement jumps to an inside of a loop. This is "
-       ++ "prohibited in PHP and will result in a runtime error."
 
 inLoops :: [Entry] -> [String]
 inLoops = concatMap $ \x -> case x of

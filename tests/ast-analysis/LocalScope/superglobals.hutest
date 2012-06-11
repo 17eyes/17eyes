@@ -1,6 +1,6 @@
 import TestHelper
 
-tests = assertNoIssue (IssueKind "Lang.Php.Ast.Analysis.LocalScope" "undeclaredVariable")
+tests = assertNoIssue "undeclaredVariable"
 
 ================================= BEGIN TEST =================================
 <?php

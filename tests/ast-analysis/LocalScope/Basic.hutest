@@ -1,9 +1,9 @@
 import TestHelper
 
-tests = map (assertIssue . atLine kind) (markerLines "__UNDECLARED__" thisSource)
-     ++ map (assertNoIssue . atLine kind) (markerLines "__DECLARED__" thisSource)
+tests = map (assertIssue . atLine kind_id) (markerLines "__UNDECLARED__" thisSource)
+     ++ map (assertNoIssue . atLine kind_id) (markerLines "__DECLARED__" thisSource)
  where
-    kind = IssueKind "Lang.Php.Ast.Analysis.LocalScope" "undeclaredVariable"
+    kind_id = "undeclaredVariable"
 
 ================================= BEGIN TEST =================================
 <?php

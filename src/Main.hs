@@ -7,6 +7,7 @@ import Lang.Php.Ast.Traversal
 import Lang.Php.Ast.Analysis
 import Codebase
 import Pipeline
+import qualified Issue
 
 data Options = Options {
     optCodebaseDir :: String,
@@ -45,11 +46,11 @@ astAnalyses opts = do
     let fn = optInputFile opts
     issues <- analyzeFile fn <$> readFile fn
     forM_ issues $ \is -> do
-        let loc = (maybe "?" id $ issueFileName is) ++ ":" ++
-                  (maybe "?" show $ issueLineNumber is) ++ " "
-        putStrLn (loc ++ issueTitle is)
+        let loc = (maybe "?" id $ Issue.issueFileName is) ++ ":" ++
+                  (maybe "?" show $ Issue.issueLineNumber is) ++ " "
+        putStrLn (loc ++ Issue.issueTitle is)
         putStrLn (take 78 $ repeat '-')
-        putStrLn (issueMessage is)
+        putStrLn (Issue.issueMessage is)
         putStrLn ""
 
 main :: IO ()

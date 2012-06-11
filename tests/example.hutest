@@ -6,7 +6,7 @@ import TestHelper
 
 -- Top-level value 'tests' is a HUnit Testable that will be executed by the
 -- framework.
-tests = assertIssue $ (IssueKind "Pipeline" "parseError") `atLine` 21
+tests = assertIssue $ "parseError" `atLine` 21
 
 -- The script tools/hutest2hs converts this file to Haskell sources by putting
 -- all file contents to a top-level String called 'thisSource'. It can be
