@@ -1,5 +1,9 @@
 module Kinds where
 
+-- | All issue kinds should be declared here. You should use either `newKind'
+-- or `newKind_' for this purpose. In the future, we may decide to generate
+-- this module from some kind of issue kind database.
+
 import Issue
 
 parseError = newKind "Pipeline" "parseError"

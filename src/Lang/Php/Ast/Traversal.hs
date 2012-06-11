@@ -57,6 +57,9 @@ traverse f x = do
 getSourceLine :: TraverseState s Int
 getSourceLine = MkTS $ MS.get >>= return . esSourceLine
 
+-- | Constructs and emits an issue based on kind, context and payload. Source
+-- name and line are taken from the 'current source position' values in the
+-- monadic state (`esSourceFile' and `esSourceLine').
 emitIssue :: (Issue.Kind a) -> [String] -> a -> TraverseState s ()
 emitIssue kind context payload = do
     es <- MkTS $ MS.get
@@ -65,6 +68,8 @@ emitIssue kind context payload = do
     MkTS $ MS.put $ es { esIssues = issue:(esIssues es) }
     return ()
 
+-- | Execute a given action in the `TraverseState' monad with a different
+-- 'current source position' value. Useful in conjunction with `emitIssue'.
 withSourcePos :: SourcePos -> TraverseState s a -> TraverseState s a
 withSourcePos pos action = do
     es <- MkTS $ MS.get
