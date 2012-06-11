@@ -304,19 +304,20 @@ data Foreach = Foreach {
 data If = If {
   ifSyntax     :: StmtSyntax,
   ifAndIfelses :: [IfBlock],
-  ifElse       :: Maybe BlockOrStmt}
+  ifElse       :: Maybe (BlockOrStmt, WS)}
   deriving (Eq, Show, Typeable, Data)
 
 data IfBlock = IfBlock {
-  ifBlockExpr  :: Expr,
-  ifBlockBlock :: BlockOrStmt}
+  ifBlockExpr  :: WSCap Expr,
+  ifBlockWS    :: WS,
+  ifBlockBlock :: (BlockOrStmt, WS)}
   deriving (Eq, Show, Typeable, Data)
 
 data Switch = Switch {
   switchSyntax  :: StmtSyntax,
   switchExpr    :: WSCap2 Expr,
   switchWS      :: WS,
-  switchTL      :: Maybe TopLevel, -- allows for '?>' before first case
+  switchTL      :: Maybe (WSCap TopLevel), -- allows for '?>' before first case
   switchCases   :: [StoredPos Case]
  } deriving (Eq, Show, Typeable, Data)
 
@@ -343,7 +344,7 @@ data TopLevel = TopLevel String (Maybe (Either (WSCap Expr, StmtEnd) String))
 data StmtEnd = StmtEndSemi | StmtEndClose TopLevel
   deriving (Eq, Show, Typeable, Data)
 
-type BlockOrStmt = Either (StoredPos Stmt) (Block Stmt)
+type BlockOrStmt = Either (WSCap (StoredPos Stmt)) (WSCap (Block Stmt))
 
 ---
 --- makeBinary

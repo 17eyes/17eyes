@@ -67,8 +67,8 @@ minBreakLevelIC ic = foldM f 0 (IC.toList2 ic)
           "This may be an indicator of a bug or some sort of redundancy."
 
 minBreakLevelBlockOrStmt :: BlockOrStmt -> TraverseState () BreakLevel
-minBreakLevelBlockOrStmt (Left (StoredPos _ stmt)) = minBreakLevel stmt
-minBreakLevelBlockOrStmt (Right (Block stmts)) = minBreakLevelIC stmts
+minBreakLevelBlockOrStmt (Left (WSCap _ (StoredPos _ stmt) _)) = minBreakLevel stmt
+minBreakLevelBlockOrStmt (Right (WSCap _ (Block stmts) _)) = minBreakLevelIC stmts
 
 -- | Calculate the break level for statements. Since some statements are
 -- compound (can contain whole statements blocks), this also needs to happen
@@ -85,10 +85,10 @@ minBreakLevel (StmtBreak _ _ _) = return 1 -- safe, this argument cannot be < 1
 minBreakLevel (StmtContinue x y z) = minBreakLevel (StmtBreak x y z)
 
 minBreakLevel (StmtIf (If _ ifblocks ifelse)) = do
-    let xs = map ifBlockBlock ifblocks
+    let xs = map fst (map ifBlockBlock ifblocks)
     ifblock_levels <- mapM minBreakLevelBlockOrStmt xs
     ifelse_level <- case ifelse of
-        Just bos -> minBreakLevelBlockOrStmt bos
+        Just (bos, _) -> minBreakLevelBlockOrStmt bos
         Nothing  -> return 0
     return (foldl1 min (ifelse_level:ifblock_levels))
 

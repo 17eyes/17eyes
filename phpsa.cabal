@@ -10,4 +10,4 @@ executable phpsa
                   containers, derive, directory, filepath, mtl, parsec == 3.*,
                   process, syb
   ghc-options:    -threaded -O2 -fspec-constr-count=32 -rtsopts
-                  -with-rtsopts=-K32M 
+                  -with-rtsopts=-K64M 

@@ -146,10 +146,11 @@ instance EntryExtractable a => EntryExtractable (Maybe a) where
 -- non-looping control flow statments: if, switch, try..catch
 
 instance EntryExtractable IfBlock where
-    extract (IfBlock _ b) = extract b
+    extract (IfBlock _ _ (b, _)) = extract b
 
 instance EntryExtractable If where
-    extract (If _ bs el) = extract bs ++ extract el
+    extract (If _ bs Nothing) = extract bs
+    extract (If _ bs (Just (el, _))) = extract bs ++ extract el
 
 instance EntryExtractable Switch where
     extract (Switch _ _ _ _ cases) = do
