@@ -9,10 +9,16 @@ HUTESTFILES=$(shell find . -type f -name "*.hutest")
 HUTESTFILESS=$(HUTESTFILES:=.hutesttest)
 HUNIT_LOG=".hunit.out"
 
-.PHONY: test clean summary failed
+.PHONY: test test_parser_only test_hunit_only clean failed summary
 
-test: clean stamp $(TESTFILESS) summary
-test_hunit_only: clean stamp $(HUTESTFILESS) summary
+test: clean stamp $(TESTFILESS) $(HUTESTFILESS)
+	@$(MAKE) -s summary
+
+test_hunit_only: clean stamp $(HUTESTFILESS)
+	@$(MAKE) -s summary
+
+test_parser_only: clean stamp $(TESTFILESS)
+	@$(MAKE) -s summary
 
 %.phptest:
 	@(cat $(@:.phptest=) | phpsa --dump-ast > /dev/null 2> /dev/null && echo "$@ : OK" || echo "$@ : FAIL") >> $(OUTLOG)
