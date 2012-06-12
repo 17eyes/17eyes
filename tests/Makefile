@@ -44,3 +44,7 @@ summary:
 
 failed:
 	@grep " : FAIL" $(OUTLOG) | cut -d " " -f 1 | sed -e "s/\.phptest$$//g"
+
+# show targets
+help:
+	@grep "^\.PHONY" Makefile | tr " " "\n" | grep -v PHONY

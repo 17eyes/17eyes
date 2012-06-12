@@ -65,7 +65,7 @@ createIssueAsserts source = (assertIssue, assertNoIssue)
 -- | True, if a given line is the '=== BEGIN CODE ===' delimiter.
 isDelimiter :: String -> Bool
 isDelimiter = (=~ regex)
- where regex = "^\\s*=+\\s*BEGIN TEST\\s*=+\\s*$"
+ where regex = "^[ ]*=+[ ]*BEGIN TEST[ ]*=+[ ]*$"
 
 -- | Returns a list of all line numbers in the input that contain a given
 -- string and are in the '=== BEGIN CODE ===' section.
