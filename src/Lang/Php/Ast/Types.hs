@@ -344,7 +344,7 @@ data TopLevel = TopLevel String (Maybe (Either (WSCap Expr, StmtEnd) String))
 data StmtEnd = StmtEndSemi | StmtEndClose TopLevel
   deriving (Eq, Show, Typeable, Data)
 
-type BlockOrStmt = Either (WSCap (StoredPos Stmt)) (WSCap (Block Stmt))
+type BlockOrStmt = WSCap (Either (StoredPos Stmt) (Block Stmt))
 
 ---
 --- makeBinary

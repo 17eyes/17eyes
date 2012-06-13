@@ -113,28 +113,26 @@ instance Unparse DoWhile where
     unparse block, tokWhile, unparse w1, tokLParen, unparse w2, unparse expr,
     unparse w3, tokRParen, unparse w4, unparse end]
 
--- FIXME: for-endfor syntax does not store all whitespace in the AST
 instance Unparse For where
   unparse (For (WSCap w1 (inits, conds, incrs) w2) block StdSyntax) = concat [
     tokFor, unparse w1, tokLParen,
     intercalate tokSemi $ map unparse [inits, conds, incrs],
     tokRParen, unparse w2, unparse block]
-  unparse (For (WSCap w1 (inits, conds, incrs) w2) (Right b) AltSyntax) =
+  unparse (For (WSCap w1 (inits, conds, incrs) w2) block AltSyntax) =
     concat [tokFor, unparse w1, tokLParen,
         intercalate tokSemi $ map unparse [inits, conds, incrs],
-        tokRParen, unparse w2, tokColon, " ", unparse b, tokEndfor]
+        tokRParen, unparse w2, tokColon, " ", unparse block, tokEndfor]
 
 instance Unparse ForPart where
   unparse (ForPart e) = either unparse (intercalate tokComma . map unparse) e
 
--- FIXME: foreach-endforeach syntax does not store all whitespace in the AST
 instance Unparse Foreach where
   unparse (Foreach (WSCap w1 (expr, dubArrow) w2) block StdSyntax) = concat [tokForeach,
     unparse w1, tokLParen, unparse expr, tokAs, unparse dubArrow, tokRParen,
     unparse w2, unparse block]
-  unparse (Foreach (WSCap w1 (expr, dubArrow) w2) (Right b) AltSyntax) =
+  unparse (Foreach (WSCap w1 (expr, dubArrow) w2) block AltSyntax) =
     concat [tokForeach, unparse w1, tokLParen, unparse expr, tokAs, unparse dubArrow,
-            tokRParen, unparse w2, tokColon, " ", unparse b, tokEndforeach]
+            tokRParen, unparse w2, tokColon, " ", unparse block, tokEndforeach]
 
 instance Unparse Func where
   unparse (Func w1 ref name (WSCap w2 args w3) block) = concat [tokFunction,
@@ -189,9 +187,9 @@ instance Unparse While where
     concat [tokWhile, unparse w1, tokLParen, unparse expr, tokRParen,
             unparse w2, unparse block]
   -- FIXME: while-endwhile syntax does not store all whitespace in the AST
-  unparse (While (WSCap w1 expr w2) (Right b) AltSyntax) =
+  unparse (While (WSCap w1 expr w2) block AltSyntax) =
     concat [tokWhile, unparse w1, tokLParen, unparse expr, tokRParen,
-            unparse w2, tokColon, unparse b, " ", tokEndwhile, " "]
+            unparse w2, tokColon, unparse block, " ", tokEndwhile, " "]
 
 
 stmtListParser :: Parser StmtList
@@ -237,7 +235,7 @@ instance Parse (If, WS) where
     syn <- option StdSyntax ((lookAhead tokColonP) >> return AltSyntax)
     block <- blockP syn
     elseifs <- many (elseifP syn)
-    elseBlock <- optionMaybe (tokElseP >> discardWS >> (blockP syn)) -- XXSHM
+    elseBlock <- optionMaybe (tokElseP >> blockP syn) -- XXSHM
     if syn == AltSyntax then tokEndifP >> return () else return ()
     wsr <- parse
     return (If syn ((IfBlock e wsl block):elseifs) elseBlock, wsr)
@@ -264,7 +262,7 @@ instance Parse (If, WS) where
         wsr <- parse 
         ws <- parse   
         lookAhead (tokEndifP <|> tokElseP <|> tokElseifP)
-        return ((Right $ WSCap wsl (Block stmts) wsr), ws)
+        return (WSCap wsl (Right $ Block stmts) wsr, ws)
 
 tryParser :: Parser (Stmt, WS)
 tryParser = tokTryP >> do
@@ -398,10 +396,10 @@ instance Parse (For, WS) where
     (do -- try parsing for-endfor combination
         wsl <- parse <* tokColonP
         stmts <- stmtListParser
-        wsp <- parse
+        wsr <- parse
         tokEndforP
         ws <- parse
-        return (For h (Right $ WSCap wsl (Block stmts) wsp) AltSyntax, ws)
+        return (For h (WSCap wsl (Right $ Block stmts) wsr) AltSyntax, ws)
      ) <|> (do
         -- standard for(...) {...}
         (block, ws) <- parse
@@ -427,10 +425,10 @@ instance Parse (Foreach, WS) where
     parseAltSyntax h = do
         wsl <- tokColonP >> parse
         stmts <- stmtListParser
-        wsp <- parse
+        wsr <- parse
         tokEndforeachP
         ws <- parse
-        return (Foreach h (Right $ WSCap wsl (Block stmts) wsp) AltSyntax, ws)
+        return (Foreach h (WSCap wsl (Right $ Block stmts) wsr) AltSyntax, ws)
 
     parseStdSyntax h = do
         (block, ws) <- parse
@@ -479,10 +477,10 @@ instance Parse (While, WS) where
     (do -- try parse while-endwhile combination
         wsl <- tokColonP >> parse
         stmts <- stmtListParser
-        wsp <- parse
+        wsr <- parse
         tokEndwhileP
         ws <- parse
-        return (While e (Right $ WSCap wsl (Block stmts) wsp) AltSyntax, ws)
+        return (While e (WSCap wsl (Right $ Block stmts) wsr) AltSyntax, ws)
      ) <|> (do
         -- otherwise revert to standard while(...) {...}
         (block, ws) <- parse

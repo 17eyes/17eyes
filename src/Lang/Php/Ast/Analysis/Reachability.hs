@@ -67,8 +67,8 @@ minBreakLevelIC ic = foldM f 0 (IC.toList2 ic)
           "This may be an indicator of a bug or some sort of redundancy."
 
 minBreakLevelBlockOrStmt :: BlockOrStmt -> TraverseState () BreakLevel
-minBreakLevelBlockOrStmt (Left (WSCap _ (StoredPos _ stmt) _)) = minBreakLevel stmt
-minBreakLevelBlockOrStmt (Right (WSCap _ (Block stmts) _)) = minBreakLevelIC stmts
+minBreakLevelBlockOrStmt (WSCap _ (Left (StoredPos _ stmt)) _) = minBreakLevel stmt
+minBreakLevelBlockOrStmt (WSCap _ (Right (Block stmts)) _) = minBreakLevelIC stmts
 
 -- | Calculate the break level for statements. Since some statements are
 -- compound (can contain whole statements blocks), this also needs to happen
