@@ -308,7 +308,7 @@ data If = If {
   deriving (Eq, Show, Typeable, Data)
 
 data IfBlock = IfBlock {
-  ifBlockExpr  :: WSCap Expr,
+  ifBlockExpr  :: WSCap (WS, Expr),
   ifBlockWS    :: WS,
   ifBlockBlock :: (BlockOrStmt, WS)}
   deriving (Eq, Show, Typeable, Data)

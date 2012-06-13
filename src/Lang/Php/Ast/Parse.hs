@@ -186,7 +186,7 @@ instance Unparse While where
   unparse (While (WSCap w1 expr w2) block StdSyntax) =
     concat [tokWhile, unparse w1, tokLParen, unparse expr, tokRParen,
             unparse w2, unparse block]
-  -- FIXME: while-endwhile syntax does not store all whitespace in the AST
+  
   unparse (While (WSCap w1 expr w2) block AltSyntax) =
     concat [tokWhile, unparse w1, tokLParen, unparse expr, tokRParen,
             unparse w2, tokColon, unparse block, " ", tokEndwhile, " "]
@@ -235,7 +235,7 @@ instance Parse (If, WS) where
     syn <- option StdSyntax ((lookAhead tokColonP) >> return AltSyntax)
     block <- blockP syn
     elseifs <- many (elseifP syn)
-    elseBlock <- optionMaybe (tokElseP >> blockP syn) -- XXSHM
+    elseBlock <- optionMaybe (tokElseP >> blockP syn)
     if syn == AltSyntax then tokEndifP >> return () else return ()
     wsr <- parse
     return (If syn ((IfBlock e wsl block):elseifs) elseBlock, wsr)
@@ -246,12 +246,12 @@ instance Parse (If, WS) where
         (block, wsr) <- blockP syn
         return (IfBlock e wsl (block, wsr))
 
-    parenExprP :: Parser ((WSCap Expr), WS)
+    parenExprP :: Parser ((WSCap (WS, Expr)), WS)
     parenExprP = do
-        wsl <- parse <* tokLParenP <* discardWS -- XXXSHM
+        (wsbp, wsap) <- liftM2 (,) parse (tokLParenP >> parse)
         (e, wsr) <- parse :: Parser (Expr, WS)
         ws <- tokRParenP >> parse
-        return $ (WSCap wsl e wsr, ws)
+        return $ (WSCap wsbp (wsap, e) wsr, ws)
 
     blockP :: StmtSyntax -> Parser (BlockOrStmt, WS)
     blockP StdSyntax = parse :: Parser (BlockOrStmt, WS)
@@ -470,7 +470,6 @@ instance Parse Case where
     ((tokDefaultP >> Left <$> parse) <|> (tokCaseP >> Right <$> parse))
     ((tokColonP <|> tokSemiP) >> stmtListParser)
 
--- FIXME: while-endwhile syntax does not store all whitespace in the AST
 instance Parse (While, WS) where
   parse = tokWhileP >> do
     e <- liftM3 WSCap parse (tokLParenP >> parse <* tokRParenP) parse
