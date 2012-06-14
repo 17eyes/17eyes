@@ -1,7 +1,8 @@
 TESTID=$(shell date +%Y%m%d%H%M%S)
-TESTFILES=$(shell find . -type f -name "*.php*")
-TESTFILESS=$(TESTFILES:=.phptest)
 OUTLOG=.tests.out
+
+PARSERTESTFILES=$(shell find . -type f -name "*.php*")
+PARSERTESTFILESS=$(PARSERTESTFILES:=.parser)
 
 # HUnit-enabled tests: They can be executed separately using 'make test_hunit_only'
 # and are run using ghc after preprocessing with tools/hutest2hs.
@@ -9,19 +10,29 @@ HUTESTFILES=$(shell find . -type f -name "*.hutest")
 HUTESTFILESS=$(HUTESTFILES:=.hutesttest)
 HUNIT_LOG=".hunit.out"
 
-.PHONY: test test_parser_only test_hunit_only clean failed summary
+# Unparse tests
+UNPARSERTESTFILES=$(shell find . -type f -name "*.php*")
+UNPARSERTESTFILESS=$(UNPARSERTESTFILES:=.unparser)
 
-test: clean stamp $(TESTFILESS) $(HUTESTFILESS)
+.PHONY: test test_parser_only test_hunit_only test_unparser_only clean failed summary
+
+test: clean stamp $(PARSERTESTFILESS) $(HUTESTFILESS) $(UNPARSERTESTFILESS)
 	@$(MAKE) -s summary
 
 test_hunit_only: clean stamp $(HUTESTFILESS)
 	@$(MAKE) -s summary
 
-test_parser_only: clean stamp $(TESTFILESS)
+test_parser_only: clean stamp $(PARSERTESTFILESS)
 	@$(MAKE) -s summary
 
-%.phptest:
-	@(cat $(@:.phptest=) | phpsa --dump-ast > /dev/null 2> /dev/null && echo "$@ : OK" || echo "$@ : FAIL") >> $(OUTLOG)
+test_unparser_only: clean stamp $(UNPARSERTESTFILESS)
+	@$(MAKE) -s summary
+
+%.parser:
+	@(cat $(@:.parser=) | phpsa --dump-ast > /dev/null 2> /dev/null && echo "$@ : OK" || echo "$@ : FAIL") >> $(OUTLOG)
+
+%.unparser:
+	@(cat $(@:.unparser=) | phpsa --unparse 2> /dev/null | diff -B -q $(@:.unparser=) > /dev/null - && echo "$@ : OK" || echo "$@ : FAIL") >> $(OUTLOG)
 
 %.hutesttest:
 	@echo "====== $@" >> $(HUNIT_LOG)
@@ -43,7 +54,7 @@ summary:
 	@echo "Failed: "`grep -c " : FAIL" $(OUTLOG)`
 
 failed:
-	@grep " : FAIL" $(OUTLOG) | cut -d " " -f 1 | sed -e "s/\.phptest$$//g"
+	@grep " : FAIL" $(OUTLOG) | cut -d " " -f 1 | sed -e "s/\.parser$$//g"
 
 # show targets
 help:
