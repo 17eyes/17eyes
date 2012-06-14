@@ -1,10 +1,14 @@
 import System.Environment(getArgs)
 import System.IO
 import System.Console.GetOpt
+import Compiler.Hoopl(showGraph)
 
 import Lang.Php.Ast
 import Lang.Php.Ast.Traversal
 import Lang.Php.Ast.Analysis
+
+import Lang.Php.Cfg.Generation
+
 import Codebase
 import Pipeline
 import qualified Issue
@@ -23,6 +27,8 @@ defaultOptions = Options {
 
 options :: [OptDescr (Options -> Options)]
 options = [
+    Option [] ["dump-cfg"] (NoArg $ \x -> x { optAction = dumpCfg })
+           "parse from the standard input and print out the CFG",
     Option [] ["dump-ast"] (NoArg $ \x -> x { optAction = dumpAst })
            "just parse from standard input and dump the AST",
     Option [] ["unparse"]  (NoArg $ \x -> x { optAction = parseUnparse })
@@ -40,6 +46,11 @@ parseString name input = case runParser (parse <* eof) () name input of
 
 (dumpAst, parseUnparse) = (work show, work unparse)
  where work f _ = getContents >>= parseString "<stdin>" >>= putStrLn . f
+
+dumpCfg _ = do
+    ast <- parseString "<stdin>" =<< getContents
+    let cfg = runGMonad (toCfg ast)
+    putStrLn (showGraph show cfg)
 
 astAnalyses :: Options -> IO ()
 astAnalyses opts = do
