@@ -144,16 +144,17 @@ controlStructs = AstAnalysis () analysis
       maybe (return x) (\(block, _) -> checkBlock x $ wsCapMain block)
         elseBlock >>
       -- ws
-      mapM (\(IfBlock (WSCap _ _ ws) _ _) -> checkWS x ws) blocks >>
+      mapM (\(IfBlock _ ws _) -> checkWS x ws) blocks >>
       maybe (return x) (\(WSCap ws _ _, _) -> checkWS x ws) elseBlock
 
     -- switch - check for the default case, ws
     analysis x@(StmtSwitch (Switch _ (WSCap _ _ ws) _ _ cases)) =
       checkWS x ws >>
-      if (fst $ partitionEithers (map (\(StoredPos _ (Case c _)) -> c) cases))
-        /= [] then
-        return x else (emitIssue Kinds.styleControlStructsWS
-          [unparse x] ()) >> return x
+      if null (fst $ partitionEithers (map (\(StoredPos _ (Case c _)) -> c)
+        cases))
+        then (emitIssue Kinds.styleControlStructsSwitchDefault [unparse x] ())
+          >> return x
+        else return x
 
     analysis x = return x
 

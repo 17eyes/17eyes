@@ -24,7 +24,7 @@ lineLengthInconsistent = newKind_ "CharAnalysis" "lineLengthInconsistent"
 lineLength = newKind "CharAnalysis" "lineLength"
   "line too long" Style Possible $
   \lim ->
-     "Almost all lines in this file are shorter than " ++ lim ++
+     "Almost all lines in this file are shorter than " ++ lim ++ " " ++
      "characters, but this one is longer. It is often desirable to " ++
      "maintain a consistent line length convention."
 
@@ -112,17 +112,17 @@ styleShortTags = newKind_ "Lang.Php.Ast.Analysis.Style" "styleShortTags"
   \recommended to use long tags, since they're supported by all PHP versions."
 
 styleControlStructs = newKind_ "Lang.Php.Ast.Analysis.Style" "styleControlStructs"
-  "blocks in the control statements should be bounded by parenthesis" Style Sure
+  "blocks in the control statements should be sounded by parenthesis" Style Sure
   "Lack of the parenthesis may lead to logic errors when new lines are introduced. \
   \Having them also increases readability of the code. "
 
 styleControlStructsWS = newKind_ "Lang.Php.Ast.Analysis.Style" "styleControlStructsWS"
-  "control statements should have one space between the keyword and parehtesis" Style Sure
+  "control statements should have one space between the keyword and parenthesis" Style Sure
   "Control statements should have one space between the control keyword and \
   \opening parenthesis, in order to distinguish them from function calls."
 
 styleControlStructsSwitchDefault = newKind_ "Lang.Php.Ast.Analysis.Style"
   "styleControlStructsSwitchDefault"
-  "switch should always include default case" Style Sure
-  "Switch should always include default case otherwise it may lead to logic \
+  "switch should always include default branch" Style Sure
+  "Switch should always include default branch otherwise it may lead to logic \
   \bugs connected with lack of a default action."
