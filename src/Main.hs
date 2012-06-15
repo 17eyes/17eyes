@@ -8,6 +8,7 @@ import Lang.Php.Ast.Traversal
 import Lang.Php.Ast.Analysis
 
 import Lang.Php.Cfg.Generation
+import Lang.Php.Cfg.Dot
 
 import Codebase
 import Pipeline
@@ -27,8 +28,9 @@ defaultOptions = Options {
 
 options :: [OptDescr (Options -> Options)]
 options = [
-    Option [] ["dump-cfg"] (NoArg $ \x -> x { optAction = dumpCfg })
-           "parse from the standard input and print out the CFG",
+    Option [] ["dot"] (NoArg $ \x -> x { optAction = dumpCfg })
+           ("parse from the standard input and output CFG representation "
+           ++ "consumable by Graphviz's `dot'."),
     Option [] ["dump-ast"] (NoArg $ \x -> x { optAction = dumpAst })
            "just parse from standard input and dump the AST",
     Option [] ["unparse"]  (NoArg $ \x -> x { optAction = parseUnparse })
@@ -50,7 +52,7 @@ parseString name input = case runParser (parse <* eof) () name input of
 dumpCfg _ = do
     ast <- parseString "<stdin>" =<< getContents
     let cfg = runGMonad (toCfg ast)
-    putStrLn (showGraph show cfg)
+    putStr (cfgToDot cfg)
 
 astAnalyses :: Options -> IO ()
 astAnalyses opts = do
