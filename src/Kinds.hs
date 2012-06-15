@@ -110,3 +110,19 @@ styleShortTags = newKind_ "Lang.Php.Ast.Analysis.Style" "styleShortTags"
   "Short tags <? and <?= might be not supported by the PHP interpreter, thus \
   \using short tags on some servers may lead to information leak. It's \
   \recommended to use long tags, since they're supported by all PHP versions."
+
+styleControlStructs = newKind_ "Lang.Php.Ast.Analysis.Style" "styleControlStructs"
+  "blocks in the control statements should be bounded by parenthesis" Style Sure
+  "Lack of the parenthesis may lead to logic errors when new lines are introduced. \
+  \Having them also increases readability of the code. "
+
+styleControlStructsWS = newKind_ "Lang.Php.Ast.Analysis.Style" "styleControlStructsWS"
+  "control statements should have one space between the keyword and parehtesis" Style Sure
+  "Control statements should have one space between the control keyword and \
+  \opening parenthesis, in order to distinguish them from function calls."
+
+styleControlStructsSwitchDefault = newKind_ "Lang.Php.Ast.Analysis.Style"
+  "styleControlStructsSwitchDefault"
+  "switch should always include default case" Style Sure
+  "Switch should always include default case otherwise it may lead to logic \
+  \bugs connected with lack of a default action."

@@ -103,7 +103,7 @@ minBreakLevel (StmtSwitch (Switch _ _ _ _ cases)) = do
     nakedCases = [x | (StoredPos _ x) <- cases]
 
 minBreakLevel (StmtWhile (While _ bs _)) = handleLoop bs
-minBreakLevel (StmtDoWhile (DoWhile wsbs _ _)) = handleLoop (wsCapMain wsbs)
+minBreakLevel (StmtDoWhile (DoWhile wsbs _ _)) = handleLoop wsbs
 minBreakLevel (StmtFor (For _ bs _)) = handleLoop bs
 minBreakLevel (StmtForeach (Foreach _ bs _)) = handleLoop bs
 

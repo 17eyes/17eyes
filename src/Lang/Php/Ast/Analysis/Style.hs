@@ -2,6 +2,7 @@ module Lang.Php.Ast.Analysis.Style(allAnalyses) where
 
 import Data.Char(isSpace)
 import Data.Generics.Aliases(mkM)
+import Data.Either(partitionEithers)
 
 import qualified Data.Intercal as IC
 import Lang.Php.Ast
@@ -17,6 +18,7 @@ allAnalyses = [
     , classDeclaration
     , functionDeclaration
     , shortTags
+    , controlStructs
  ]
 
 finishPhp :: AstAnalysis
@@ -103,3 +105,67 @@ shortTags = AstAnalysis () analysis
         else (emitIssue Kinds.styleShortTags [unparse x] ()) >> return x
 
     analysis x = return x
+
+-------------------------------------------------------------------------------
+-- XXXSHM: this analysis should be somehow ,,adaptive'' instead of forcing THE
+--         GREAT CODING STYLE!
+-------------------------------------------------------------------------------
+
+controlStructs :: AstAnalysis
+controlStructs = AstAnalysis () analysis
+ where
+    analysis :: Stmt -> TraverseState () Stmt
+
+    -- while - blocks vs. stmts, ws
+    analysis x@(StmtWhile (While (WSCap _ _ ws) block _)) =
+      (checkBlock x $ wsCapMain block) >>
+      checkWS x ws
+
+    -- for - blocks vs. stmts, ws
+    analysis x@(StmtFor(For (WSCap _ _ ws) block _)) =
+      (checkBlock x $ wsCapMain block) >>
+      checkWS x ws
+
+    -- foreach - blocks vs. stmts, ws
+    analysis x@(StmtForeach(Foreach (WSCap _ _ ws) block _)) =
+      (checkBlock x $ wsCapMain block) >>
+      checkWS x ws
+
+    -- do-while - blocks vs. stmts, ws
+    analysis x@(StmtDoWhile(DoWhile (WSCap _ block ws) _ _)) =
+      checkBlock x block >>
+      checkWS x ws
+
+    -- if - blocks vs. stmts, ws
+    analysis x@(StmtIf (If _ blocks elseBlock)) =
+      -- block
+      mapM (\(IfBlock _ _ (block, _)) -> checkBlock x $ wsCapMain block)
+        blocks >>
+      maybe (return x) (\(block, _) -> checkBlock x $ wsCapMain block)
+        elseBlock >>
+      -- ws
+      mapM (\(IfBlock (WSCap _ _ ws) _ _) -> checkWS x ws) blocks >>
+      maybe (return x) (\(WSCap ws _ _, _) -> checkWS x ws) elseBlock
+
+    -- switch - check for the default case, ws
+    analysis x@(StmtSwitch (Switch _ (WSCap _ _ ws) _ _ cases)) =
+      checkWS x ws >>
+      if (fst $ partitionEithers (map (\(StoredPos _ (Case c _)) -> c) cases))
+        /= [] then
+        return x else (emitIssue Kinds.styleControlStructsWS
+          [unparse x] ()) >> return x
+
+    analysis x = return x
+
+    -- checks if block is a real block or just a statement (which should be
+    -- considered harmful (tm) in the control structs
+    checkBlock x block =
+      case block of
+        Left _ -> (emitIssue Kinds.styleControlStructs [unparse block] ()) >>
+          return x
+        Right _ -> return x
+
+    -- checks if there's at least one character between parens and block.
+    checkWS x ws =
+        if ws /= [] then return x else (emitIssue Kinds.styleControlStructsWS
+          [unparse x] ()) >> return x

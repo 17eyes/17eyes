@@ -428,10 +428,7 @@ instance Parse (DynConst, WS) where
       return $ DynConst idents lastIdent
      where
       parseIdent :: Parser (WSCap (Either String Var))
-      parseIdent = do
-        ws1 <- parse
-        (ident, ws2) <- identifierOrVarParser
-        return $ WSCap ws1 ident ws2
+      parseIdent = liftM2 (capify) parse identifierOrVarParser
       
       identifierOrVarParser :: Parser ((Either String Var), WS)
       identifierOrVarParser =

@@ -276,7 +276,7 @@ data ClassStmt =
   deriving (Eq, Show, Typeable, Data)
 
 data DoWhile = DoWhile {
-  doWhileBlock   :: WSCap BlockOrStmt,
+  doWhileBlock   :: BlockOrStmt,
   doWhileExpr    :: WSCap2 Expr,
   doWhileStmtEnd :: StmtEnd}
   deriving (Eq, Show, Typeable, Data)
