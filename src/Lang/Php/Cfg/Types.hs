@@ -1,7 +1,7 @@
 {-# LANGUAGE GADTs, StandaloneDeriving #-}
 
 module Lang.Php.Cfg.Types(
-      Variable(..)
+      Register(..)
     , InstrPos(..)
     , Instr(..)
     , Callable(..)
@@ -11,7 +11,11 @@ module Lang.Php.Cfg.Types(
 import Data.Functor((<$>))
 import Compiler.Hoopl
 
-data Variable = VUser String | VUnique Unique deriving Show
+data Register = RVar String | RTemp Unique
+
+instance Show Register where
+  show (RVar x) = "$" ++ x
+  show (RTemp x) = "r" ++ show x
 
 data InstrPos e x = IP (Maybe (FilePath, Int)) (Instr e x) deriving Show
 
@@ -27,10 +31,14 @@ instr (IP _ x) = x
 data Instr e x where
   ILabel :: Label -> Instr C O
   IJump :: Label -> Instr O C
-  ICondJump :: Variable -> Label -> Label -> Instr O C
-  IReturn :: Maybe Variable -> Instr O C
-  ICall :: Callable -> [Variable] -> Instr O O
-  ILoad :: Variable -> Instr O O -- FIXME: this is temporary, remove when expressions are implemented
+  ICondJump :: Register -> Label -> Label -> Instr O C
+  IReturn :: Maybe Register -> Instr O C
+  ICall :: Show a => Callable Register a -> a -> Instr O O
+
+  ILoadString :: Register -> String -> Instr O O
+  ILoadNum :: Register -> String -> Instr O O -- TODO: a numeric type perhaps?
+  ILoadConst :: Register -> String -> Instr O O
+  ICopyVar :: Register -> Register -> Instr O O
 
 deriving instance Show (Instr e x)
 
@@ -44,6 +52,9 @@ instance HooplNode InstrPos where
   mkBranchNode x = IP Nothing (IJump x)
   mkLabelNode x = IP Nothing (ILabel x)
 
-data Callable = CEcho deriving Show -- TODO
+data Callable tArg aSPec where
+  CEcho :: Callable t [t]
+
+deriving instance Show tArg => Show (Callable tArg aSpec)
 
 type Cfg = Graph InstrPos O O
