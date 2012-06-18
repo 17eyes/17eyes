@@ -24,7 +24,7 @@ tabsVsSpaces fn str = if emit_issue
     ws = [' ', '\t'] -- all "interesting" whitespace
 
     -- all tabs and spaces in the input
-    all_white = concatMap (takeWhile (`elem` ws)) (lines str )
+    all_white = concatMap (takeWhile (`elem` ws)) (lines str)
 
     count_map :: Map.Map Char Int
     count_map = foldr (Map.adjust (1+)) init_map all_white

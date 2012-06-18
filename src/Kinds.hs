@@ -126,3 +126,7 @@ styleControlStructsSwitchDefault = newKind_ "Lang.Php.Ast.Analysis.Style"
   "switch should always include default branch" Style Sure
   "Switch should always include default branch otherwise it may lead to logic \
   \bugs connected with lack of a default action."
+
+funcInfo = newKind "Lang.Php.Ast.Analysis.Func" "funcInfo"
+  "suspicious function usage" MayHarm Sure
+  (\(fname, desc) -> concat[fname,": ",desc])
