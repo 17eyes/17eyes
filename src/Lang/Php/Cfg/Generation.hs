@@ -160,6 +160,36 @@ instance TacAbleR Expr where
   toTacR (ExprPostOp PoIncr _ e) pos = error "$x++ not implemented"
   toTacR (ExprPostOp PoDecr _ e) pos = error "$x-- not implemented"
 
+  toTacR (ExprTernaryIf (TernaryIf cond _ m_then _ e_else)) pos = do
+    r_res <- RTemp <$> freshUnique
+    (l_end, l_then, l_else) <- liftM3 (,,) freshLabel freshLabel freshLabel
+    (r_cond, g_cond) <- toTacR cond pos
+    let b_cond = g_cond
+             <*> (mkLast $ sp2ip pos $ ICondJump r_cond l_then l_else)
+
+    -- `then' block: If it's present, evaluate it. Otherwise, copy the value
+    -- of evaluated condition to r_res.
+    b_then <- case m_then of
+      (Just e_then) -> do
+        (r_then, g_then) <- toTacR e_then pos
+        return $ mkLabel l_then
+                     <*> g_then
+                     <*> (mkMiddle $ sp2ip pos $ ICopyVar r_res r_then)
+                     <*> mkBranch l_end
+      Nothing -> return $ mkLabel l_then
+                      <*> (mkMiddle $ sp2ip pos $ ICopyVar r_res r_cond)
+                      <*> mkBranch l_end
+
+    -- `else' block
+    (r_else, g_else) <- toTacR e_else pos
+    let b_else = mkLabel l_else
+             <*> g_else
+             <*> (mkMiddle $ sp2ip pos $ ICopyVar r_res r_else)
+             <*> mkBranch l_end
+
+    let b_end = mkLabel l_end
+    return (r_res, b_cond |*><*| b_then |*><*| b_else |*><*| b_end)
+
   toTacR _ pos = error "TacAbleR Expr not fully implmented"
 
 instance TacAbleR RVal where
