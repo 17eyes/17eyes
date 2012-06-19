@@ -108,6 +108,57 @@ instance TacAbleR Expr where
 
   toTacR (ExprAssign (Just _) lval _ expr) pos = error "TODO: implement binops"
 
+  -- Simple binary operators are just mapped to corresponding callables.
+  toTacR (ExprBinOp BEQ e1 _ e2) pos = simpleBinop CEq e1 e2 pos
+  toTacR (ExprBinOp BID e1 _ e2) pos = simpleBinop CId e1 e2 pos
+  toTacR (ExprBinOp BLE e1 _ e2) pos = simpleBinop CLe e1 e2 pos
+  toTacR (ExprBinOp BLT e1 _ e2) pos = simpleBinop CLt e1 e2 pos
+  toTacR (ExprBinOp (BByable BBitAnd) e1 _ e2) pos = simpleBinop CBitAnd e1 e2 pos
+  toTacR (ExprBinOp (BByable BConcat) e1 _ e2) pos = simpleBinop CConcat e1 e2 pos
+  toTacR (ExprBinOp (BByable BDiv) e1 _ e2) pos = simpleBinop CDiv e1 e2 pos
+  toTacR (ExprBinOp (BByable BMod) e1 _ e2) pos = simpleBinop CMod e1 e2 pos
+  toTacR (ExprBinOp (BByable BMul) e1 _ e2) pos = simpleBinop CMul e1 e2 pos
+  toTacR (ExprBinOp (BByable BPlus) e1 _ e2) pos = simpleBinop CAdd e1 e2 pos
+  toTacR (ExprBinOp (BByable BShiftL) e1 _ e2) pos = simpleBinop CShiftL e1 e2 pos
+  toTacR (ExprBinOp (BByable BShiftR) e1 _ e2) pos = simpleBinop CShiftR e1 e2 pos
+
+  -- Some operators can be translated to negated callables (e.g. e1 != e2
+  -- becomes !(e1 == e2)).
+  toTacR (ExprBinOp BGE e1 _ e2) pos = negatedBinop CLt e1 e2 pos
+  toTacR (ExprBinOp BGT e1 _ e2) pos = negatedBinop CLe e1 e2 pos
+  toTacR (ExprBinOp BNE e1 _ e2) pos = negatedBinop CEq e1 e2 pos
+  toTacR (ExprBinOp BNI e1 _ e2) pos = negatedBinop CId e1 e2 pos
+
+  -- `Alternative syntax' operators are treated like the simple version.
+  toTacR (ExprBinOp BAndWd e1 w e2) pos = toTacR (ExprBinOp BAnd e1 w e2) pos
+  toTacR (ExprBinOp BNEOld e1 w e2) pos = toTacR (ExprBinOp BNE e1 w e2) pos
+  toTacR (ExprBinOp BOrWd e1 w e2) pos = toTacR (ExprBinOp BOr e1 w e2) pos
+
+  -- Logical lazy operators are treated like conditionals. (TODO)
+  toTacR (ExprBinOp BAnd e1 _ e2) pos = error "not implemented"
+  toTacR (ExprBinOp BOr e1 _ e2) pos = error "not implemented"
+  toTacR (ExprBinOp BXorWd e1 _ e2) pos = error "not implemented"
+
+  -- Some bit and arithmetic operators can be expressed using the others. (TODO)
+  toTacR (ExprBinOp (BByable BBitOr) e1 _ e2) pos = error "not implemented"
+  toTacR (ExprBinOp (BByable BXor) e1 _ e2) pos = error "not implemented"
+  toTacR (ExprBinOp (BByable BMinus) e1 _ e2) pos = error "not implemented"
+
+  -- Simple unary operators also have their own callables.
+  toTacR (ExprPreOp PrPrint _ e) pos = simpleUnop CPrint e pos
+  toTacR (ExprPreOp PrBitNot _ e) pos = simpleUnop CBitNot e pos
+  toTacR (ExprPreOp PrClone _ e) pos = simpleUnop CClone e pos
+  toTacR (ExprPreOp PrNegate _ e) pos = simpleUnop CNegate e pos
+
+  -- TODO: implement error suppression operators
+  toTacR (ExprPreOp PrSuppress _ e) pos = error "error suppression operators not implemented"
+  toTacR (ExprPreOp PrAt w e) pos = toTacR (ExprPreOp PrSuppress w e) pos
+
+  -- TODO: implement incrementation/decrementation operators
+  toTacR (ExprPreOp PrIncr _ e) pos = error "++$x not implemented"
+  toTacR (ExprPreOp PrDecr _ e) pos = error "--$x not implemented"
+  toTacR (ExprPostOp PoIncr _ e) pos = error "$x++ not implemented"
+  toTacR (ExprPostOp PoDecr _ e) pos = error "$x-- not implemented"
 
   toTacR _ pos = error "TacAbleR Expr not fully implmented"
 
@@ -180,10 +231,10 @@ instance CfgAble (StoredPos Stmt) where
     return (g1 <*> g2)
 
   toCfg (StoredPos pos (StmtEcho args _)) = do
-    (vars, gs) <- fmap unzip $ forM args $
+    (vars, gs1) <- fmap unzip $ forM args $
       \wexpr -> toTacR (wsCapMain wexpr) pos
-    let call_node = mkMiddle $ sp2ip pos (ICall CEcho vars)
-    return $ (foldl (<*>) emptyGraph gs) <*> call_node
+    let gs2 = map (mkMiddle . sp2ip pos . ICall RNull CPrint) vars
+    return $ foldl (<*>) emptyGraph (gs1 ++ gs2)
 
   toCfg (StoredPos pos (StmtWhile (While wexpr block _))) = do
     lstart <- freshLabel
@@ -222,3 +273,34 @@ instance CfgAble (StoredPos Stmt) where
 
 sp2ip :: Ast.SourcePos -> Instr e x -> InstrPos e x
 sp2ip pos = IP (Just (sourceName pos, sourceLine pos))
+
+simpleBinop :: Callable Register (Register, Register)
+               -> Expr -> Expr -> Ast.SourcePos -> GMonad (Register, Cfg)
+simpleBinop c e1 e2 pos = do
+  var <- RTemp <$> freshUnique
+  (v_e1, g_e1) <- toTacR e1 pos
+  (v_e2, g_e2) <- toTacR e2 pos
+  let g_call = mkMiddle $ sp2ip pos $ ICall var c (v_e1, v_e2)
+  return (var, g_e1 <*> g_e2 <*> g_call)
+
+negatedBinop :: Callable Register (Register, Register)
+                -> Expr -> Expr -> Ast.SourcePos -> GMonad (Register, Cfg)
+negatedBinop c e1 e2 pos = do
+  r_ret <- RTemp <$> freshUnique
+  (r_cond, g1) <- simpleBinop c e1 e2 pos
+  (ltrue, lfalse, lend) <- liftM3 (,,) freshLabel freshLabel freshLabel
+  let g2 = mkLast $ sp2ip pos $ ICondJump r_cond ltrue lfalse
+  let true_block = mkMiddle $ sp2ip pos $ ILoadConst r_ret "FALSE"
+  let false_block = mkMiddle $ sp2ip pos $ ILoadConst r_ret "TRUE"
+  let graph = (g1 <*> g2)
+       |*><*| (mkLabel ltrue <*> true_block <*> mkBranch lend)
+       |*><*| (mkLabel lfalse <*> false_block <*> mkBranch lend)
+       |*><*| mkLabel lend
+  return (r_ret, graph)
+
+simpleUnop :: Callable Register Register -> Expr -> Ast.SourcePos -> GMonad (Register, Cfg)
+simpleUnop c e pos = do
+  r_out <- RTemp <$> freshUnique
+  (r_in, g_e) <- toTacR e pos
+  let g_call = mkMiddle $ sp2ip pos $ ICall r_out c r_in
+  return (r_out, g_e <*> g_call)

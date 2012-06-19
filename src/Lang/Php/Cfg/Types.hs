@@ -11,11 +11,12 @@ module Lang.Php.Cfg.Types(
 import Data.Functor((<$>))
 import Compiler.Hoopl
 
-data Register = RVar String | RTemp Unique
+data Register = RVar String | RTemp Unique | RNull
 
 instance Show Register where
   show (RVar x) = "$" ++ x
   show (RTemp x) = "r" ++ show x
+  show RNull = "_"
 
 data InstrPos e x = IP (Maybe (FilePath, Int)) (Instr e x) deriving Show
 
@@ -33,7 +34,7 @@ data Instr e x where
   IJump :: Label -> Instr O C
   ICondJump :: Register -> Label -> Label -> Instr O C
   IReturn :: Maybe Register -> Instr O C
-  ICall :: Show a => Callable Register a -> a -> Instr O O
+  ICall :: Show a => Register -> Callable Register a -> a -> Instr O O
 
   ILoadString :: Register -> String -> Instr O O
   ILoadNum :: Register -> String -> Instr O O -- TODO: a numeric type perhaps?
@@ -52,8 +53,42 @@ instance HooplNode InstrPos where
   mkBranchNode x = IP Nothing (IJump x)
   mkLabelNode x = IP Nothing (ILabel x)
 
-data Callable tArg aSPec where
-  CEcho :: Callable t [t]
+data Callable tArg aSpec where
+  --                        UNARY OPERATORS
+  ----------------------------------------------------------------------------
+  -- PrNot is translated into a branch instruction.  Incrementation and decre-
+  -- -mentation operators are replaced by assignments $x = $x +/- 1, though
+  -- this isn't 100% semantically correct.  PrNegate is translated into 0-e,
+  -- PrPos into 0+e.
+  --
+  -- TODO: how to handle PrAt/PrSuppress?
+  CPrint  :: Callable t t -- note that `echo' is translated to CPrints
+  CBitNot :: Callable t t
+  CClone  :: Callable t t
+  CNegate :: Callable t t
+
+  --                        BINARY OPERATORS
+  ----------------------------------------------------------------------------
+  -- Some of the logical operators from AST's BinOp are translated into
+  -- branching instructions.  This includes: BAnd*, BOr*, and BXorWd. BNE* and
+  -- BNI are translated into negated BEq and BId.
+  CEq :: Callable t (t,t)
+  CId :: Callable t (t,t)
+  -- BGE and BGT are translated into CLe and CLt with inverted arguments (but
+  -- respecting the evaluation order).
+  CLe :: Callable t (t,t) -- lower or equal
+  CLt :: Callable t (t,t) -- lower than
+  CBitAnd :: Callable t (t,t)
+  -- BBitOr from BinOpBy is translated into bit-negated CBitAnd.
+  CConcat :: Callable t (t,t)
+  CDiv :: Callable t (t,t)
+  -- BMinus is translated into negated CAdd
+  CMod :: Callable t (t,t)
+  CMul :: Callable t (t,t)
+  CAdd :: Callable t (t,t)
+  CShiftL :: Callable t (t,t)
+  CShiftR :: Callable t (t,t)
+  -- BXor is translated into other bit operators
 
 deriving instance Show tArg => Show (Callable tArg aSpec)
 
