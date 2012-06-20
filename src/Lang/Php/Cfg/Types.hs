@@ -58,8 +58,9 @@ data Callable tArg aSpec where
   ----------------------------------------------------------------------------
   -- PrNot is translated into a branch instruction.  Incrementation and decre-
   -- -mentation operators are replaced by assignments $x = $x +/- 1, though
-  -- this isn't 100% semantically correct.  PrNegate is translated into 0-e,
-  -- PrPos into 0+e.
+  -- this isn't 100% semantically correct.  PrPos is translated into (0+e).
+  -- We cannot translate PrNegate into (0-e) since (-) is implemented using
+  -- negation.
   --
   -- TODO: how to handle PrAt/PrSuppress?
   CPrint  :: Callable t t -- note that `echo' is translated to CPrints

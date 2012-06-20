@@ -134,10 +134,36 @@ instance TacAbleR Expr where
   toTacR (ExprBinOp BNEOld e1 w e2) pos = toTacR (ExprBinOp BNE e1 w e2) pos
   toTacR (ExprBinOp BOrWd e1 w e2) pos = toTacR (ExprBinOp BOr e1 w e2) pos
 
-  -- Logical lazy operators are treated like conditionals. (TODO)
-  toTacR (ExprBinOp BAnd e1 _ e2) pos = error "not implemented"
-  toTacR (ExprBinOp BOr e1 _ e2) pos = error "not implemented"
-  toTacR (ExprBinOp BXorWd e1 _ e2) pos = error "not implemented"
+  -- Logical lazy operators are treated like conditionals.
+  toTacR (ExprBinOp BAnd e1 _ e2) pos = toTacR outer_if pos
+   -- (e1 && e2) <=> (e1? (e2? TRUE : FALSE) : FALSE)
+   where
+     inner_if = ExprTernaryIf (TernaryIf e2 nows (Just e_true) nows e_false)
+     outer_if = ExprTernaryIf (TernaryIf e1 nows (Just inner_if) nows e_false)
+     e_true = makeExprConst "TRUE"
+     e_false = makeExprConst "FALSE"
+     nows = ([],[])
+
+  toTacR (ExprBinOp BOr e1 _ e2) pos = toTacR outer_if pos
+   -- (e1 || e2) <=> (e1? TRUE : (e2? TRUE : FALSE))
+   where
+     inner_if = ExprTernaryIf (TernaryIf e2 nows (Just e_true) nows e_false)
+     outer_if = ExprTernaryIf (TernaryIf e1 nows (Just e_true) nows inner_if)
+     e_true = makeExprConst "TRUE"
+     e_false = makeExprConst "FALSE"
+     nows = ([],[])
+
+  toTacR (ExprBinOp BXorWd e1 _ e2) pos = toTacR outer_if pos
+   -- (e1 xor e2) <=> (e1? !e2 : (e2? TRUE : FALSE))
+   -- Note that `e2' occurs twice in the above expression but it will be always
+   -- evaluated only once.
+   where
+     not_e2 = ExprPreOp PrNot [] e2
+     inner_if = ExprTernaryIf (TernaryIf e2 nows (Just e_true) nows e_false)
+     outer_if = ExprTernaryIf (TernaryIf e1 nows (Just not_e2) nows inner_if)
+     e_true = makeExprConst "TRUE"
+     e_false = makeExprConst "FALSE"
+     nows = ([],[])
 
   -- Some bit and arithmetic operators can be expressed using the others. (TODO)
   toTacR (ExprBinOp (BByable BBitOr) e1 _ e2) pos = error "not implemented"
@@ -149,6 +175,18 @@ instance TacAbleR Expr where
   toTacR (ExprPreOp PrBitNot _ e) pos = simpleUnop CBitNot e pos
   toTacR (ExprPreOp PrClone _ e) pos = simpleUnop CClone e pos
   toTacR (ExprPreOp PrNegate _ e) pos = simpleUnop CNegate e pos
+
+  -- !e <=> (e? FALSE : TRUE)
+  toTacR (ExprPreOp PrNot _ e) pos = toTacR if_expr pos
+   where
+    if_expr = ExprTernaryIf (TernaryIf e nows (Just e_false) nows e_true)
+    e_true = makeExprConst "TRUE"
+    e_false = makeExprConst "FALSE"
+    nows = ([],[])
+
+  -- (+e) is translated into (0+e)
+  toTacR (ExprPreOp PrPos _ e) pos = toTacR e' pos
+   where e' = ExprBinOp (BByable BPlus) (ExprNumLit (NumLit "0")) ([],[]) e
 
   -- TODO: implement error suppression operators
   toTacR (ExprPreOp PrSuppress _ e) pos = error "error suppression operators not implemented"
@@ -356,3 +394,7 @@ postIncDecOp delta e@(ExprRVal (RValLRVal lv)) pos = do
   return (r_saved, g_e <*> g_load <*> g_save <*> g_add <*> g_assign)
  where
   mkM = mkMiddle . (sp2ip pos)
+
+makeExprConst :: String -> Expr
+makeExprConst name =
+  ExprRVal $ RValROnlyVal $ ROnlyValConst (Const [] (WSCap [] name []))
