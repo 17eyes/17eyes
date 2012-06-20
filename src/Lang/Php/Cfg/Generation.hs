@@ -106,7 +106,13 @@ instance TacAbleR Expr where
     graphL <- toTacL lval pos var    -- code to store var in lval
     return (var, graphR <*> graphL)
 
-  toTacR (ExprAssign (Just _) lval _ expr) pos = error "TODO: implement binops"
+  -- Assignment with binary operator (like $x += 5) can be unfolded into a
+  -- simple assignment (like $x = $x + 5).
+  toTacR (ExprAssign (Just binop) lval@(LValLRVal lrval) _ expr) pos = toTacR e' pos
+   where
+     e' = ExprAssign Nothing lval ([],[]) expr'
+     expr' = ExprBinOp (BByable binop) e_lrval ([],[]) expr
+     e_lrval = ExprRVal (RValLRVal lrval)
 
   -- Simple binary operators are just mapped to corresponding callables.
   toTacR (ExprBinOp BEQ e1 _ e2) pos = simpleBinop CEq e1 e2 pos
@@ -165,10 +171,46 @@ instance TacAbleR Expr where
      e_false = makeExprConst "FALSE"
      nows = ([],[])
 
-  -- Some bit and arithmetic operators can be expressed using the others. (TODO)
-  toTacR (ExprBinOp (BByable BBitOr) e1 _ e2) pos = error "not implemented"
-  toTacR (ExprBinOp (BByable BXor) e1 _ e2) pos = error "not implemented"
-  toTacR (ExprBinOp (BByable BMinus) e1 _ e2) pos = error "not implemented"
+  -- Rewrite (e1 | e2) to ~(~e1 & ~e2).
+  toTacR (ExprBinOp (BByable BBitOr) e1 _ e2) pos = toTacR (mkNot e_and) pos
+   where
+     mkNot e = ExprPreOp PrBitNot [] e
+     e_and = ExprBinOp (BByable BBitAnd) (mkNot e1) ([],[]) (mkNot e2)
+
+  -- We cannot rewrite (e1 ^ e2) to ~(~e1 & ~e2) & ~(e1 & e2) since evaluation
+  -- of some subexpressions can have side effects.  Thus, we create the CFG
+  -- manually for this operator, based on a following pseudocode:
+  --   (g1) r1 := e1
+  --   (g2) r2 := e2
+  --   (g3) r_and := r1 & r2
+  --   (g4) r_and := ~r_and
+  --   (g5) r_n1 := ~r1
+  --   (g6) r_andnot := ~r2
+  --   (g7) r_andnot := r_n1 & r_andnot
+  --   (g8) r_andnot := ~r_andnot
+  --   (g9) r_and := r_and & r_andnot
+  --   return r_and
+  toTacR (ExprBinOp (BByable BXor) e1 _ e2) pos = do
+    (r_and, r_andnot, r_n1) <- liftM3 (,,) freshR freshR freshR
+    (r1, g1) <- toTacR e1 pos
+    (r2, g2) <- toTacR e2 pos
+    let g3 = mkM (ICall r_and CBitAnd (r1, r2))
+    let g4 = mkM (ICall r_and CBitNot r_and)
+    let g5 = mkM (ICall r_n1 CBitNot r1)
+    let g6 = mkM (ICall r_andnot CBitNot r2)
+    let g7 = mkM (ICall r_andnot CBitAnd (r_n1, r_andnot))
+    let g8 = mkM (ICall r_andnot CBitNot r_andnot)
+    let g9 = mkM (ICall r_and CBitAnd (r_and, r_andnot))
+    return (r_and, g1 <*> g2 <*> g3 <*> g4 <*> g5 <*> g6 <*> g7 <*> g8 <*> g9)
+   where
+    freshR = RTemp <$> freshUnique
+    mkM = mkMiddle . sp2ip pos
+
+  toTacR (ExprBinOp (BByable BMinus) e1 _ e2) pos = toTacR e' pos
+   -- rewrite (e1 - e2) to (e1 + (-e2))
+   where
+     e' = ExprBinOp (BByable BPlus) e1 ([],[]) neg_e2
+     neg_e2 = ExprPreOp PrNegate [] e2
 
   -- Simple unary operators also have their own callables.
   toTacR (ExprPreOp PrPrint _ e) pos = simpleUnop CPrint e pos
