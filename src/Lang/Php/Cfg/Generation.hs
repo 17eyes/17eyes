@@ -377,6 +377,39 @@ instance CfgAble (StoredPos Stmt) where
             |*><*| (mkLabel ltrue <*> then_block <*> mkBranch after)
             |*><*| (mkLabel lfalse <*> else_block)
 
+  -- `for' loop is translated into `while'
+  toCfg (StoredPos pos (StmtFor (For ws_head block _))) = do
+    let (fp_init, fp_cond, fp_inc) = wsCapMain ws_head
+    let while_cond = foldConds (fpToExprs fp_cond)
+    let init_stmts = exprsToStmts (fpToExprs fp_init)
+    let inc_stmts = exprsToStmts (fpToExprs fp_inc)
+    let while_body = Ast.Block $ stmtsFromList (for_body:inc_stmts)
+    let while = While (mkWSC $ mkWSC while_cond) (mkWSC $ Right while_body)
+                      StdSyntax
+    toCfg $ stmtsFromList (init_stmts ++ [StoredPos pos (StmtWhile while)])
+   where
+     fpToExprs :: ForPart -> [Expr]
+     fpToExprs (ForPart (Left _)) = []
+     fpToExprs (ForPart (Right xs)) = map wsCapMain xs
+
+     stmtsFromList :: [a] -> IC.Intercal WS a
+     stmtsFromList xs = IC.unbreakEnd (map (\x -> ([], x)) xs) []
+
+     exprsToStmts :: [Expr] -> [StoredPos Stmt]
+     exprsToStmts = map (\x -> StoredPos pos (StmtExpr x [] StmtEndSemi))
+
+     foldConds :: [Expr] -> Expr
+     foldConds []     = makeExprConst "TRUE"
+     foldConds [x]    = x
+     foldConds (x:xs) = ExprBinOp BAnd x ([],[]) (foldConds xs)
+
+     for_body = case wsCapMain block of
+       Left spos -> spos
+       Right iblock -> StoredPos pos (StmtBlock iblock)
+
+     mkWSC :: a -> WSCap a
+     mkWSC x = WSCap [] x []
+
 ------------------------------------------------------------------------------
 --                          Helper functions                                --
 ------------------------------------------------------------------------------
