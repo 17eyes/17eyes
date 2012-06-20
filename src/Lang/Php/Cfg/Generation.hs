@@ -154,11 +154,11 @@ instance TacAbleR Expr where
   toTacR (ExprPreOp PrSuppress _ e) pos = error "error suppression operators not implemented"
   toTacR (ExprPreOp PrAt w e) pos = toTacR (ExprPreOp PrSuppress w e) pos
 
-  -- TODO: implement incrementation/decrementation operators
-  toTacR (ExprPreOp PrIncr _ e) pos = error "++$x not implemented"
-  toTacR (ExprPreOp PrDecr _ e) pos = error "--$x not implemented"
-  toTacR (ExprPostOp PoIncr _ e) pos = error "$x++ not implemented"
-  toTacR (ExprPostOp PoDecr _ e) pos = error "$x-- not implemented"
+  -- Incrementation & decrementation is translated into addition.
+  toTacR (ExprPreOp PrIncr _ e) pos = preIncDecOp 1 e pos
+  toTacR (ExprPreOp PrDecr _ e) pos = preIncDecOp (-1) e pos
+  toTacR (ExprPostOp PoIncr e _) pos = postIncDecOp 1 e pos
+  toTacR (ExprPostOp PoDecr e _) pos = postIncDecOp (-1) e pos
 
   toTacR (ExprTernaryIf (TernaryIf cond _ m_then _ e_else)) pos = do
     r_res <- RTemp <$> freshUnique
@@ -334,3 +334,25 @@ simpleUnop c e pos = do
   (r_in, g_e) <- toTacR e pos
   let g_call = mkMiddle $ sp2ip pos $ ICall r_out c r_in
   return (r_out, g_e <*> g_call)
+
+preIncDecOp delta e@(ExprRVal (RValLRVal lv)) pos = do
+  (r_e, g_e) <- toTacR e pos
+  r_temp <- RTemp <$> freshUnique
+  let g_load = mkM (ILoadNum r_temp (show delta))
+  let g_add = mkM (ICall r_temp CAdd (r_e, r_temp))
+  g_assign <- toTacL lv pos r_temp
+  return (r_temp, g_e <*> g_load <*> g_add <*> g_assign)
+ where
+  mkM = mkMiddle . (sp2ip pos)
+
+postIncDecOp delta e@(ExprRVal (RValLRVal lv)) pos = do
+  (r_e, g_e) <- toTacR e pos
+  r_temp <- RTemp <$> freshUnique
+  r_saved <- RTemp <$> freshUnique
+  let g_load = mkM (ILoadNum r_temp (show delta))
+  let g_save = mkM (ICopyVar r_saved r_e)
+  let g_add = mkM (ICall r_temp CAdd (r_e, r_temp))
+  g_assign <- toTacL lv pos r_temp
+  return (r_saved, g_e <*> g_load <*> g_save <*> g_add <*> g_assign)
+ where
+  mkM = mkMiddle . (sp2ip pos)
