@@ -430,6 +430,61 @@ instance CfgAble (StoredPos Stmt) where
      mkWSC :: a -> WSCap a
      mkWSC x = WSCap [] x []
 
+  -- An empty `switch' statement is a boring case but we need to handle it
+  -- correctly. This is equivalent to just evaluating the switched value.
+  toCfg (StoredPos pos (StmtSwitch (Switch _ w2_e _ m_tl []))) =
+    toCfg (StoredPos pos (StmtExpr (wsCapMain $ wsCapMain w2_e) [] stend))
+   where
+     stend = maybe StmtEndSemi (StmtEndClose . wsCapMain) m_tl
+
+  -- TODO: toplevels?
+  toCfg (StoredPos pos (StmtSwitch (Switch _ w2_e _ _ cases))) = do
+    (r_val, g_val) <- toTacR w2_e pos
+    l_end <- freshLabel
+    -- interestingly, `continue' behaves just like `break' inside PHP's switch
+    modify $ \gs -> gs {
+        gsBreakTargets = l_end:gsBreakTargets gs,
+        gsContinueTargets = l_end:gsContinueTargets gs
+      }
+    l_checks <- forM cases (const freshLabel)
+    l_cases <- forM cases (const freshLabel)
+
+    -- The list `checks' contains basic blocks that check whether r_val is
+    -- equal to the value of an expression given in `case'. Each block passes
+    -- control to the next one if the value is not equal, and to a block from
+    -- l_cases if it is.
+    checks <- forM (zip4 cases l_checks l_cases (tail l_checks ++ [l_end])) $
+      \(cs, l_check, l_true, l_false) -> case cs of
+        StoredPos pos (Case (Left _) _) -> -- `default:' block
+          return (mkLabel l_check <*> mkBranch l_true)
+        StoredPos pos (Case (Right w_e) _) -> do -- `case:'
+          (r_comp, g_comp) <- toTacR w_e pos
+          r_cond <- RTemp <$> freshUnique
+          return $ mkLabel l_check
+               <*> g_comp
+               <*> (mkMiddle $ sp2ip pos $ ICall r_cond CEq (r_val, r_comp))
+               <*> (mkLast $ sp2ip pos $ ICondJump r_cond l_true l_false)
+
+    -- `cases' is a similar list of blocks. Each block contains code from the
+    -- `case' body and passes control to the next one (which implements the
+    -- standard fall-through semantics of `switch').
+    cases <- forM (zip3 cases l_cases (tail l_cases ++ [l_end])) $
+      \(StoredPos _ (Case _ stmts), l_case, l_next) -> do
+        g_stmts <- toCfg stmts
+        return (mkLabel l_case <*> g_stmts <*> mkBranch l_next)
+
+    -- we finished generating the code inside `switch'
+    modify $ \gs -> gs {
+        gsBreakTargets = tail (gsBreakTargets gs),
+        gsContinueTargets = tail (gsContinueTargets gs)
+      }
+
+    -- form the final graph from blocks in `checks' and `cases'
+    return $ (g_val <*> mkBranch (head l_checks))
+      |*><*| (foldl1 (|*><*|) (checks ++ cases))
+      |*><*| (mkLabel l_end)
+
+
   -- TODO: translate StmtEnd properly (top-levels?)
   toCfg (StoredPos pos (StmtBreak m_lvl _ _)) = loopExit gsBreakTargets pos m_lvl
   toCfg (StoredPos pos (StmtContinue m_lvl _ _)) = loopExit gsContinueTargets pos m_lvl
