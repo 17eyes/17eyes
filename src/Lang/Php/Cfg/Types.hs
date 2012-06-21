@@ -91,6 +91,14 @@ data Callable tArg aSpec where
   CShiftR :: Callable t (t,t)
   -- BXor is translated into other bit operators
 
+  --               BUILTINS USED TO IMPLEMENT `foreach'
+  ----------------------------------------------------------------------------
+  CItrGet :: Callable t t
+  CItrCurrent :: Callable t t
+  CItrKey :: Callable t t
+  CItrValid :: Callable t t
+  CItrNext :: Callable t t
+
 deriving instance Show tArg => Show (Callable tArg aSpec)
 
 type Cfg = Graph InstrPos O O

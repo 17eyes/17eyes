@@ -327,6 +327,9 @@ instance TacAbleL Var where
 
   toTacL _ _ _ = error "TODO: implement indexed and dynamic variables"
 
+instance TacAbleL Ref where
+  toTacL = error "TODO: implement references"
+
 ------------------------------------------------------------------------------
 --                              Statements                                  --
 ------------------------------------------------------------------------------
@@ -359,16 +362,9 @@ instance CfgAble (StoredPos Stmt) where
     lbody <- freshLabel
     lend <- freshLabel
     -- setup break/continue targets before entering the loop body
-    modify $ \gs -> gs {
-        gsBreakTargets = lend:(gsBreakTargets gs),
-        gsContinueTargets = lstart:(gsContinueTargets gs)
-      }
+    pushTargets lend lstart
     body <- toCfg block
-    -- revert break/continue targets
-    modify $ \gs -> gs {
-        gsBreakTargets = tail (gsBreakTargets gs),
-        gsContinueTargets = tail (gsContinueTargets gs)
-      }
+    popTargets -- revert break/continue targets
     (var_cond, head_exp) <- toTacR (wsCapMain $ wsCapMain wexpr) pos
     let head = (mkLabel lstart)
            <*> head_exp
@@ -430,6 +426,60 @@ instance CfgAble (StoredPos Stmt) where
      mkWSC :: a -> WSCap a
      mkWSC x = WSCap [] x []
 
+  -- Code generated for `foreach' is composed of 5 basic blocks -- b_init calls
+  -- CGetItr, b_cond checks whether the loop can still continue using
+  -- CItrValid, b_body assigns the current value of the iterator to the
+  -- variables specified by the user.  In b_cont, we move the iterator to the
+  -- next item.  A `break' statement inside the body jumps to b_break;
+  -- `continue' -- to b_cont.
+  --
+  -- b_init -> b_cond ----> b_break
+  --            ^   |
+  --            |   +-----> b_body
+  --            |             |
+  --           b_cont <-------+
+  toCfg (StoredPos pos (StmtForeach (Foreach head body _))) = do
+    (l_cont, l_break, l_cond, l_body) <- liftM4 (,,,) freshLabel freshLabel freshLabel freshLabel
+    let (ws_obj, mws_key, ws_curr) = wsCapMain head
+
+    (r_obj, g_obj) <- toTacR (wsCapMain ws_obj) pos
+    r_itr <- RTemp <$> freshUnique
+    let b_init = g_obj
+             <*> (mkMiddle $ sp2ip pos $ ICall r_itr CItrGet r_obj)
+             <*> mkBranch l_cond
+
+    r_cond <- RTemp <$> freshUnique
+    let b_cond = mkLabel l_cond
+             <*> (mkMiddle $ sp2ip pos $ ICall r_cond CItrValid r_itr)
+             <*> (mkLast $ sp2ip pos $ ICondJump r_cond l_body l_break)
+
+    let b_cont = mkLabel l_cont
+             <*> (mkMiddle $ sp2ip pos $ ICall r_itr CItrNext r_itr)
+             <*> mkBranch l_cond
+
+    r_val <- RTemp <$> freshUnique
+    let g_init_curr = mkMiddle $ sp2ip pos $ ICall r_val CItrCurrent r_itr
+    g_assign_curr <- toTacL (wsCapMain ws_curr) pos r_val
+
+    (g_init_key, g_assign_key) <- case mws_key of
+      Nothing -> return (emptyGraph, emptyGraph)
+      Just ws_key -> do
+        r_key <- RTemp <$> freshUnique
+        let g_init = mkMiddle $ sp2ip pos $ ICall r_key CItrKey r_itr
+        g_assign <- toTacL (wsCapMain ws_key) pos r_key
+        return (g_init, g_assign)
+
+    pushTargets l_break l_cont
+    g_body <- toCfg body
+    popTargets
+    let b_body = mkLabel l_body
+             <*> g_init_curr <*> g_assign_curr
+             <*> g_init_key <*> g_assign_key
+             <*> g_body
+             <*> mkBranch l_cont
+
+    return (b_init |*><*| b_cont |*><*| b_cond |*><*| b_body |*><*| (mkLabel l_break))
+
   -- An empty `switch' statement is a boring case but we need to handle it
   -- correctly. This is equivalent to just evaluating the switched value.
   toCfg (StoredPos pos (StmtSwitch (Switch _ w2_e _ m_tl []))) =
@@ -442,10 +492,7 @@ instance CfgAble (StoredPos Stmt) where
     (r_val, g_val) <- toTacR w2_e pos
     l_end <- freshLabel
     -- interestingly, `continue' behaves just like `break' inside PHP's switch
-    modify $ \gs -> gs {
-        gsBreakTargets = l_end:gsBreakTargets gs,
-        gsContinueTargets = l_end:gsContinueTargets gs
-      }
+    pushTargets l_end l_end
     l_checks <- forM cases (const freshLabel)
     l_cases <- forM cases (const freshLabel)
 
@@ -473,12 +520,7 @@ instance CfgAble (StoredPos Stmt) where
         g_stmts <- toCfg stmts
         return (mkLabel l_case <*> g_stmts <*> mkBranch l_next)
 
-    -- we finished generating the code inside `switch'
-    modify $ \gs -> gs {
-        gsBreakTargets = tail (gsBreakTargets gs),
-        gsContinueTargets = tail (gsContinueTargets gs)
-      }
-
+    popTargets -- we finished generating the code inside `switch'
     -- form the final graph from blocks in `checks' and `cases'
     return $ (g_val <*> mkBranch (head l_checks))
       |*><*| (foldl1 (|*><*|) (checks ++ cases))
@@ -572,3 +614,15 @@ loopExit tfun pos m_lvl = do
    e2const (ExprParen wsc) = e2const (wsCapMain wsc)
    e2const (ExprPreOp PrNegate [] e) = -(e2const e)
    e2const _ = error "Break/continue parameter is not a constant expression."
+
+pushTargets :: Label -> Label -> GMonad ()
+pushTargets break continue = modify $ \gs -> gs {
+    gsContinueTargets = continue:gsContinueTargets gs,
+    gsBreakTargets = break:gsBreakTargets gs
+  }
+
+popTargets :: GMonad ()
+popTargets = modify $ \gs -> gs {
+    gsContinueTargets = tail (gsContinueTargets gs),
+    gsBreakTargets = tail (gsBreakTargets gs)
+  }
