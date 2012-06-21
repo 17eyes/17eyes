@@ -296,7 +296,7 @@ data ForPart = ForPart (Either WS [WSCap Expr])
   deriving (Eq, Show, Typeable, Data)
 
 data Foreach = Foreach {
-  foreachHeader :: WSCap (WSCap Expr, WSCap DubArrowMb),
+  foreachHeader :: WSCap (WSCap Expr, WSCap LVal),
   foreachBlock  :: BlockOrStmt,
   foreachSyntax :: StmtSyntax}
   deriving (Eq, Show, Typeable, Data)
