@@ -121,10 +121,15 @@ data Expr =
   ExprPreOp     PreOp WS Expr |
   -- note: "list"/"&" is actually more limited
   -- ("list() = &$a;" is nonsyntactic)
-  ExprRef       WS (Either Expr Val) |
+  ExprRef       Ref | 
   ExprRVal      RVal |
   ExprStrLit    StrLit |
   ExprTernaryIf TernaryIf
+  deriving (Eq, Show, Typeable, Data)
+
+data Ref = Ref {
+  refWS :: WS,
+  ref   :: (Either Expr Val)}
   deriving (Eq, Show, Typeable, Data)
 
 data BinOp = BAnd | BAndWd | BEQ | BGE | BGT | BID | BLE | BLT | BNE |
@@ -296,7 +301,8 @@ data ForPart = ForPart (Either WS [WSCap Expr])
   deriving (Eq, Show, Typeable, Data)
 
 data Foreach = Foreach {
-  foreachHeader :: WSCap (WSCap Expr, WSCap LVal),
+  foreachHeader :: WSCap (WSCap Expr,
+    Maybe (WSCap (Either LVal Ref)), WSCap (Either LVal Ref)),
   foreachBlock  :: BlockOrStmt,
   foreachSyntax :: StmtSyntax}
   deriving (Eq, Show, Typeable, Data)
@@ -383,6 +389,7 @@ $(derive makeBinary ''Const)
 $(derive makeBinary ''DubArrowMb)
 $(derive makeBinary ''DynConst)
 $(derive makeBinary ''Expr)
+$(derive makeBinary ''Ref)
 $(derive makeBinary ''IncOrReq)
 $(derive makeBinary ''LOnlyVal)
 $(derive makeBinary ''LRVal)

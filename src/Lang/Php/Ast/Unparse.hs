@@ -125,12 +125,17 @@ instance Unparse ForPart where
   unparse (ForPart e) = either unparse (intercalate tokComma . map unparse) e
 
 instance Unparse Foreach where
-  unparse (Foreach (WSCap w1 (expr, dubArrow) w2) block StdSyntax) = concat [tokForeach,
-    unparse w1, tokLParen, unparse expr, tokAs, unparse dubArrow, tokRParen,
-    unparse w2, unparse block]
-  unparse (Foreach (WSCap w1 (expr, dubArrow) w2) block AltSyntax) =
-    concat [tokForeach, unparse w1, tokLParen, unparse expr, tokAs, unparse dubArrow,
-            tokRParen, unparse w2, tokColon, " ", unparse block, tokEndforeach]
+  unparse (Foreach (WSCap w1 (expr, lvalKey, lvalVal) w2) block syntax) = 
+    case syntax of
+      StdSyntax -> concat [tokForeach, unparse w1, tokLParen, unparse expr,
+        tokAs, unparserlVar lvalKey, unparse lvalVal, tokRParen, unparse w2,
+        unparse block]
+      AltSyntax -> concat [tokForeach, unparse w1, tokLParen, unparse expr,
+        tokAs, unparserlVar lvalKey, unparse lvalVal, tokRParen, unparse w2,
+        tokColon, " ", unparse block, tokEndforeach]
+   where
+    unparserlVar (Just x) = unparse x ++ tokDubArrow
+    unparserlVar _ = ""
 
 instance Unparse Func where
   unparse (Func w1 ref name (WSCap w2 args w3) block) = concat [tokFunction,
@@ -335,10 +340,13 @@ instance Unparse Expr where
     ExprParen a -> tokLParen ++ unparse a ++ tokRParen
     ExprPostOp o e w -> unparse e ++ unparse w ++ unparse o
     ExprPreOp o w e -> unparse o ++ unparse w ++ unparse e
-    ExprRef w v -> tokAmp ++ unparse w ++ unparse v
+    ExprRef r -> unparse r
     ExprRVal a -> unparse a
     ExprStrLit a -> unparse a
     ExprTernaryIf a -> unparse a
+
+instance Unparse Ref where
+  unparse (Ref w v) = tokAmp ++ unparse w ++ unparse v
 
 instance Unparse BinOpBy where
   unparse binOp = case binOp of

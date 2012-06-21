@@ -237,9 +237,8 @@ forPartExpry w1 = ForPart . Right <$>
 
 instance Parse (Foreach, WS) where
   parse = tokForeachP >> do
-    h <- liftM3 WSCap parse
-      (tokLParenP >> liftM2 (,) parse (tokAsP >> parse) <* tokRParenP)
-      parse
+    h <- liftM3 WSCap parse (tokLParenP >> liftM3 (,,) (parse <* tokAsP)
+      (optionMaybe (try $ parse <* tokDubArrowP)) (parse <* tokRParenP)) parse
     parseAltSyntax h <|> parseStdSyntax h
    where
     parseAltSyntax h = do
@@ -580,13 +579,7 @@ simpleExprParser =
     case argMb of
       Just arg -> (,) (ExprExit isExit $ Just (ws1, arg)) <$> parse
       _ -> return (ExprExit isExit Nothing, ws1)
-  <|> do
-    w <- tokAmpP >> parse
-    first (ExprRef w . Right) <$> parse <|> do
-      (e, wEnd) <- parse
-      case e of
-        ExprNew _ _ _ -> return (ExprRef w (Left e), wEnd)
-        _ -> fail "Expecting a Val or ExprNew."
+  <|> first (ExprRef) <$> parse
   <|> liftM2 (,) (
     ExprNumLit <$> parse <|>
     (tokArrayP >> liftM2 ExprArray parse (arrListParser parse)) <|>
@@ -658,6 +651,15 @@ includeParser = try $ do
     fail "Expecting an include/require expression."
   ws <- parse
   first (f ws) <$> parse
+
+instance Parse (Ref, WS) where
+  parse = do
+    w <- tokAmpP >> parse
+    first (Ref w . Right) <$> parse <|> do
+      (e, wEnd) <- parse
+      case e of
+        ExprNew _ _ _ -> return (Ref w (Left e), wEnd)
+        _ -> fail "Expecting a Val or ExprNew."
 
 instance Parse (DubArrowMb, WS) where
   parse = do
