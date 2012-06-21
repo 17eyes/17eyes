@@ -7,19 +7,27 @@ import Lang.Php.Cfg.Types
 import qualified Data.Intercal as IC
 
 import qualified Lang.Php.Ast as Ast
-import Lang.Php.Ast hiding ((<*>), Label)
+import Lang.Php.Ast hiding ((<*>), Label, get, put)
 
 import Control.Monad
 import Control.Monad.State
 import Data.Functor
 import Compiler.Hoopl
 
-data GS = GS -- TODO: define generation state
+data GS = GS {
+    gsBreakTargets :: [Label],
+    gsContinueTargets :: [Label]
+}
+
+initialGS = GS {
+    gsBreakTargets = [],
+    gsContinueTargets = []
+}
 
 type GMonad = StateT GS SimpleUniqueMonad
 
 runGMonad :: GMonad a -> a
-runGMonad = fst . runSimpleUniqueMonad . (\x -> runStateT x GS)
+runGMonad = fst . runSimpleUniqueMonad . (\x -> runStateT x initialGS)
 
 instance UniqueMonad GMonad where
   freshUnique = lift freshUnique
@@ -350,7 +358,17 @@ instance CfgAble (StoredPos Stmt) where
     lstart <- freshLabel
     lbody <- freshLabel
     lend <- freshLabel
+    -- setup break/continue targets before entering the loop body
+    modify $ \gs -> gs {
+        gsBreakTargets = lend:(gsBreakTargets gs),
+        gsContinueTargets = lstart:(gsContinueTargets gs)
+      }
     body <- toCfg block
+    -- revert break/continue targets
+    modify $ \gs -> gs {
+        gsBreakTargets = tail (gsBreakTargets gs),
+        gsContinueTargets = tail (gsContinueTargets gs)
+      }
     (var_cond, head_exp) <- toTacR (wsCapMain $ wsCapMain wexpr) pos
     let head = (mkLabel lstart)
            <*> head_exp
@@ -378,6 +396,8 @@ instance CfgAble (StoredPos Stmt) where
             |*><*| (mkLabel lfalse <*> else_block)
 
   -- `for' loop is translated into `while'
+  -- FIXME TODO XXX: `continue' doesn't work properly (the incrementation code
+  -- is note executed)
   toCfg (StoredPos pos (StmtFor (For ws_head block _))) = do
     let (fp_init, fp_cond, fp_inc) = wsCapMain ws_head
     let while_cond = foldConds (fpToExprs fp_cond)
@@ -409,6 +429,10 @@ instance CfgAble (StoredPos Stmt) where
 
      mkWSC :: a -> WSCap a
      mkWSC x = WSCap [] x []
+
+  -- TODO: translate StmtEnd properly (top-levels?)
+  toCfg (StoredPos pos (StmtBreak m_lvl _ _)) = loopExit gsBreakTargets pos m_lvl
+  toCfg (StoredPos pos (StmtContinue m_lvl _ _)) = loopExit gsContinueTargets pos m_lvl
 
 ------------------------------------------------------------------------------
 --                          Helper functions                                --
@@ -473,3 +497,23 @@ postIncDecOp delta e@(ExprRVal (RValLRVal lv)) pos = do
 makeExprConst :: String -> Expr
 makeExprConst name =
   ExprRVal $ RValROnlyVal $ ROnlyValConst (Const [] (WSCap [] name []))
+
+-- This implements break/continue statements.  The first argument can be
+-- either gsContinueTargets or gsBreakTargets.
+loopExit :: (GS -> [Label]) -> SourcePos -> Maybe (WS, Expr) -> GMonad Cfg
+loopExit tfun pos m_lvl = do
+  targets <- tfun <$> get
+  let lvl = case m_lvl of
+              Nothing -> 1
+              Just (_,e) -> e2const e
+  if length targets < lvl || lvl <= 0
+    then error "Invalid break/continue parameter."
+    else return ()
+  lab <- freshLabel
+  return $ (mkLast $ sp2ip pos $ IJump (targets !! (lvl-1)))
+    |*><*| mkLabel lab
+ where
+   e2const (ExprNumLit (NumLit x)) = read x :: Int
+   e2const (ExprParen wsc) = e2const (wsCapMain wsc)
+   e2const (ExprPreOp PrNegate [] e) = -(e2const e)
+   e2const _ = error "Break/continue parameter is not a constant expression."
