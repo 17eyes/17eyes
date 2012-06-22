@@ -278,6 +278,8 @@ instance TacAbleR Expr where
     let b_end = mkLabel l_end
     return (r_res, b_cond |*><*| b_then |*><*| b_else |*><*| b_end)
 
+  toTacR (ExprStrLit sl) pos = toTacR sl pos
+
   toTacR _ pos = error "TacAbleR Expr not fully implmented"
 
 instance TacAbleR RVal where
@@ -305,6 +307,34 @@ instance TacAbleR Var where
   toTacR (Var name []) pos = return (RVar name, emptyGraph)
   toTacR (Var _ _) _ = error "TODO: implement indexed variables (as r-values)"
   toTacR _ _ = error "TODO: implement dyanmic variables (as r-values)"
+
+instance TacAbleR StrLit where
+  -- Basic case of a simple string without embedded expressions.
+  toTacR (StrLit (IC.Interend str)) pos = do
+    r <- RTemp <$> freshUnique
+    return (r, mkMiddle $ sp2ip pos $ ILoadString r str)
+
+  -- This is a bit overcomplicated since Strings inside StrLits hold also the
+  -- quoting characters (" or ').  We strip those from the beginning and the
+  -- end and translate:
+  --
+  --      "foo $a bar $b baz" ===> "foo " . $a . " bar " . $b . " baz"
+  --
+  -- Then, we invoke toTacR on such expression.  Strings inside it are always
+  -- simple and get handled by the basic case above.
+  toTacR (StrLit ic) pos = do
+    -- str' and xs' are str and xs with lit_char removed from the beginning
+    -- and the end.
+    let str' = take (length str - 1) str
+    let xs' = case head xs of (a, b) -> (tail a, b):tail xs
+    let e = foldr comb (lit str') xs'
+    toTacR e pos
+   where
+     (xs, str) = IC.breakEnd ic
+     lit_char = last str -- " or '
+     cat e1 e2 = ExprBinOp (BByable BConcat) e1 ([],[]) e2
+     lit x = ExprStrLit (StrLit (IC.Interend (lit_char:x ++ [lit_char])))
+     comb (str, (_, rval)) e = (lit str) `cat` (ExprRVal rval) `cat` e
 
 ------------------------------------------------------------------------------
 --                              L-Values                                    --
