@@ -13,6 +13,7 @@ import Control.Monad
 import Control.Monad.State
 import Data.Functor
 import Compiler.Hoopl
+import Text.Parsec.Pos(newPos)
 
 data GS = GS {
     gsBreakTargets :: [Label],
@@ -336,6 +337,28 @@ instance TacAbleR StrLit where
      lit x = ExprStrLit (StrLit (IC.Interend (lit_char:x ++ [lit_char])))
      comb (str, (_, rval)) e = (lit str) `cat` (ExprRVal rval) `cat` e
 
+instance TacAbleR TopLevel where
+  toTacR (TopLevel str Nothing) pos = do
+    (reg, graph) <- toTacR (strLitExpr str) pos
+    return (RNull, graph <*> (mkMiddle $ IP Nothing (ICall RNull CPrint reg)))
+
+  toTacR (TopLevel str (Just (Right _))) pos = toTacR (TopLevel str Nothing) pos
+
+  -- <?= style tags
+  toTacR (TopLevel str (Just (Left (ws_expr, stmt_end)))) pos = do
+    -- first, just print the main textual content
+    (_, g_str) <- toTacR (TopLevel str Nothing) pos
+    -- next, print the expression inside the tags
+    (r_expr, g_expr) <- toTacR (wsCapMain ws_expr) pos
+    let g_print = mkMiddle $ sp2ip pos $ ICall RNull CPrint r_expr
+    -- finally, there is possibly an another TopLevel inside the StmtEnd
+    (_, g_stmt_end) <- toTacR stmt_end pos
+    return (RNull, g_str <*> g_expr <*> g_print <*> g_stmt_end)
+
+instance TacAbleR StmtEnd where
+  toTacR StmtEndSemi _ = return (RNull, emptyGraph)
+  toTacR (StmtEndClose top_level) pos = toTacR top_level pos
+
 ------------------------------------------------------------------------------
 --                              L-Values                                    --
 ------------------------------------------------------------------------------
@@ -364,28 +387,28 @@ instance TacAbleL Ref where
 --                              Statements                                  --
 ------------------------------------------------------------------------------
 
--- TODO: implement top-levels in Ast
 instance CfgAble Ast where
-  toCfg (Ast _ _ sl) = toCfg sl
-
-instance CfgAble StmtEnd where
-  toCfg StmtEndSemi = return emptyGraph
-  toCfg (StmtEndClose _) = error "TODO: implement top levels"
+  toCfg (Ast file toplevel sl) = do
+    let pos = newPos file 0 0
+    (_, g_toplevel) <- toTacR toplevel pos
+    g_main <- toCfg sl
+    return (g_toplevel <*> g_main)
 
 instance CfgAble (StoredPos Stmt) where
   toCfg (StoredPos _ (StmtBlock b)) = toCfg b
-  toCfg (StoredPos _ (StmtNothing _)) = return emptyGraph
+  toCfg (StoredPos pos (StmtNothing stmt_end)) = snd <$> toTacR stmt_end pos
 
-  toCfg (StoredPos pos (StmtExpr e _ end)) = do
-    (_, g1) <- toTacR e pos -- variable is discarded
-    g2 <- toCfg end
-    return (g1 <*> g2)
+  toCfg (StoredPos pos (StmtExpr e _ stmt_end)) = do
+    (_, g_e) <- toTacR e pos -- variable is discarded
+    (_, g_end) <- toTacR stmt_end pos
+    return (g_e <*> g_end)
 
-  toCfg (StoredPos pos (StmtEcho args _)) = do
+  toCfg (StoredPos pos (StmtEcho args stmt_end)) = do
     (vars, gs1) <- fmap unzip $ forM args $
       \wexpr -> toTacR (wsCapMain wexpr) pos
     let gs2 = map (mkMiddle . sp2ip pos . ICall RNull CPrint) vars
-    return $ foldl (<*>) emptyGraph (gs1 ++ gs2)
+    (_, g_end) <- toTacR stmt_end pos
+    return $ foldl (<*>) emptyGraph (gs1 ++ gs2 ++ [g_end])
 
   toCfg (StoredPos pos (StmtWhile (While wexpr block _))) = do
     lstart <- freshLabel
@@ -512,13 +535,16 @@ instance CfgAble (StoredPos Stmt) where
 
   -- An empty `switch' statement is a boring case but we need to handle it
   -- correctly. This is equivalent to just evaluating the switched value.
+  --
+  -- There is an annoying possibility of a TopLevel inside the switch, before
+  -- the first case. This is to make the colon-syntax for switch more
+  -- convenient to write. PHP interpreter parses it but just ignores it.
   toCfg (StoredPos pos (StmtSwitch (Switch _ w2_e _ m_tl []))) =
     toCfg (StoredPos pos (StmtExpr (wsCapMain $ wsCapMain w2_e) [] stend))
    where
      stend = maybe StmtEndSemi (StmtEndClose . wsCapMain) m_tl
 
-  -- TODO: toplevels?
-  toCfg (StoredPos pos (StmtSwitch (Switch _ w2_e _ _ cases))) = do
+  toCfg (StoredPos pos (StmtSwitch (Switch _ w2_e _ m_ws_tl cases))) = do
     (r_val, g_val) <- toTacR w2_e pos
     l_end <- freshLabel
     -- interestingly, `continue' behaves just like `break' inside PHP's switch
@@ -556,10 +582,9 @@ instance CfgAble (StoredPos Stmt) where
       |*><*| (foldl1 (|*><*|) (checks ++ cases))
       |*><*| (mkLabel l_end)
 
-
   -- TODO: translate StmtEnd properly (top-levels?)
-  toCfg (StoredPos pos (StmtBreak m_lvl _ _)) = loopExit gsBreakTargets pos m_lvl
-  toCfg (StoredPos pos (StmtContinue m_lvl _ _)) = loopExit gsContinueTargets pos m_lvl
+  toCfg (StoredPos pos (StmtBreak m_lvl _ stmt_end)) = loopExit gsBreakTargets pos m_lvl stmt_end
+  toCfg (StoredPos pos (StmtContinue m_lvl _ stmt_end)) = loopExit gsContinueTargets pos m_lvl stmt_end
 
 ------------------------------------------------------------------------------
 --                          Helper functions                                --
@@ -627,8 +652,8 @@ makeExprConst name =
 
 -- This implements break/continue statements.  The first argument can be
 -- either gsContinueTargets or gsBreakTargets.
-loopExit :: (GS -> [Label]) -> SourcePos -> Maybe (WS, Expr) -> GMonad Cfg
-loopExit tfun pos m_lvl = do
+loopExit :: (GS -> [Label]) -> SourcePos -> Maybe (WS, Expr) -> StmtEnd -> GMonad Cfg
+loopExit tfun pos m_lvl stmt_end = do
   targets <- tfun <$> get
   let lvl = case m_lvl of
               Nothing -> 1
@@ -637,8 +662,9 @@ loopExit tfun pos m_lvl = do
     then error "Invalid break/continue parameter."
     else return ()
   lab <- freshLabel
+  (_, g_stmt_end) <- toTacR stmt_end pos
   return $ (mkLast $ sp2ip pos $ IJump (targets !! (lvl-1)))
-    |*><*| mkLabel lab
+    |*><*| (mkLabel lab <*> g_stmt_end)
  where
    e2const (ExprNumLit (NumLit x)) = read x :: Int
    e2const (ExprParen wsc) = e2const (wsCapMain wsc)
@@ -656,3 +682,6 @@ popTargets = modify $ \gs -> gs {
     gsContinueTargets = tail (gsContinueTargets gs),
     gsBreakTargets = tail (gsBreakTargets gs)
   }
+
+strLitExpr :: String -> Expr
+strLitExpr str = ExprStrLit $ StrLit $ IC.Interend ('\'':str ++ "'")
