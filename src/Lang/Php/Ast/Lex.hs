@@ -5,20 +5,99 @@ module Lang.Php.Ast.Lex where
 import Lang.Php.Ast.Common
 import qualified Data.Set as Set
 
-data NumLit = NumLit String
+--
+-- Number literals
+--
+-- Documentation for integers:
+-- http://php.net/manual/en/language.types.integer.php
+--
+
+data NumLit = NumLit String (Either Integer Double)
   deriving (Eq, Show, Typeable, Data)
 
 instance Parse NumLit where
   -- could be tighter
-  parse = NumLit <$> (liftM2 (++) numStart (ptAndRest <|> return "") <|>
-    ptAndRest)
+  parse = do
+    strNumber <- liftM2 (:) (char '0') (hexNum <|> binNum <|> numRest) <|>
+      liftM2 (:) (oneOf ['1'..'9']) numRest <|>
+      -- special case .[0-9]+([eE][+-]?[0-9]+)? is a number!
+      (lookAhead (char '.') >> numRest)
+    return $ NumLit strNumber (parseNumber strNumber)
     where
-    numStart = liftM2 (:) (oneOf ['0'..'9']) noDecPt
-    ptAndRest = liftM2 (:) (char '.') noDecPt
-    noDecPt = many . oneOf $ 'X':'x':['0'..'9'] ++ ['a'..'f'] ++ ['A'..'F']
+
+    numRest :: Parser String
+    numRest = do
+      prePt <- octdecNum
+      pt <- ptAndRest
+      sciNot <- sciNot
+      return $ concat [prePt,pt,sciNot]
+
+    -- parses: .[0-9]
+    ptAndRest :: Parser String
+    ptAndRest = option ""
+      (try (liftM2 (:) (char '.') (many . oneOf $ ['0'..'9'])))
+
+    -- parses: .[+-][0-9]
+    sciNot :: Parser String
+    sciNot = option ""
+      (try $ liftM2 (++)
+       (liftM2 (:) (oneOf ['e','E']) (tokPlusP <|> tokMinusP <|> return "")) 
+       (many1 . oneOf $ ['0'..'9']))
+
+    -- binary numbers (since PHP 5.4)
+    -- parses: b[0-1]+
+    binNum = liftM2 (:) (char 'b') (many1 . oneOf $ ['0','1'])
+
+    -- As PHP docs says: [..] If an invalid digit is given in an octal integer
+    -- (i.e. 8 or 9), the rest of the number is ignored. [...], That's why
+    -- those two options are connected.
+    -- parses: [0-9]*
+    octdecNum = many . oneOf $ ['0'..'9']
+
+    -- hex numbers
+    -- parses: x[0-9a-fA-F]+
+    hexNum = liftM2 (:) (oneOf ['X','x'])
+      (many1 . oneOf $ ['0'..'9'] ++ ['a'..'f'] ++ ['A'..'F'])
+
+    -- Parse number
+    parseNumber :: String -> Either Integer Double
+    parseNumber strNum = let lowerStrNum = map toLower strNum in
+      if '.' `elem` strNum ||
+      (('x' `notElem` lowerStrNum) &&
+       ('e' `elem` lowerStrNum))
+      then Right $ parseFloat lowerStrNum
+      else Left $ parseInteger lowerStrNum 0 0
+
+    -- XXX: verify if this trick is sufficent for the PHP
+    parseFloat :: String -> Double
+    parseFloat x = read . concat $
+      ["0", takeWhile ((/=) 'e') x, "0", dropWhile ((/=) 'e') x]
+
+    -- This function assumes that given string is valid string (valid in the
+    --  PHP world)
+    -- XXX: refactor me, too complicated
+    parseInteger :: String -> Integer -> Integer -> Integer
+    parseInteger [] _ acc = acc
+    parseInteger (x:xs) base acc =
+      case x of
+        'b' -> parseInteger xs 2 0
+        'x' -> parseInteger xs 16 0
+        x -> if x == '0' && base == 0
+          then parseInteger xs 8 0
+          else (case base of
+              -- special case: we hit first digit of 10-based number
+              0 -> parseInteger xs 10 (toInteger $ digitToInt x)
+              -- special case: first non oct digit ends oct numbers
+              8 -> if isOctDigit x
+                    then parseInteger xs 8
+                      (acc * base + (toInteger $ digitToInt x))
+                    else acc
+              base -> parseInteger xs base
+                (acc * base + (toInteger $ digitToInt x))
+            )
 
 instance Unparse NumLit where
-  unparse (NumLit a) = a
+  unparse (NumLit a _) = a
 
 lineParser :: Parser String
 lineParser = liftM2 (++) (many $ satisfy (/= '\n')) ((:[]) <$> newline)

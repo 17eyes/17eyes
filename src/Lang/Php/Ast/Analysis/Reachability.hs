@@ -78,7 +78,7 @@ minBreakLevel :: Stmt -> TraverseState () BreakLevel
 minBreakLevel (StmtReturn _ _ _) = return infinity
 minBreakLevel (StmtThrow _ _) = return infinity
 
-minBreakLevel (StmtBreak (Just (_, ExprNumLit (NumLit x))) _ _) = return (read x)
+minBreakLevel (StmtBreak (Just (_, ExprNumLit (NumLit x _))) _ _) = return (read x)
 minBreakLevel (StmtBreak _ _ _) = return 1 -- safe, this argument cannot be < 1
 
 -- surprisingly, continue works just like break

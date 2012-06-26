@@ -103,7 +103,7 @@ instance (TacAbleL a, TacAbleL b) => TacAbleL (Either a b) where
 ------------------------------------------------------------------------------
 
 instance TacAbleR Expr where
-  toTacR (ExprNumLit (NumLit x)) pos = do
+  toTacR (ExprNumLit (NumLit x _)) pos = do
     var <- RTemp <$> freshUnique
     return (var, mkMiddle (sp2ip pos $ ILoadNum var x))
 
@@ -237,7 +237,8 @@ instance TacAbleR Expr where
 
   -- (+e) is translated into (0+e)
   toTacR (ExprPreOp PrPos _ e) pos = toTacR e' pos
-   where e' = ExprBinOp (BByable BPlus) (ExprNumLit (NumLit "0")) ([],[]) e
+   where e' = ExprBinOp (BByable BPlus) (ExprNumLit (NumLit "0" (Left 0))) 
+          ([],[]) e
 
   -- TODO: implement error suppression operators
   toTacR (ExprPreOp PrSuppress _ e) pos = error "error suppression operators not implemented"
@@ -666,7 +667,7 @@ loopExit tfun pos m_lvl stmt_end = do
   return $ (mkLast $ sp2ip pos $ IJump (targets !! (lvl-1)))
     |*><*| (mkLabel lab <*> g_stmt_end)
  where
-   e2const (ExprNumLit (NumLit x)) = read x :: Int
+   e2const (ExprNumLit (NumLit x _)) = read x :: Int
    e2const (ExprParen wsc) = e2const (wsCapMain wsc)
    e2const (ExprPreOp PrNegate [] e) = -(e2const e)
    e2const _ = error "Break/continue parameter is not a constant expression."
