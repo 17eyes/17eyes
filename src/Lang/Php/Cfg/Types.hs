@@ -99,6 +99,11 @@ data Callable tArg aSpec where
   CItrValid :: Callable t t
   CItrNext :: Callable t t
 
+  --                      CALLS TO PHP FUNCTIONS
+  ----------------------------------------------------------------------------
+  CPhp :: String -> Callable t [t]
+  CPhpStatic :: [String] -> String -> Callable t [t]
+
 deriving instance Show tArg => Show (Callable tArg aSpec)
 
 type Cfg = Graph InstrPos O O

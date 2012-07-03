@@ -294,7 +294,31 @@ instance TacAbleR ROnlyVal where
     return (var, mkMiddle $ sp2ip pos $ ILoadConst var (wsCapMain w_name))
 
   toTacR (ROnlyValConst _) pos = error "TODO: implement class member constants"
-  toTacR (ROnlyValFunc _ _ _) pos = error "TODO: implement function calls"
+
+  -- Ordinary function call: function name is a constant, parameters are r-values.
+  toTacR (ROnlyValFunc (Right const) _ ws_args) pos = do
+    (r_args, g_args) <- unzip <$> mapM (\x -> toTacR x pos) args
+    r_res <- RTemp <$> freshUnique
+    let graph = (foldl1 (<*>) g_args)
+            <*> (mkMiddle $ sp2ip pos $ ICall r_res callable r_args)
+    return (r_res, graph)
+   where
+     callable :: Callable t [t]
+     callable = case const of
+       Const [] wsc -> CPhp (wsCapMain wsc)
+       Const wcls wsc -> CPhpStatic (map wsCapMain wcls) (wsCapMain wsc)
+
+     args :: [Expr]
+     args = case ws_args of
+       Left _ -> []
+       Right xs -> map (asExpr . wsCapMain) xs
+
+     asExpr :: Either Expr LVal -> Expr
+     asExpr (Left x) = x
+     asExpr (Right lv) = error "l-values as function arguments are not implemented"
+
+  toTacR (ROnlyValFunc (Left _) _ _) pos =
+    error "complex expressions as functions in function calls are not implemented"
 
 -- Not that this translates an LRVal when used as an r-value. L-values are
 -- handled differently.
