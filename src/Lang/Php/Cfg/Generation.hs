@@ -282,6 +282,12 @@ instance TacAbleR Expr where
 
   toTacR (ExprStrLit sl) pos = toTacR sl pos
 
+  toTacR (ExprBackticks sl) pos = do
+    (r_sl, g_sl) <- toTacR sl pos
+    r_shell <- RTemp <$> freshUnique
+    let g_shell = mkMiddle $ sp2ip pos $ ICall r_shell (CPhp "shell_exec") [r_sl]
+    return (r_shell, g_sl <*> g_shell)
+
   toTacR _ pos = error "TacAbleR Expr not fully implmented"
 
 instance TacAbleR RVal where
