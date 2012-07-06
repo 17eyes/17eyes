@@ -104,6 +104,10 @@ data Callable tArg aSpec where
   CPhp :: String -> Callable t [t]
   CPhpStatic :: [String] -> String -> Callable t [t]
 
+  -- Type in the casting operator is kept as string. Maybe if we're going to
+  -- have some datatype to represent PHP types it should be used here?
+  CCast :: Callable t (String, t)
+
 deriving instance Show tArg => Show (Callable tArg aSpec)
 
 type Cfg = Graph InstrPos O O

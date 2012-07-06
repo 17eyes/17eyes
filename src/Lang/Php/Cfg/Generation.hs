@@ -288,6 +288,12 @@ instance TacAbleR Expr where
     let g_shell = mkMiddle $ sp2ip pos $ ICall r_shell (CPhp "shell_exec") [r_sl]
     return (r_shell, g_sl <*> g_shell)
 
+  toTacR (ExprCast ws_type _ e) pos = do
+    (r_e, g_e) <- toTacR e pos
+    r_res <- RTemp <$> freshUnique
+    let g_call = mkMiddle $ sp2ip pos $ ICall r_res CCast (wsCapMain ws_type, r_e)
+    return (r_res, g_e <*> g_call)
+
   toTacR _ pos = error "TacAbleR Expr not fully implmented"
 
 instance TacAbleR RVal where
