@@ -344,7 +344,8 @@ instance TacAbleR StrLit where
   -- Basic case of a simple string without embedded expressions.
   toTacR (StrLit (IC.Interend str)) pos = do
     r <- RTemp <$> freshUnique
-    return (r, mkMiddle $ sp2ip pos $ ILoadString r str)
+    let str_noquote = tail $ init $ str
+    return (r, mkMiddle $ sp2ip pos $ ILoadString r str_noquote)
 
   -- This is a bit overcomplicated since Strings inside StrLits hold also the
   -- quoting characters (" or ').  We strip those from the beginning and the
@@ -355,17 +356,12 @@ instance TacAbleR StrLit where
   -- Then, we invoke toTacR on such expression.  Strings inside it are always
   -- simple and get handled by the basic case above.
   toTacR (StrLit ic) pos = do
-    -- str' and xs' are str and xs with lit_char removed from the beginning
-    -- and the end.
-    let str' = take (length str - 1) str
-    let xs' = case head xs of (a, b) -> (tail a, b):tail xs
-    let e = foldr comb (lit str') xs'
-    toTacR e pos
+    let (StrLit ic') = strLitStripQuotes (StrLit ic)
+    let (xs, str) = IC.breakEnd ic'
+    toTacR (foldr comb (lit str) xs) pos
    where
-     (xs, str) = IC.breakEnd ic
-     lit_char = last str -- " or '
      cat e1 e2 = ExprBinOp (BByable BConcat) e1 ([],[]) e2
-     lit x = ExprStrLit (StrLit (IC.Interend (lit_char:x ++ [lit_char])))
+     lit x = ExprStrLit (StrLit (IC.Interend ('"':x ++ "\"")))
      comb (str, (_, rval)) e = (lit str) `cat` (ExprRVal rval) `cat` e
 
 instance TacAbleR TopLevel where
@@ -716,3 +712,15 @@ popTargets = modify $ \gs -> gs {
 
 strLitExpr :: String -> Expr
 strLitExpr str = ExprStrLit $ StrLit $ IC.Interend ('\'':str ++ "'")
+
+-- StrLit nodes in the AST contain quoting characters at the beginning and the
+-- end.  Storing this in the CFG representation isn't necessary so this
+-- function is used to strip the quotes.
+strLitStripQuotes :: StrLit -> StrLit
+strLitStripQuotes (StrLit ic) = StrLit $ strip_last $ strip_first ic
+ where
+   strip_first (IC.Interend (_:xs)) = IC.Interend xs
+   strip_first (IC.Intercal (_:xs) e ic') = IC.Intercal xs e ic'
+
+   strip_last (IC.Interend xs) = IC.Interend (init xs)
+   strip_last (IC.Intercal xs e ic') = IC.Intercal xs e (strip_last ic')
