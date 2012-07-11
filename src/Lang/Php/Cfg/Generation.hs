@@ -240,8 +240,18 @@ instance TacAbleR Expr where
    where e' = ExprBinOp (BByable BPlus) (ExprNumLit (NumLit "0" (Left 0))) 
           ([],[]) e
 
-  -- TODO: implement error suppression operators
-  toTacR (ExprPreOp PrSuppress _ e) pos = error "error suppression operators not implemented"
+  toTacR (ExprPreOp PrSuppress _ e) pos = do
+    r_prev <- RTemp <$> freshUnique
+    let g_set = mkMiddle $ sp2ip pos $ ICall r_prev CErrorsSuppress ()
+    (r_e, g_e) <- toTacR e pos
+    r <- RTemp <$> freshUnique
+    -- This copy operation is necessary since the register r_e may be an
+    -- undefined variable. If we were to return the same register it may
+    -- generate a warning which would normally be suppressed.
+    let g_copy = mkMiddle $ sp2ip pos $ ICopyVar r r_e
+    let g_restore = mkMiddle $ sp2ip pos $ ICall RNull CErrorsRestore r_prev
+    return (r, g_set <*> g_e <*> g_copy <*> g_restore)
+
   toTacR (ExprPreOp PrAt w e) pos = toTacR (ExprPreOp PrSuppress w e) pos
 
   -- Incrementation & decrementation is translated into addition.

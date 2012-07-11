@@ -68,6 +68,25 @@ data Callable tArg aSpec where
   CClone  :: Callable t t
   CNegate :: Callable t t
 
+  --                       ERROR SUPPRESSION
+  ----------------------------------------------------------------------------
+  -- Following callables are used to implement the error suppression operator
+  -- ('@'). Note that an exception may cause a corresponding CErrorsRestore
+  -- call to be omitted. This (probably buggy) behavior is consistent with
+  -- Zend PHP implementation.
+  --
+  -- CErrorsRestore suppresses error messages and returns a boolean PHP value.
+  -- TRUE means that errors were already suppressed. This is used as an
+  -- argument to CErrorsRestore later on.
+  --
+  -- CErrorsRestore accepts a boolean argument. If TRUE, the errors remain
+  -- suppressed; if it's FALSE, then errors will be shown.
+  --
+  -- Note that storing the result of CErrorsRestore is needed to correctly
+  -- implement nested '@' operators.
+  CErrorsSuppress :: Callable t ()
+  CErrorsRestore :: Callable t t
+
   --                        BINARY OPERATORS
   ----------------------------------------------------------------------------
   -- Some of the logical operators from AST's BinOp are translated into
