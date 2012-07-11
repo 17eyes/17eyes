@@ -408,21 +408,59 @@ instance TacAbleR StmtEnd where
 ------------------------------------------------------------------------------
 
 instance TacAbleL LVal where
-  toTacL (LValLOnlyVal x) = error "TODO: implement special l-values"
+  toTacL (LValLOnlyVal x) = toTacL x
   toTacL (LValLRVal x) = toTacL x
 
-instance TacAbleL LRVal where
-  toTacL (LRValVar (DynConst [] wsc)) = case wsCapMain wsc of
-    Right var -> toTacL var
-    _ -> error "TODO: implement complex l-values"
+instance TacAbleL LOnlyVal where
+  toTacL (LOnlyValAppend (LValLRVal lrv) _) pos var = do
+    (r_lrt, g_lrt) <- toTacR lrv pos
+    let g_append = mkMiddle $ sp2ip pos $ ICall RNull CArrayPush (r_lrt, var)
+    return (g_lrt <*> g_append)
 
-  toTacL _ = error "TODO: implement complex l-values"
+  toTacL (LOnlyValAppend (LValLOnlyVal lrv) _) pos var = do
+    r_arr <- RTemp <$> freshUnique
+    let g_create = mkMiddle $ sp2ip pos $ ICall r_arr CArrayEmpty ()
+    let g_append = mkMiddle $ sp2ip pos $ ICall RNull CArrayPush (r_arr, var)
+    g_assign <- toTacL lrv pos r_arr
+    return $ g_create <*> g_append <*> g_assign
+
+  -- a silly case: list() = <expression>; just discard the value
+  toTacL (LOnlyValList _ (Left _)) _ _ = return emptyGraph
+
+  -- NOTE: list(...) assigns values starting from the rightmost parameter
+  toTacL (LOnlyValList _ (Right xs)) pos var = do
+    graphs <- forM (reverse $ zip [0..] xs) $ \(idx, x) -> case x of
+      Left _ -> return emptyGraph
+      Right ws_lval -> do
+        r <- RTemp <$> freshUnique
+        r_idx <- RTemp <$> freshUnique
+        let g_idx_load = mkMiddle $ sp2ip pos $ ILoadNum r_idx (show idx)
+        let g_get = mkMiddle $ sp2ip pos $ ICall r CArrayGet (var, r_idx)
+        g_main <- toTacL (wsCapMain ws_lval) pos r
+        return $ g_idx_load <*> g_get <*> g_main
+    return (foldl1 (<*>) graphs)
+
+  toTacL (LOnlyValInd lov _ ws_e) pos var = error "TODO: implement LOnlyValInd (e.g. $x[][5] = 5)"
+  toTacL (LOnlyValMemb lov _ memb) pos var = error "TODO: implement LOnlyValMemb (e.g. $x[]->a = 5)"
+
+instance TacAbleL DynConst where
+  toTacL (DynConst [] wsc) = case wsCapMain wsc of
+    Right var -> toTacL var
+    _ -> error "inconsistent AST" -- should not happen
+
+  toTacL (DynConst xs x) = error "TODO: implement DynConst (A::$x = 5 etc.)"
+
+instance TacAbleL LRVal where
+  toTacL (LRValVar dc) = toTacL dc
+  toTacL (LRValInd rval _ ws_expr) = error "TODO: implement LRValInd (e.g. foo()[0] = 5)"
+  toTacL (LRValMemb rval _ memb) = error "TODO: implement LRValMemb (e.g. foo()->a = 5)"
 
 instance TacAbleL Var where
   toTacL (Var name []) pos var =
     return $ mkMiddle $ sp2ip pos $ ICopyVar (RVar name) var
 
-  toTacL _ _ _ = error "TODO: implement indexed and dynamic variables"
+  toTacL (VarDyn _ x) pos var = error "TODO: implement VarDyn ($$x etc.)"
+  toTacL (VarDynExpr _ x) pos var = error "TODO: implement VarDynExpr (${foo()} etc)"
 
 instance TacAbleL Ref where
   toTacL = error "TODO: implement references"
