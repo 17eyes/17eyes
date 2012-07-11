@@ -127,6 +127,7 @@ data Callable tArg aSpec where
   ----------------------------------------------------------------------------
   CArrayPush :: Callable t (t,t) -- TODO: specify behavior on undefined array variable
   CArrayEmpty :: Callable t ()
+  CArrayGet :: Callable t (t,t)
 
   -- Type in the casting operator is kept as string. Maybe if we're going to
   -- have some datatype to represent PHP types it should be used here?

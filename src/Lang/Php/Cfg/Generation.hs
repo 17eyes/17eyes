@@ -423,6 +423,22 @@ instance TacAbleL LOnlyVal where
     g_assign <- toTacL lrv pos r_arr
     return $ g_create <*> g_append <*> g_assign
 
+  -- a silly case: list() = <expression>; just discard the value
+  toTacL (LOnlyValList _ (Left _)) _ _ = return emptyGraph
+
+  -- NOTE: list(...) assigns values starting from the rightmost parameter
+  toTacL (LOnlyValList _ (Right xs)) pos var = do
+    graphs <- forM (reverse $ zip [0..] xs) $ \(idx, x) -> case x of
+      Left _ -> return emptyGraph
+      Right ws_lval -> do
+        r <- RTemp <$> freshUnique
+        r_idx <- RTemp <$> freshUnique
+        let g_idx_load = mkMiddle $ sp2ip pos $ ILoadNum r_idx (show idx)
+        let g_get = mkMiddle $ sp2ip pos $ ICall r CArrayGet (var, r_idx)
+        g_main <- toTacL (wsCapMain ws_lval) pos r
+        return $ g_idx_load <*> g_get <*> g_main
+    return (foldl1 (<*>) graphs)
+
   toTacL _ _ _ = error "TODO: implement special l-values"
 
 instance TacAbleL LRVal where
