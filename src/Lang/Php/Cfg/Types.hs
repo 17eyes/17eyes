@@ -123,6 +123,11 @@ data Callable tArg aSpec where
   CPhp :: String -> Callable t [t]
   CPhpStatic :: [String] -> String -> Callable t [t]
 
+  --                        ARRAY OPERATIONS
+  ----------------------------------------------------------------------------
+  CArrayPush :: Callable t (t,t) -- TODO: specify behavior on undefined array variable
+  CArrayEmpty :: Callable t ()
+
   -- Type in the casting operator is kept as string. Maybe if we're going to
   -- have some datatype to represent PHP types it should be used here?
   CCast :: Callable t (String, t)

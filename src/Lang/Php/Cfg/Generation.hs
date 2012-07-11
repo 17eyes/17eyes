@@ -407,8 +407,23 @@ instance TacAbleR StmtEnd where
 ------------------------------------------------------------------------------
 
 instance TacAbleL LVal where
-  toTacL (LValLOnlyVal x) = error "TODO: implement special l-values"
+  toTacL (LValLOnlyVal x) = toTacL x
   toTacL (LValLRVal x) = toTacL x
+
+instance TacAbleL LOnlyVal where
+  toTacL (LOnlyValAppend (LValLRVal lrv) _) pos var = do
+    (r_lrt, g_lrt) <- toTacR lrv pos
+    let g_append = mkMiddle $ sp2ip pos $ ICall RNull CArrayPush (r_lrt, var)
+    return (g_lrt <*> g_append)
+
+  toTacL (LOnlyValAppend (LValLOnlyVal lrv) _) pos var = do
+    r_arr <- RTemp <$> freshUnique
+    let g_create = mkMiddle $ sp2ip pos $ ICall r_arr CArrayEmpty ()
+    let g_append = mkMiddle $ sp2ip pos $ ICall RNull CArrayPush (r_arr, var)
+    g_assign <- toTacL lrv pos r_arr
+    return $ g_create <*> g_append <*> g_assign
+
+  toTacL _ _ _ = error "TODO: implement special l-values"
 
 instance TacAbleL LRVal where
   toTacL (LRValVar (DynConst [] wsc)) = case wsCapMain wsc of
