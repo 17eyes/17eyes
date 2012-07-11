@@ -439,20 +439,27 @@ instance TacAbleL LOnlyVal where
         return $ g_idx_load <*> g_get <*> g_main
     return (foldl1 (<*>) graphs)
 
-  toTacL _ _ _ = error "TODO: implement special l-values"
+  toTacL (LOnlyValInd lov _ ws_e) pos var = error "TODO: implement LOnlyValInd (e.g. $x[][5] = 5)"
+  toTacL (LOnlyValMemb lov _ memb) pos var = error "TODO: implement LOnlyValMemb (e.g. $x[]->a = 5)"
+
+instance TacAbleL DynConst where
+  toTacL (DynConst [] wsc) = case wsCapMain wsc of
+    Right var -> toTacL var
+    _ -> error "inconsistent AST" -- should not happen
+
+  toTacL (DynConst xs x) = error "TODO: implement DynConst (A::$x = 5 etc.)"
 
 instance TacAbleL LRVal where
-  toTacL (LRValVar (DynConst [] wsc)) = case wsCapMain wsc of
-    Right var -> toTacL var
-    _ -> error "TODO: implement complex l-values"
-
-  toTacL _ = error "TODO: implement complex l-values"
+  toTacL (LRValVar dc) = toTacL dc
+  toTacL (LRValInd rval _ ws_expr) = error "TODO: implement LRValInd (e.g. foo()[0] = 5)"
+  toTacL (LRValMemb rval _ memb) = error "TODO: implement LRValMemb (e.g. foo()->a = 5)"
 
 instance TacAbleL Var where
   toTacL (Var name []) pos var =
     return $ mkMiddle $ sp2ip pos $ ICopyVar (RVar name) var
 
-  toTacL _ _ _ = error "TODO: implement indexed and dynamic variables"
+  toTacL (VarDyn _ x) pos var = error "TODO: implement VarDyn ($$x etc.)"
+  toTacL (VarDynExpr _ x) pos var = error "TODO: implement VarDynExpr (${foo()} etc)"
 
 instance TacAbleL Ref where
   toTacL = error "TODO: implement references"
