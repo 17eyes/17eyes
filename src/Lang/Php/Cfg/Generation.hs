@@ -237,8 +237,9 @@ instance TacAbleR Expr where
 
   -- (+e) is translated into (0+e)
   toTacR (ExprPreOp PrPos _ e) pos = toTacR e' pos
-   where e' = ExprBinOp (BByable BPlus) (ExprNumLit (NumLit "0" (Left 0))) 
-          ([],[]) e
+   where 
+    e' = ExprBinOp (BByable BPlus) (ExprNumLit (NumLit "0" (PhpNum $ Left 0)))
+      ([],[]) e
 
   toTacR (ExprPreOp PrSuppress _ e) pos = do
     r_prev <- RTemp <$> freshUnique
