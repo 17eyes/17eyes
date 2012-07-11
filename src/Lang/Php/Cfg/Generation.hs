@@ -311,7 +311,7 @@ instance TacAbleR ROnlyVal where
   toTacR (ROnlyValFunc (Right const) _ ws_args) pos = do
     (r_args, g_args) <- unzip <$> mapM (\x -> toTacR x pos) args
     r_res <- RTemp <$> freshUnique
-    let graph = (foldl1 (<*>) g_args)
+    let graph = (foldl (<*>) emptyGraph g_args)
             <*> (mkMiddle $ sp2ip pos $ ICall r_res callable r_args)
     return (r_res, graph)
    where
