@@ -9,5 +9,5 @@ function strlen($x) {
 }
 
 echo strlen("Hello"),"\n";
---EXPECT--
+?>
 test\ns1\strlen

@@ -26,7 +26,7 @@ Foo::bar();
 Bar::bar();
 Foo2::bar();
 Bar2::bar();
---EXPECT--
+?>
 test\ns1\Foo
 test\ns1\Foo
 test\ns1\Foo2

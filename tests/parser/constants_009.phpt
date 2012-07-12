@@ -18,7 +18,7 @@ namespace\x::x);
 var_dump(defined('foo\x\x'));
 
 ?>
---EXPECT--
+?>
 int(2)
 int(1)
 int(1)

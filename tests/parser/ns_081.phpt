@@ -19,5 +19,5 @@ new foo;
 }
 ?>
 ===DONE===
---EXPECTF--
+?>
 Fatal error: Cannot mix bracketed namespace declarations with unbracketed namespace declarations in %sns_081.php on line 9

@@ -28,7 +28,7 @@ new foo1;
 new foo;
 echo "===DONE===\n";
 }
---EXPECT--
+?>
 foo::__construct
 foo\bar::__construct
 foo\bar::__construct

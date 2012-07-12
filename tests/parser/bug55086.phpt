@@ -31,6 +31,6 @@ namespace N2 {
     }
 }
 ?>
---EXPECT--
+?>
 hello from t1
 hello from t1

@@ -185,20 +185,21 @@ data Stmt =
   StmtForeach   Foreach                       |
   StmtFuncDef   Func                          |
   -- this list must have at least one element.. should i make a type for that?
-  StmtGlobal    [WSCap Var] StmtEnd           |
-  StmtGoto      (WSCap Label) StmtEnd         |
-  StmtIf        If                            |
-  StmtInterface Interface                     |
-  StmtLabel     (WSCap Label)                 |
-  StmtNothing   StmtEnd                       |
-  StmtNamespace Namespace                     |
-  StmtReturn    WS (Maybe (Expr, WS)) StmtEnd |
+  StmtGlobal    [WSCap Var] StmtEnd             |
+  StmtGoto      (WSCap Label) StmtEnd           |
+  StmtIf        If                              |
+  StmtInterface Interface                       |
+  StmtLabel     (WSCap Label)                   |
+  StmtNothing   StmtEnd                         |
+  StmtNamespace Namespace                       |
+  StmtReturn    WS (Maybe (Expr, WS)) StmtEnd   |
   -- this list must have at least one element.. should i make a type for that?
-  StmtStatic    [WSCap VarMbVal] StmtEnd      |
-  StmtSwitch    Switch                        |
-  StmtThrow     (WSCap Expr) StmtEnd          |
+  StmtStatic    [WSCap VarMbVal] StmtEnd        |
+  StmtSwitch    Switch                          |
+  StmtThrow     (WSCap Expr) StmtEnd            |
   StmtTry       (WSCap (Block Stmt)) (IC.Intercal Catch WS) |
   StmtUnset     (WSCap [WSCap LRVal]) StmtEnd   |
+  StmtUse       WS String (Maybe (WS2, String)) |
   StmtWhile     While
   deriving (Eq, Show, Typeable, Data)
 

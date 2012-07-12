@@ -59,7 +59,7 @@ rmdir($absMainDir);
 
 echo "\n*** Done ***\n";
 ?>
---EXPECTF--
+?>
 *** Testing file_get_contents() : variation ***
 
 -- Iteration 1 --

@@ -69,5 +69,5 @@ namespace HTML
     echo 'Done';
 }
 
---EXPECT--
+?>
 Done

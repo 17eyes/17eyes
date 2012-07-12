@@ -75,7 +75,7 @@ rmdir("$name_prefix/home/tests/");
 rmdir("$name_prefix/home/");
 rmdir("$name_prefix/");
 ?>
---EXPECTF--
+?>
 *** Testing realpath(): usage variations ***
 
 *** Testing realpath() with filename stored inside a object ***

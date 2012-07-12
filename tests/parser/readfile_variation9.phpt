@@ -65,7 +65,7 @@ rmdir($absMainDir);
 
 echo "\n*** Done ***\n";
 ?>
---EXPECTF--
+?>
 *** Testing readfile() : variation ***
 
 -- Iteration 1 --

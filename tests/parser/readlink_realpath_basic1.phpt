@@ -70,7 +70,7 @@ rmdir("$name_prefix/home/test/");
 rmdir("$name_prefix/home/");
 rmdir("$name_prefix/");
 ?>
---EXPECTF--
+?>
 *** Testing readlink() and realpath(): with valid and invalid path ***
 
 -- Iteration 1 --

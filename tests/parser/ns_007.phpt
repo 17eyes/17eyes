@@ -9,5 +9,5 @@ class Exception {
 
 $x = "Exception";
 echo get_class(new $x),"\n";
---EXPECT--
+?>
 Exception

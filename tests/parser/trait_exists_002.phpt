@@ -15,7 +15,7 @@ var_dump(trait_exists('foo\\IFoo'));
 var_dump(trait_exists('FOO\\ITEST'));
 
 ?>
---EXPECT--
+?>
 bool(false)
 bool(true)
 bool(true)

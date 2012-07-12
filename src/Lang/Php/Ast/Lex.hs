@@ -128,7 +128,12 @@ genIdentifierParser =
 -- FIXME: ugly hack
 -- this parser is used for parsing namespace names
 namespaceParser :: Parser String
-namespaceParser = try $ many $ oneOf $ identEndChars ++ ['\\']
+namespaceParser = try $ do 
+  i <- liftM2 (:) (oneOf $ identStartChars ++ ['\\'])
+    (many $ oneOf $ identEndChars ++ ['\\'])
+  when (map toLower i `Set.member` reservedWords) $
+    fail "Found reserved word when expecting identifier."
+  return i
 
 identifierParser :: Parser String
 identifierParser = try $ do

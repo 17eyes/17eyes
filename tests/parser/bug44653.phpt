@@ -21,7 +21,7 @@ B::fooBar();
 fooBar();
 \B\fooBar();
 ?>
---EXPECT--
+?>
 int(1)
 bag1
 A\fooBar

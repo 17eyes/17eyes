@@ -141,7 +141,7 @@ print_r(bar5::$a7);
 function oops($a = array(foo\unknown)){}
 oops();
 ?>
---EXPECTF--
+?>
 first
 foo\C
 foo\foo\C

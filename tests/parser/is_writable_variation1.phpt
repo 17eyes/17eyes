@@ -75,7 +75,7 @@ echo "Done\n";
 unlink(dirname(__FILE__)."/is_writable_variation1/bar.tmp");
 rmdir(dirname(__FILE__)."/is_writable_variation1/");
 ?>
---EXPECTF--
+?>
 *** Testing is_writable(): usage variations ***
 -- Iteration 1 --
 bool(true)

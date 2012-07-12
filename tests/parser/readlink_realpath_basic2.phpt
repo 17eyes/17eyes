@@ -60,7 +60,7 @@ rmdir("$name_prefix/home/test/");
 rmdir("$name_prefix/home/");
 rmdir("$name_prefix/");
 ?>
---EXPECTF--
+?>
 *** Testing realpath() on filenames ***
 
 -- Iteration 1 --

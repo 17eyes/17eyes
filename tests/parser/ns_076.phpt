@@ -10,7 +10,7 @@ echo unknown;
 echo "\n";
 var_dump($a);
 echo \unknown;
---EXPECTF--
+?>
 Notice: Use of undefined constant unknown - assumed 'unknown' in %sns_076.php on line %d
 
 Notice: Use of undefined constant unknown - assumed 'unknown' in %sns_076.php on line %d

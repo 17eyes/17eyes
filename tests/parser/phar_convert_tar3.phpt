@@ -50,16 +50,3 @@ unlink(dirname(__FILE__) . '/' . basename(__FILE__, '.clean.php') . '.phar.tar')
 unlink(dirname(__FILE__) . '/' . basename(__FILE__, '.clean.php') . '.phar.php');
 __HALT_COMPILER();
 ?>
-?>
-bool(false)
-bool(false)
-string(48) "<?php echo "first stub\n"; __HALT_COMPILER(); ?>"
-bool(true)
-int(8192)
-string(60) "<?php // tar-based phar archive stub file
-__HALT_COMPILER();"
-bool(true)
-bool(true)
-string(60) "<?php // tar-based phar archive stub file
-__HALT_COMPILER();"
-=?>=

@@ -8,7 +8,7 @@ function foo() {
 }
 \Exception\foo();
 \Exception::bar();
---EXPECTF--
+?>
 ok
 
 Fatal error: Call to undefined method Exception::bar() in %sns_038.php on line 7

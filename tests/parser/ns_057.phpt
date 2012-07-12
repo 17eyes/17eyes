@@ -44,7 +44,7 @@ echo namespace\f2();
 echo namespace\f3(new namespace\foo());
 echo namespace\unknown;
 ?>
---EXPECTF--
+?>
 const ok
 func ok
 const ok

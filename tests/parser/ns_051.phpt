@@ -8,5 +8,5 @@ function foo($x = INI_ALL) {
 	var_dump($x);
 }
 foo();
---EXPECT--
+?>
 int(7)

@@ -108,7 +108,7 @@ $file_path = dirname(__FILE__);
 $filename = "$file_path/fscanf_variation14.tmp";
 unlink($filename);
 ?>
---EXPECTF--
+?>
 *** Test fscanf(): different string format types with different string ***
 
 -- iteration 1 --

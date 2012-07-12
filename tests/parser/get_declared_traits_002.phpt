@@ -13,7 +13,7 @@ namespace test {
 }
 
 ?>
---EXPECT--
+?>
 array(1) {
   [0]=>
   string(6) "test\c"

@@ -67,7 +67,7 @@ rmdir("$name_prefix/home/tests/");
 rmdir("$name_prefix/home/");
 rmdir("$name_prefix/");
 ?>
---EXPECTF--
+?>
 *** Testing readlink() and realpath() : usage variations ***
 
 *** Testing readlink() and realpath() with linkname stored in an array ***

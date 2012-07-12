@@ -8,5 +8,5 @@ class Exception {
 }
 
 echo get_class(new \Exception()),"\n";
---EXPECT--
+?>
 Exception

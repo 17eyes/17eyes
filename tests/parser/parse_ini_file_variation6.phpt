@@ -60,7 +60,7 @@ rmdir($absMainDir);
 
 echo "\n*** Done ***\n";
 ?>
---EXPECTF--
+?>
 *** Testing parse_ini_file() : variation ***
 
 -- Iteration 1 --

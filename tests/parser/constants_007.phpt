@@ -15,7 +15,7 @@ class a {
 var_dump(a, A, a::a, a::A);
 
 ?>
---EXPECT--
+?>
 string(1) "a"
 string(1) "b"
 string(1) "c"

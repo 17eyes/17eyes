@@ -26,7 +26,7 @@ var_dump(defined('TEST'));
 
 
 ?>
---EXPECT--
+?>
 bool(true)
 bool(true)
 int(11)

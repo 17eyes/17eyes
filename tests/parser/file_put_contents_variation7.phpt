@@ -74,7 +74,7 @@ rmdir($absMainDir);
 
 echo "\n*** Done ***\n";
 ?>
---EXPECTF--
+?>
 *** Testing file_put_contents() : usage variation ***
 
 -- Iteration 1 --

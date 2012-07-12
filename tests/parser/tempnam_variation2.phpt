@@ -87,7 +87,7 @@ rmdir($dir_name);
 
 echo "\n*** Done ***\n";
 ?>
---EXPECTF--
+?>
 *** Testing tempnam() with absolute and relative paths ***
 
 -- Iteration 1 --

@@ -43,6 +43,11 @@ simpleStmtParser =
   liftM3 StmtReturn (tokReturnP >> parse) (optionMaybe parse) parse <|>
   liftM2 StmtGoto (tokGotoP >> parse) parse <|>
   StmtNamespace <$> parse <|>
+  (StmtUse <$>
+    (tokUseP >> parse) <*>
+    namespaceParser <*>
+    (try $ Just <$> liftM2 (,) (liftM2 (,) parse (tokAsP >> parse))
+      namespaceParser <|> return Nothing)) <|>
   StmtSwitch <$> parse <|>
   liftM2 StmtThrow (tokThrowP >> parse) parse <|>
   liftM2 StmtUnset
@@ -541,9 +546,9 @@ valExtendIndApp lVal mkVal ws = tokLBracketP >> do
 instance Parse (Const, WS) where
   parse = liftM2 (,) stmts parse where
     stmts = do
-      initIdent <- many (try $ liftM3 WSCap parse identifierParser
+      initIdent <- many (try $ liftM3 WSCap parse namespaceParser
         (parse <* tokDubColonP))
-      lastIdent <- liftM3 WSCap parse identifierParser parse
+      lastIdent <- liftM3 WSCap parse namespaceParser parse
       return $ Const initIdent lastIdent
 
 lRValOrConstParser :: Parser (Either LRVal Const, WS)

@@ -37,5 +37,4 @@ unicode(%d) "%sphar_magicU.phar.zip.php"
 bool(true)
 in b
 <?php include "b/c.php";
-in d
-=?>=
+?>

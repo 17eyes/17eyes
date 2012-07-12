@@ -27,6 +27,6 @@ $bar = new Bar();
 $bar->attach($foo);
 $foo->update($bar);
 ?>
---EXPECT--
+?>
 ok
 ok

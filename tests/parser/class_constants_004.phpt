@@ -32,7 +32,7 @@ var_dump(	foo,
 			);
 
 ?>
---EXPECT--
+?>
 int(1)
 int(1)
 int(1)

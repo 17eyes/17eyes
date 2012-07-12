@@ -68,7 +68,7 @@ rmdir($absMainDir);
 
 echo "\n*** Done ***\n";
 ?>
---EXPECTF--
+?>
 *** Testing rename() with absolute and relative paths ***
 
 -- Iteration 1 --

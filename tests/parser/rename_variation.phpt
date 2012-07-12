@@ -47,7 +47,7 @@ rmdir("$file_path/rename_variation");
 
 echo "Done\n";
 ?>
---EXPECTF--
+?>
 *** Testing rename() : rename files across directories ***
 -- Iteration 1 --
 bool(true)

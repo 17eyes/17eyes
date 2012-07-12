@@ -13,7 +13,7 @@ echo(BAR);
 
 const BAR = "ok\n";
 
---EXPECTF--
+?>
 ok
 ok
 ok
