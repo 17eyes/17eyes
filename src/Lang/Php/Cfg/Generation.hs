@@ -459,6 +459,29 @@ instance TacAbleL Var where
   toTacL (Var name []) pos var =
     return $ mkMiddle $ sp2ip pos $ ICopyVar (RVar name) var
 
+  -- This is a special case with only one index. It could be handled by the
+  -- code below but it's fairly common and we would like to generate a clearer
+  -- CFG without redundant registers.
+  toTacL (Var name [(_, (_, ws_idx))]) pos var = do
+    (r_idx, g_idx) <- toTacR (wsCapMain ws_idx) pos
+    let g_set = mkMiddle $ sp2ip pos $ ICall RNull CArraySet (RVar name, r_idx, var)
+    return (g_idx <*> g_set)
+
+  -- This is a weird kind of node in the AST. It corresponds to expressions
+  -- like $x[0][1][2] (`xs' here holds the indices). It seems redundant (we
+  -- already have LRValInd).
+  toTacL (Var name xs) pos var = do
+    let idx_exprs = map (wsCapMain . snd . snd) xs
+    r_arr <- RTemp <$> freshUnique
+    let g_init = mkMiddle $ sp2ip pos $ ICopyVar r_arr (RVar name)
+    g_gets <- forM (init idx_exprs) $ \e -> do
+      (r_idx, g_idx) <- toTacR e pos
+      let g_get = mkMiddle $ sp2ip pos $ ICall r_arr CArrayGet (r_arr, r_idx)
+      return (g_idx <*> g_get)
+    (r_idx, g_idx) <- toTacR (last idx_exprs) pos
+    let g_set = mkMiddle $ sp2ip pos $ ICall RNull CArraySet (r_arr, r_idx, var)
+    return $ g_init <*> (foldl (<*>) emptyGraph g_gets) <*> g_idx <*> g_set
+
   toTacL (VarDyn _ x) pos var = error "TODO: implement VarDyn ($$x etc.)"
   toTacL (VarDynExpr _ x) pos var = error "TODO: implement VarDynExpr (${foo()} etc)"
 
