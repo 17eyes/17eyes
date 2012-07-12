@@ -33,7 +33,10 @@ instance Num PhpNum where
   signum (PhpNum (Left x)) = PhpNum $ Left (signum x)
   signum (PhpNum (Right x)) = PhpNum $ Right (signum x)
 
-  fromInteger x = PhpNum $ Left x
+  fromInteger x =
+    if x <= upperBound && x >= lowerBound
+      then PhpNum $ Left x
+      else PhpNum $ Right (fromInteger x)
 
   negate (PhpNum (Left x)) = PhpNum $ (Left $ -x)
   negate (PhpNum (Right x)) = PhpNum $ (Right $ -x)
