@@ -138,9 +138,11 @@ instance Unparse Foreach where
     unparserlVar _ = ""
 
 instance Unparse Func where
-  unparse (Func w1 ref name (WSCap w2 args w3) block) = concat [tokFunction,
+  unparse (Func w1 ref name (WSCap w2 args w3) useVars block) = concat [tokFunction,
     unparse w1, maybe [] ((tokAmp ++) . unparse) ref, show name, unparse w2,
-    tokLParen, argsUnparser args, tokRParen, unparse w3, unparse block]
+    tokLParen, argsUnparser args,
+    maybe "" (\(WSCap _ args _) -> tokUse ++ argsUnparser args) useVars,
+    tokRParen, unparse w3, unparse block]
 
 argsUnparser :: (Unparse t, Unparse s) => Either t [s] -> String
 argsUnparser = either unparse (intercalate tokComma . map unparse)

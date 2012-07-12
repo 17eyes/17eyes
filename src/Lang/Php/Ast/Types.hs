@@ -208,11 +208,12 @@ data Block a = Block (IC.Intercal WS (StoredPos a))
   deriving (Eq, Show, Typeable, Data)
 
 data Func = Func {
-  funcWS    :: WS,
-  funcRef   :: Maybe WS,
-  funcName  :: Maybe String,
-  funcArgs  :: WSCap (Either WS [WSCap FuncArg]),
-  funcBlock :: Block Stmt}
+  funcWS      :: WS,
+  funcRef     :: Maybe WS,
+  funcName    :: Maybe String,
+  funcArgs    :: WSCap (Either WS [WSCap FuncArg]),
+  funcUseVars :: Maybe (WSCap (Either WS [WSCap FuncArg])),
+  funcBlock   :: Block Stmt}
   deriving (Eq, Show, Typeable, Data)
 
 data Interface = Interface {

@@ -30,5 +30,3 @@ __HALT_COMPILER();
 ?>
 in b
 <?php include "b/c.php";
-in d
-=?>=

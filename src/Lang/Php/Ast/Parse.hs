@@ -254,9 +254,14 @@ instance Parse (Foreach, WS) where
         return (Foreach h block StdSyntax, ws)
 
 instance Parse Func where
-  parse = tokFunctionP >> liftM5 Func parse
-    ((tokAmpP >> Just <$> parse) <|> return Nothing) (Just <$> identifierParser)
-    (liftM3 WSCap parse (argListParser parse) parse) parse
+  parse = tokFunctionP >> 
+    Func <$>
+      parse <*>
+      ((tokAmpP >> Just <$> parse) <|> return Nothing) <*>
+      (Just <$> identifierParser) <*>
+      (liftM3 WSCap parse (argListParser parse) parse) <*>
+      (return Nothing) <*>
+      parse
 
 instance Parse Interface where
   parse = tokInterfaceP >> liftM3 Interface
@@ -593,9 +598,16 @@ simpleExprParser =
     (liftM2 (,) (ExprClosure <$> anonFuncParser) parse))
 
 
-anonFuncParser = liftM5 Func parse
-  ((tokAmpP >> Just <$> parse) <|> return Nothing) (return Nothing)
-  (liftM3 WSCap parse (argListParser parse) parse) parse 
+anonFuncParser = Func <$>
+  parse <*>
+  ((tokAmpP >> Just <$> parse) <|> return Nothing) <*>
+  (return Nothing) <*>
+  parseArgList <*>
+  ((tokUseP >> Just <$> parseArgList) <|> return Nothing) <*>
+  parse 
+
+  where
+    parseArgList = (liftM3 WSCap parse (argListParser parse) parse)
 
 ambigCastParser :: WS -> Parser (Expr, WS)
 ambigCastParser ws1 = try $ do

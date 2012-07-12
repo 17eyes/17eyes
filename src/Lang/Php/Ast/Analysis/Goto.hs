@@ -29,7 +29,7 @@ mkAnalyses f init = [top_level, func]
         f (extract st)
         return ast
 
-    func = AstAnalysis init $ \func@(Func _ _ _ _ block) -> do
+    func = AstAnalysis init $ \func@(Func _ _ _ _ _ block) -> do
         f (extract block)
         return func
 

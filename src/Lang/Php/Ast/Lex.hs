@@ -327,6 +327,7 @@ tokSwitch = "switch"
 tokThrow = "throw"
 tokTry = "try"
 tokUnset = "unset"
+tokUse = "use"
 tokVar = "var"
 tokWhile = "while"
 tokXorWd = "xor"
@@ -390,6 +391,7 @@ reservedWords = Set.fromList [
   tokThrow,
   tokTry,
   tokUnset,
+  tokUse,
   tokVar,
   tokWhile,
   tokXorWd]
@@ -457,6 +459,7 @@ tokSwitchP = identCI tokSwitch
 tokThrowP = identCI tokThrow
 tokTryP = identCI tokTry
 tokUnsetP = identCI tokUnset
+tokUseP = identCI tokUse
 tokVarP = identCI tokVar
 tokWhileP = identCI tokWhile
 tokXorWdP = identCI tokXorWd

@@ -40,7 +40,7 @@ checkTL = AstAnalysis () $ \ast@(Ast _ _ st) -> do
     minBreakLevelIC st
     return ast
 
-checkFunc = AstAnalysis () $ \func@(Func _ _ _ _ (Block st)) -> do
+checkFunc = AstAnalysis () $ \func@(Func _ _ _ _ _ (Block st)) -> do
     minBreakLevelIC st
     return func
 
