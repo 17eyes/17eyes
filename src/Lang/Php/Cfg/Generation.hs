@@ -9,6 +9,8 @@ import qualified Data.Intercal as IC
 import qualified Lang.Php.Ast as Ast
 import Lang.Php.Ast hiding ((<*>), Label, get, put)
 
+import Lang.Php.Type.PhpNum
+
 import Control.Monad
 import Control.Monad.State
 import Data.Functor

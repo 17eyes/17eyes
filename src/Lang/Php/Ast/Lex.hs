@@ -2,7 +2,7 @@
 
 module Lang.Php.Ast.Lex where
 
-import GHC.Real
+import Lang.Php.Type.PhpNum
 import Lang.Php.Ast.Common
 import qualified Data.Set as Set
 
@@ -15,76 +15,6 @@ import qualified Data.Set as Set
 
 data NumLit = NumLit String PhpNum
   deriving (Eq, Show, Typeable, Data)
-
-{-- XXX:
- 
- Temporary here, todo:
-
- 1) add Integral instance
- 2) move code into new module
-
---}
-
-data PhpNum = PhpNum (Either Integer Double)
-  deriving (Eq, Show, Typeable, Data)
-
-upperBound = 2^63-1
-lowerBound = -(2^63)
-
-instance Num PhpNum where
-  abs (PhpNum (Left x)) = PhpNum $ Left (abs x)
-  abs (PhpNum (Right x)) = PhpNum $ Right (abs x)
-
-  signum (PhpNum (Left x)) = PhpNum $ Left (signum x)
-  signum (PhpNum (Right x)) = PhpNum $ Right (signum x)
-
-  fromInteger x = PhpNum $ Left x
-
-  PhpNum (Right x) + (PhpNum (Right y)) = PhpNum $ Right (x+y)
-  PhpNum (Left x) + (PhpNum (Left y)) = PhpNum $
-    if x+y < upperBound && x+y > lowerBound
-      then Left (x+y)
-      else Right $ fromInteger (x+y)
-  PhpNum (Left x) + (PhpNum (Right y)) = PhpNum $ Right (fromInteger x + y)
-  -- in order to avoid redundancy
-  PhpNum (Right x) + (PhpNum (Left y)) = PhpNum (Left y) + PhpNum (Right x)
-
-  PhpNum (Right x) * (PhpNum (Right y)) = PhpNum $ Right (x*y)
-  PhpNum (Left x) * (PhpNum (Left y)) = PhpNum $
-    if x*y < upperBound && x*y > lowerBound
-      then Left (x*y)
-      else Right $ fromInteger (x*y)
-  PhpNum (Left x) * (PhpNum (Right y)) = PhpNum $ Right (fromInteger x * y)
-  -- avoid redundancy
-  PhpNum (Right x) * (PhpNum (Left y)) = PhpNum (Left y) * PhpNum (Right x)
-
-
-instance Fractional PhpNum where
-  fromRational (x :% y) = PhpNum $
-    if y == 0
-      then (Left $ x)
-      else (Right $ fromRational (x :% y))
-
-  PhpNum (Right x) / (PhpNum (Right y)) = PhpNum $ Right (x/y)
-  PhpNum (Left x) / (PhpNum (Left y)) = PhpNum $
-    if x % y == 0 || y % x == 0
-      then Left (x `div` y)
-      else Right $ (fromInteger x / (fromInteger y))
-  PhpNum (Left x) / (PhpNum (Right y)) = PhpNum $ Right (fromInteger x / y)
-  -- in order to avoid redundancy
-  PhpNum (Right x) / (PhpNum (Left y)) = PhpNum $ Right (x / (fromInteger y))
-
-instance Ord PhpNum where
-  compare (PhpNum (Left x)) (PhpNum (Left y)) = compare x y
-  compare (PhpNum (Right x)) (PhpNum (Right y)) = compare x y
-  compare (PhpNum (Left x)) (PhpNum (Right y)) = compare (fromInteger x) y
-  compare (PhpNum (Right x)) (PhpNum (Left y)) = compare x (fromInteger y)
-
-instance Real PhpNum where
-  toRational (PhpNum (Right x)) = toRational x
-  toRational (PhpNum (Left x)) = toRational x
-
-$(derive makeBinary ''PhpNum)
 
 instance Parse NumLit where
   -- could be tighter
