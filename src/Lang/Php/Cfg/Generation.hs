@@ -354,8 +354,19 @@ instance TacAbleR LRVal where
 
 instance TacAbleR Var where
   toTacR (Var name []) pos = return (RVar name, emptyGraph)
-  toTacR (Var _ _) _ = error "TODO: implement indexed variables (as r-values)"
-  toTacR _ _ = error "TODO: implement dyanmic variables (as r-values)"
+
+  toTacR (Var name xs) pos = do
+    let idx_exprs = map (wsCapMain . snd . snd) xs
+    r <- RTemp <$> freshUnique
+    let g_init = mkMiddle $ sp2ip pos $ ICopyVar r (RVar name)
+    g_gets <- forM idx_exprs $ \e -> do
+      (r_idx, g_idx) <- toTacR e pos
+      let g = mkMiddle $ sp2ip pos $ ICall r CArrayGet (r, r_idx)
+      return (g_idx <*> g)
+    return (r, g_init <*> (foldl (<*>) emptyGraph g_gets))
+
+  toTacR (VarDyn _ x) pos = error "TODO: implement VarDyn ($$x etc.)"
+  toTacR (VarDynExpr _ x) pos = error "TODO: implement VarDynExpr (${foo()} etc)"
 
 instance TacAbleR StrLit where
   -- Basic case of a simple string without embedded expressions.
