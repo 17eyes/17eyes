@@ -307,6 +307,39 @@ instance TacAbleR Expr where
     let g_call = mkMiddle $ sp2ip pos $ ICall r_res CCast (wsCapMain ws_type, r_e)
     return (r_res, g_e <*> g_call)
 
+  -- Array literals may list both values and key-value pairs. They are transla-
+  -- -ted to a sequence of CArraySet or CArrayPush on a fresh array created
+  -- using CArrayEmpty. The initialization list is translated using a following
+  -- algorithm:
+  --
+  -- $x = array(..., k => v)    is equivalent to    $x = array(...); $x[k] = v;
+  -- $x = array(..., v)         is equivalent to    $x = array(...); $x[] = v;
+  toTacR (ExprArray _ elem_spec) pos = do
+    r <- RTemp <$> freshUnique
+    let g_init = mkMiddle $ sp2ip pos $ ICall r CArrayEmpty ()
+    g_sets <- foldl (<*>) emptyGraph <$> mapM (gen r) elems
+    return (r, g_init <*> g_sets)
+   where
+     gen :: Register -> (Maybe Expr, Expr) -> GMonad Cfg
+     gen r (Just e_key, e_val) = do
+       (r_key, g_key) <- toTacR e_key pos
+       (r_val, g_val) <- toTacR e_val pos
+       let g_set = mkMiddle $ sp2ip pos $ ICall RNull CArraySet (r, r_key, r_val)
+       return (g_key <*> g_val <*> g_set)
+
+     gen r (Nothing, e_val) = do
+       (r_val, g_val) <- toTacR e_val pos
+       let g_push = mkMiddle $ sp2ip pos $ ICall RNull CArrayPush (r, r_val)
+       return (g_val <*> g_push)
+
+     elems = case elem_spec of
+       Left _ -> []
+       Right (xs, _) -> map (unArrow . wsCapMain) xs
+
+     unArrow :: DubArrowMb -> (Maybe Expr, Expr)
+     unArrow (DubArrowMb (Just (e_key, _)) e_val) = (Just e_key, e_val)
+     unArrow (DubArrowMb Nothing e_val) = (Nothing, e_val)
+
   toTacR _ pos = error "TacAbleR Expr not fully implmented"
 
 instance TacAbleR RVal where
