@@ -350,6 +350,12 @@ instance TacAbleR Expr where
     let g_c = mkMiddle $ sp2ip pos $ ICall r CCast ("boolean", r_lrv)
     return (r, g_lrv <*> g_c)
 
+  toTacR (ExprEval _ ws_e) pos = do
+    (r_e, g_e) <- toTacR ws_e pos
+    r <- RTemp <$> freshUnique
+    let g_c = mkMiddle $ sp2ip pos $ ICall r CEval r_e
+    return (r, g_e <*> g_c)
+
   toTacR _ pos = error "TacAbleR Expr not fully implmented"
 
 instance TacAbleR RVal where

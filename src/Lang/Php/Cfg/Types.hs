@@ -134,6 +134,7 @@ data Callable tArg aSpec where
   -- Type in the casting operator is kept as string. Maybe if we're going to
   -- have some datatype to represent PHP types it should be used here?
   CCast :: Callable t (String, t)
+  CEval :: Callable t t
 
 deriving instance Show tArg => Show (Callable tArg aSpec)
 
