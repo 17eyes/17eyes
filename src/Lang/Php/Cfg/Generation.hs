@@ -340,6 +340,16 @@ instance TacAbleR Expr where
      unArrow (DubArrowMb (Just (e_key, _)) e_val) = (Just e_key, e_val)
      unArrow (DubArrowMb Nothing e_val) = (Nothing, e_val)
 
+  -- `empty($x)' is translated like `(boolean) $x'
+  --
+  -- FIXME: empty($x) doesn't warn if $x is not declared. This kind of beha-
+  -- -vior is currently not preserved.
+  toTacR (ExprEmpty _ ws_lrv) pos = do
+    (r_lrv, g_lrv) <- toTacR ws_lrv pos
+    r <- RTemp <$> freshUnique
+    let g_c = mkMiddle $ sp2ip pos $ ICall r CCast ("boolean", r_lrv)
+    return (r, g_lrv <*> g_c)
+
   toTacR _ pos = error "TacAbleR Expr not fully implmented"
 
 instance TacAbleR RVal where
