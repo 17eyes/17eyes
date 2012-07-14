@@ -356,6 +356,12 @@ instance TacAbleR Expr where
     let g_c = mkMiddle $ sp2ip pos $ ICall r CEval r_e
     return (r, g_e <*> g_c)
 
+  toTacR (ExprIsset _ ws_lrvals) pos = do
+    (rs, gs) <- unzip <$> forM ws_lrvals (\x -> toTacR x pos)
+    r <- RTemp <$> freshUnique
+    let g_c = mkMiddle $ sp2ip pos $ ICall r CIsset rs
+    return (r, foldr (<*>) g_c gs)
+
   toTacR _ pos = error "TacAbleR Expr not fully implmented"
 
 instance TacAbleR RVal where

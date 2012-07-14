@@ -135,6 +135,7 @@ data Callable tArg aSpec where
   -- have some datatype to represent PHP types it should be used here?
   CCast :: Callable t (String, t)
   CEval :: Callable t t
+  CIsset :: Callable t [t]
 
 deriving instance Show tArg => Show (Callable tArg aSpec)
 
