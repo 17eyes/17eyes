@@ -11,6 +11,8 @@ module Lang.Php.Cfg.Types(
 import Data.Functor((<$>))
 import Compiler.Hoopl
 
+import Lang.Php.Ast(IncOrReq, OnceOrNot)
+
 data Register = RVar String | RTemp Unique | RNull
 
 instance Show Register where
@@ -136,6 +138,7 @@ data Callable tArg aSpec where
   CCast :: Callable t (String, t)
   CEval :: Callable t t
   CIsset :: Callable t [t]
+  CInclude :: IncOrReq -> OnceOrNot -> Callable t t
 
 deriving instance Show tArg => Show (Callable tArg aSpec)
 
