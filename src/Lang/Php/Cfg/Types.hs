@@ -33,6 +33,7 @@ instr (IP _ x) = x
 
 data Instr e x where
   ILabel :: Label -> Instr C O
+  IFuncEntry :: String -> [Register] -> Label -> Instr C O
   IJump :: Label -> Instr O C
   ICondJump :: Register -> Label -> Label -> Instr O C
   IReturn :: Maybe Register -> Instr O C
@@ -42,11 +43,13 @@ data Instr e x where
   ILoadNum :: Register -> String -> Instr O O -- TODO: a numeric type perhaps?
   ILoadConst :: Register -> String -> Instr O O
   ICopyVar :: Register -> Register -> Instr O O
+  IDeclareFunc :: String -> Label -> Instr O O
 
 deriving instance Show (Instr e x)
 
 instance NonLocal InstrPos where
   entryLabel (IP _ (ILabel x)) = x
+  entryLabel (IP _ (IFuncEntry _ _ x)) = x
   successors (IP _ (IJump x)) = [x]
   successors (IP _ (ICondJump _ x y)) = [x, y]
   successors (IP _ (IReturn _)) = []

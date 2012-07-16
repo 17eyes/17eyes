@@ -3,6 +3,7 @@
 -- | Dump control flow graph in the Graphviz Dot format.
 module Lang.Php.Cfg.Dot(cfgToDot) where
 
+import Data.List(intersperse)
 import Compiler.Hoopl
 import Lang.Php.Cfg.Types
 
@@ -23,12 +24,20 @@ dumpGraph (GMany entry blocks exit) =
 
 dumpBlock :: Block InstrPos e x -> String
 dumpBlock block =
-     dot_label ++ "[label=\"" ++ dot_label ++ ":"
+     dot_label ++ "[label=\""
+  ++ header
   ++ concatMap dumpNode middle
   ++ maybeC "\\l(END)" dumpNode m_last
   ++ "\"];\n"
   ++ maybeC "" (outEdges dot_label) m_last
  where
+  header = maybeC "START:" mkHeader m_first
+  mkHeader (IP _ (IFuncEntry name args lab)) =
+       show lab ++ ": [" ++ name ++ "("
+    ++ concat (intersperse ", " (map show args))
+    ++ ")]"
+  mkHeader _ = dot_label ++ ":"
+
   (m_first, middle, m_last) = blockToNodeList block
   dot_label = maybeC "START" (show . entryLabel) m_first
 
