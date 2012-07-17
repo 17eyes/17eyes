@@ -20,21 +20,21 @@ import Text.Parsec.Pos(newPos)
 import qualified Data.Map as Map
 import Data.Map(Map)
 
--- In top-level code, the order of function declarations is not significant.
--- This is implemented by storing IDeclareFunc instructions in the state GS
--- and prepending them at the beginning of the graph afterwards.
-data TopLevelFunc = NotTopLevel | TLF [Graph InstrPos O O]
+-- In top-level code, the order of function or class declarations is not
+-- significant.  This is implemented by storing IDeclare instructions in the
+-- state GS and prepending them at the beginning of the graph afterwards.
+data TLDecl = NotTopLevel | TLDecl [Graph InstrPos O O]
 
 data GS = GS {
     gsBreakTargets :: [Label],
     gsContinueTargets :: [Label],
-    gsTopLevelFunc :: TopLevelFunc
+    gsTopLevelDecls :: TLDecl
 }
 
 initialGS = GS {
     gsBreakTargets = [],
     gsContinueTargets = [],
-    gsTopLevelFunc = NotTopLevel
+    gsTopLevelDecls = NotTopLevel
 }
 
 type GMonad = StateT GS SimpleUniqueMonad
@@ -578,17 +578,17 @@ instance TacAbleL Ref where
 
 instance CfgAble Ast where
   toCfg (Ast file toplevel sl) = do
-    tlf <- gsTopLevelFunc <$> get
-    modify (\x -> x { gsTopLevelFunc = TLF [] })
+    tlf <- gsTopLevelDecls <$> get
+    modify (\x -> x { gsTopLevelDecls = TLDecl [] })
     let pos = newPos file 0 0
     (_, g_toplevel) <- toTacR toplevel pos
     g_main <- toCfg sl
-    g_decls <- catGraphs <$> reverse <$> fromTLF <$> gsTopLevelFunc <$> get
+    g_decls <- catGraphs <$> reverse <$> fromTLD <$> gsTopLevelDecls <$> get
     -- g_decls is a graph with declarations for all top-level functions
-    modify (\x -> x { gsTopLevelFunc = tlf }) -- revert to previous gsTopLevelFunc
+    modify (\x -> x { gsTopLevelDecls = tlf }) -- revert to previous gsTopLevelDecls
     return (g_decls <*> g_toplevel <*> g_main)
    where
-     fromTLF (TLF xs) = xs
+     fromTLD (TLDecl xs) = xs
 
 instance CfgAble (StoredPos Stmt) where
   toCfg (StoredPos _ (StmtBlock b)) = toCfg b
@@ -787,70 +787,72 @@ instance CfgAble (StoredPos Stmt) where
   -- parameters). Functions at the top level are somewhat problematic, since
   -- they behave as if they have been always declared at the beginning of the
   -- file (this is a deliberate feature of the language probably designed this
-  -- way to make it more user-friendly). We simulate this behavior by storing
-  -- the IDeclareFunc nodes in the GS state (gsTopLevelFunc) when in top level.
-  -- They are later prepended to the graph (see also the instance declaration
-  -- for CfgAble Ast).
-  --
-  -- Note that since the (|*><*|) operator cannot recieve a graph that is open
-  -- on both sides, and addBlocks operates on AGraphs I don't see a better way
-  -- to inject the function body to the graph than to create a (somewhat
-  -- redundant) unconditional jump. This is implemented as the `rest_lab'
-  -- labels below.
+  -- way to make it more user-friendly). Helper function `declare' handles
+  -- that.
   toCfg (StoredPos pos (StmtFuncDef func)) = do
-    tlf <- gsTopLevelFunc <$> get
-    case tlf of
-      NotTopLevel -> notTL
-      TLF xs -> inTL
-   where
-     inTL = do
-       func_lab <- freshLabel
-       rest_lab <- freshLabel
-       TLF xs <- gsTopLevelFunc <$> get
-       func_g <- funcGraph func_lab
-       decl_g <- declGraph func_lab
-       modify $ \x -> x { gsTopLevelFunc = TLF (decl_g:xs) }
-       return $ (mkBranch rest_lab)
-         |*><*| func_g
-         |*><*| (mkLabel rest_lab)
+    (func_lab, g_body) <- createFuncGraph pos func
+    g_inj <- injectBlocks g_body
+    let Just name = funcName func
+    g_decl <- declare (DFunction name func_lab)
+    return (g_decl <*> g_inj)
 
-     notTL = do
-       func_lab <- freshLabel
-       rest_lab <- freshLabel
-       func_g <- funcGraph func_lab
-       decl_g <- fmap (<*> (mkLast $ sp2ip pos $ IJump rest_lab))
-                      (declGraph func_lab)
-       return (decl_g |*><*| func_g |*><*| mkLabel rest_lab)
+------------------------------------------------------------------------------
+--                         Handling declarations
+------------------------------------------------------------------------------
 
-     -- graph that contains the function code
-     funcGraph func_lab = do
-       body_g <- withStateT (\x -> x { gsTopLevelFunc = NotTopLevel })
-                            (toCfg (funcBlock func))
-       let Just name = funcName func
-       return $ (mkFirst $ sp2ip pos $ IFuncEntry name (map (RVar . fst) params) func_lab)
-            <*> body_g
-            <*> (mkLast $ sp2ip pos $ IReturn Nothing)
+declare :: Declarable -> GMonad Cfg
+declare dec = do
+  let dec_g = mkMiddle $ IP Nothing $ IDeclare dec
+  tld <- gsTopLevelDecls <$> get
+  case tld of
+    NotTopLevel -> return dec_g
+    TLDecl xs -> do
+      modify $ \x -> x { gsTopLevelDecls = TLDecl (dec_g:xs) }
+      return emptyGraph
 
-     -- graph with function declaration (IDeclareFunc node)
-     declGraph func_lab = do
-       let Just name = funcName func
-       return $ mkMiddle $ sp2ip pos $ IDeclareFunc name func_lab
+-- Add closed blocks to the CFG. Similar to addBlocks from Hoopl but addBlocks
+-- unfortunately works only on AGraphs.
+--
+-- FIXME: Would it be possible to implement it without redundant labels and
+-- jumps?
+injectBlocks :: Graph InstrPos C C -> GMonad Cfg
+injectBlocks blcks = do
+  rest_lab <- freshLabel
+  return $ (mkBranch rest_lab)
+    |*><*| blcks
+    |*><*| (mkLabel rest_lab)
 
-     -- graph with initializers created based on the default values of the
-     -- function arguments in the declaration
-     initGraph :: GMonad Cfg
-     initGraph = fmap catGraphs $ forM params $ \(name, m_expr) ->
-       case m_expr of
-         Nothing -> return emptyGraph
-         Just expr -> error "TODO: default arguments are not implemented"
+-- Create CFG for the function body.
+createFuncGraph :: SourcePos -> Func -> GMonad (Label, Graph InstrPos C C)
+createFuncGraph pos func = do
+  func_lab <- freshLabel
+  old_tld <- gsTopLevelDecls <$> get
+  modify $ \x -> x { gsTopLevelDecls = NotTopLevel }
+  body_g <- toCfg (funcBlock func)
+  modify $ \x -> x { gsTopLevelDecls = old_tld }
+  let Just name = funcName func
+  init_g <- initGraph
+  let res_g = (mkFirst $ sp2ip pos $ IFuncEntry name (map (RVar . fst) params) func_lab)
+          <*> init_g
+          <*> body_g
+          <*> (mkLast $ sp2ip pos $ IReturn Nothing)
+  return (func_lab, res_g)
+ where
+   -- graph with initializers created based on the default values of the
+   -- function arguments in the declaration
+   initGraph :: GMonad Cfg
+   initGraph = fmap catGraphs $ forM params $ \(name, m_expr) ->
+     case m_expr of
+       Nothing -> return emptyGraph
+       Just expr -> error "TODO: default arguments are not implemented"
 
-     -- list of all formal parameters (extracted for convenience)
-     params :: [(String, Maybe Ast.Expr)]
-     params = either (const []) (map (procArg . wsCapMain))
-                     (wsCapMain (funcArgs func))
+   -- list of all formal parameters (extracted for convenience)
+   params :: [(String, Maybe Ast.Expr)]
+   params = either (const []) (map (procArg . wsCapMain))
+                   (wsCapMain (funcArgs func))
 
-     procArg (FuncArg { funcArgVar = VarMbVal (Var name []) mb_wse }) = (name, fmap snd mb_wse)
-     procArg _ = error "TODO: crazy stuff as formal parameters is not implemented."
+   procArg (FuncArg { funcArgVar = VarMbVal (Var name []) mb_wse }) = (name, fmap snd mb_wse)
+   procArg _ = error "TODO: crazy stuff as formal parameters is not implemented."
 
 ------------------------------------------------------------------------------
 --                          Helper functions                                --

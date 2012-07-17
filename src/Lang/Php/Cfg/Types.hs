@@ -2,6 +2,8 @@
 
 module Lang.Php.Cfg.Types(
       Register(..)
+    , Visibility(..)
+    , Declarable(..)
     , InstrPos(..)
     , Instr(..)
     , Callable(..)
@@ -19,6 +21,17 @@ instance Show Register where
   show (RVar x) = "$" ++ x
   show (RTemp x) = "r" ++ show x
   show RNull = "_"
+
+data Visibility = Public | Private | Protected deriving Show
+
+data Declarable =
+    DFunction String Label
+  | DClass {
+      -- FIXME: this obviously isn't everything that can live inside a PHP class
+      dclsName :: String,
+      dclsMethods :: [(Visibility, String, Label)]
+    }
+  deriving Show
 
 data InstrPos e x = IP (Maybe (FilePath, Int)) (Instr e x) deriving Show
 
@@ -43,7 +56,7 @@ data Instr e x where
   ILoadNum :: Register -> String -> Instr O O -- TODO: a numeric type perhaps?
   ILoadConst :: Register -> String -> Instr O O
   ICopyVar :: Register -> Register -> Instr O O
-  IDeclareFunc :: String -> Label -> Instr O O
+  IDeclare :: Declarable -> Instr O O
 
 deriving instance Show (Instr e x)
 
