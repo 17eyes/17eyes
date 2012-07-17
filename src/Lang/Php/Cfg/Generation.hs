@@ -796,6 +796,30 @@ instance CfgAble (StoredPos Stmt) where
     g_decl <- declare (DFunction name func_lab)
     return (g_decl <*> g_inj)
 
+  toCfg (StoredPos pos (StmtClass cls)) = do
+    (labs, bodies) <- unzip <$> mapM (createFuncGraph pos . snd) methods
+    g_inj <- injectBlocks (foldl (|*><*|) emptyClosedGraph bodies)
+    g_decl <- declare $ DClass {
+      dclsName = wsCapMain (className cls),
+      dclsMethods = zip3 visibilities
+                         (map (maybe "" id . funcName . snd) methods)
+                         labs,
+      dclsFields = fields
+    }
+    return (g_decl <*> g_inj)
+   where
+     cstmts = case classBlock cls of
+       Ast.Block ic -> [x | StoredPos _ x <- IC.toList2 ic]
+
+     visibilities = map (mods2vis . fst) methods
+     methods = [(map fst mods, func) | CStmtFuncDef mods func <- cstmts]
+
+     fields = concat [mkFields (IC.toList1 mods) vars | CStmtVar mods vars _ <- cstmts]
+     mkFields mods vars = zip (repeat (mods2vis mods)) names
+      where
+        -- TODO: support initializers somehow
+        names = [x | VarMbVal (Var x _) _ <- map wsCapMain vars]
+
 ------------------------------------------------------------------------------
 --                         Handling declarations
 ------------------------------------------------------------------------------
@@ -853,6 +877,13 @@ createFuncGraph pos func = do
 
    procArg (FuncArg { funcArgVar = VarMbVal (Var name []) mb_wse }) = (name, fmap snd mb_wse)
    procArg _ = error "TODO: crazy stuff as formal parameters is not implemented."
+
+mods2vis :: [String] -> Visibility
+mods2vis ("public":_) = Public
+mods2vis ("private":_) = Private
+mods2vis ("protected":_) = Protected
+mods2vis (_:xs) = mods2vis xs
+mods2vis [] = Public
 
 ------------------------------------------------------------------------------
 --                          Helper functions                                --

@@ -29,7 +29,8 @@ data Declarable =
   | DClass {
       -- FIXME: this obviously isn't everything that can live inside a PHP class
       dclsName :: String,
-      dclsMethods :: [(Visibility, String, Label)]
+      dclsMethods :: [(Visibility, String, Label)],
+      dclsFields :: [(Visibility, String)]
     }
   deriving Show
 
