@@ -782,6 +782,34 @@ instance CfgAble (StoredPos Stmt) where
   toCfg (StoredPos pos (StmtBreak m_lvl _ stmt_end)) = loopExit gsBreakTargets pos m_lvl stmt_end
   toCfg (StoredPos pos (StmtContinue m_lvl _ stmt_end)) = loopExit gsContinueTargets pos m_lvl stmt_end
 
+  -- It is not clear how to represent try-catch blocks so that dataflow
+  -- analyses will be easy to write. Currently, the problem with control flow
+  -- coming to the catch block is handled by 'special' label-like instruction
+  -- ICatchException. I guess we'll see how convenient this will turn out to
+  -- be.
+  toCfg (StoredPos pos (StmtTry ws_block ic_catch)) = do
+    lab_end <- freshLabel
+    catches <- mapM (mkCatchBlock lab_end) (IC.toList1 ic_catch)
+    g_block <- toCfg (wsCapMain ws_block)
+    return $ (g_block <*> mkBranch lab_end)
+      |*><*| (foldl (|*><*|) emptyClosedGraph catches)
+      |*><*| (mkLabel lab_end)
+   where
+     mkCatchBlock lab_end (Catch ws_hdr _ block) = do
+       let exception_type = case (wsCapMain $ fst $ wsCapMain ws_hdr) of
+                                 Const [] name -> wsCapMain name
+                                 _ -> error "TODO: namespaces for exceptions not supported"
+       let exception_expr = snd $ wsCapMain ws_hdr
+       r_exception <- RTemp <$> freshUnique
+       lab_this <- freshLabel
+       let g_catch = mkFirst $ sp2ip pos $
+                     ICatchException lab_this r_exception exception_type
+       g_assign <- case exception_expr of
+                  (ExprRVal (RValLRVal lrval)) -> toTacL lrval pos r_exception
+                  _ -> error "TODO: inconsistency in the AST?"
+       g_main <- toCfg block
+       return (g_catch <*> g_assign <*> g_main <*> (mkBranch lab_end))
+
   -- For function definitions, we translate the function body into another
   -- block (with a special entry node IFuncEntry which handles the formal
   -- parameters). Functions at the top level are somewhat problematic, since

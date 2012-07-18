@@ -53,6 +53,8 @@ data Instr e x where
   IReturn :: Maybe Register -> Instr O C
   ICall :: Show a => Register -> Callable Register a -> a -> Instr O O
 
+  ICatchException :: Label -> Register -> String -> Instr C O
+
   ILoadString :: Register -> String -> Instr O O
   ILoadNum :: Register -> String -> Instr O O -- TODO: a numeric type perhaps?
   ILoadConst :: Register -> String -> Instr O O
@@ -64,6 +66,7 @@ deriving instance Show (Instr e x)
 instance NonLocal InstrPos where
   entryLabel (IP _ (ILabel x)) = x
   entryLabel (IP _ (IFuncEntry _ _ x)) = x
+  entryLabel (IP _ (ICatchException x _ _)) = x
   successors (IP _ (IJump x)) = [x]
   successors (IP _ (ICondJump _ x y)) = [x, y]
   successors (IP _ (IReturn _)) = []

@@ -36,6 +36,8 @@ dumpBlock block =
        show lab ++ ": [" ++ name ++ "("
     ++ concat (intersperse ", " (map show args))
     ++ ")]"
+  mkHeader (IP _ (ICatchException lab reg name)) =
+       show lab ++ ": [catch " ++ name ++ " to " ++ show reg ++ "]"
   mkHeader _ = dot_label ++ ":"
 
   (m_first, middle, m_last) = blockToNodeList block
