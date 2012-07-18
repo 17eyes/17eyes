@@ -810,6 +810,12 @@ instance CfgAble (StoredPos Stmt) where
        g_main <- toCfg block
        return (g_catch <*> g_assign <*> g_main <*> (mkBranch lab_end))
 
+  toCfg (StoredPos pos (StmtThrow ws_e _)) = do
+    (r_e, g_e) <- toTacR ws_e pos
+    let g_throw = mkLast $ sp2ip pos $ IThrow r_e
+    lab_dead <- freshLabel
+    return (g_e <*> g_throw |*><*| mkLabel lab_dead)
+
   -- For function definitions, we translate the function body into another
   -- block (with a special entry node IFuncEntry which handles the formal
   -- parameters). Functions at the top level are somewhat problematic, since

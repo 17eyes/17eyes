@@ -54,6 +54,7 @@ data Instr e x where
   ICall :: Show a => Register -> Callable Register a -> a -> Instr O O
 
   ICatchException :: Label -> Register -> String -> Instr C O
+  IThrow :: Register -> Instr O C
 
   ILoadString :: Register -> String -> Instr O O
   ILoadNum :: Register -> String -> Instr O O -- TODO: a numeric type perhaps?
@@ -70,6 +71,7 @@ instance NonLocal InstrPos where
   successors (IP _ (IJump x)) = [x]
   successors (IP _ (ICondJump _ x y)) = [x, y]
   successors (IP _ (IReturn _)) = []
+  successors (IP _ (IThrow _)) = []
 
 instance HooplNode InstrPos where
   mkBranchNode x = IP Nothing (IJump x)
