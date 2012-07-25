@@ -29,10 +29,10 @@ test_unparser_only: clean stamp $(UNPARSERTESTFILESS)
 	@$(MAKE) -s summary
 
 %.parser:
-	@(cat $(@:.parser=) | phpsa --dump-ast > /dev/null 2> /dev/null && echo "$@ : OK" || echo "$@ : FAIL") >> $(OUTLOG)
+	@(cat $(@:.parser=) | 17eyes --dump-ast > /dev/null 2> /dev/null && echo "$@ : OK" || echo "$@ : FAIL") >> $(OUTLOG)
 
 %.unparser:
-	@(cat $(@:.unparser=) | phpsa --unparse 2> /dev/null | diff -B -q $(@:.unparser=) > /dev/null - && echo "$@ : OK" || echo "$@ : FAIL") >> $(OUTLOG)
+	@(cat $(@:.unparser=) | 17eyes --unparse 2> /dev/null | diff -B -q $(@:.unparser=) > /dev/null - && echo "$@ : OK" || echo "$@ : FAIL") >> $(OUTLOG)
 
 %.hutesttest:
 	@echo "====== $@" >> $(HUNIT_LOG)

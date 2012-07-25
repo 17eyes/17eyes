@@ -77,4 +77,4 @@ main = do
         [] -> optAction opts opts
         xs -> mapM_ (\f -> optAction opts (opts { optInputFile = f })) xs
   where
-    header = "Usage: phpsa [OPTION...] FILES..."
+    header = "Usage: 17eyes [OPTION...] FILES..."

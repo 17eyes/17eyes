@@ -1,9 +1,9 @@
-name:           phpsa
+name:           17eyes
 version:        0.1
 build-type:     Simple
 cabal-version:  >= 1.6
 
-executable phpsa
+executable 17eyes
   hs-source-dirs: src
   main-is:        Main.hs
   build-depends:  HSH >= 2, MissingH, base >= 4, binary, bytestring,
