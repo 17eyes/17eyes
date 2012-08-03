@@ -3,7 +3,10 @@
 module Lang.Php.Cfg.Serialization where
 
 import Control.Applicative
-import Compiler.Hoopl hiding ((<*>))
+import Control.Monad(replicateM)
+
+import Compiler.Hoopl hiding ((<*>)) -- conflicts with Control.Applicative
+import qualified Compiler.Hoopl -- to access (<*>) when we need it
 
 -- To serialize Unique and Label we are forced to use the internal Hoopl-GHC API.
 import Compiler.Hoopl.GHC(uniqueToInt, uniqueToLbl, lblToUnique)
@@ -288,3 +291,74 @@ instance Binary (InstrPos O C) where
 instance Binary (InstrPos O O) where
   put (IP m_pos instr) = put m_pos >> put instr
   get = IP <$> get <*> get
+
+------------------------------------------------------------------------------
+--               Serialization of whole Hoopl graphs
+------------------------------------------------------------------------------
+
+tagGNil  = 1 :: Word8
+tagGUnit = 2 :: Word8
+tagGMany = 3 :: Word8
+
+instance Binary (Graph InstrPos O O) where
+  put GNil = putWord8 tagGNil
+  put (GUnit block) = putWord8 tagGUnit >> putBlockOO block
+  put (GMany (JustO entry) blockMap (JustO exit)) = do
+    putWord8 tagGMany
+    let blocks = mapElems blockMap
+    putBlockOC entry
+    put (length blocks)
+    mapM putBlockCC blocks
+    putBlockCO exit
+
+  get = get >>= getTag
+   where
+     getTag tag
+       | tag == tagGNil  = return GNil
+       | tag == tagGUnit = getBlockOO
+       | tag == tagGMany = do
+           entry <- getBlockOC
+           n <- get :: Get Int
+           middle <- foldl (|*><*|) emptyClosedGraph <$> replicateM n getBlockCC
+           exit <- getBlockCO
+           return (entry |*><*| middle |*><*| exit)
+
+putBlockOO :: Block InstrPos O O -> Put
+putBlockOO block = case blockToNodeList block of
+  (NothingC, nodes, NothingC) -> put nodes
+
+putBlockOC :: Block InstrPos O C -> Put
+putBlockOC block = case blockToNodeList block of
+  (NothingC, nodes, JustC last) -> put nodes >> put last
+
+putBlockCO :: Block InstrPos C O -> Put
+putBlockCO block = case blockToNodeList block of
+  (JustC first, nodes, NothingC) -> put first >> put nodes
+
+putBlockCC :: Block InstrPos C C -> Put
+putBlockCC block = case blockToNodeList block of
+  (JustC first, middle, JustC last) -> put first >> put middle >> put last
+
+getBlockOO :: Get (Graph InstrPos O O)
+getBlockOO = do
+  nodes <- get :: Get [InstrPos O O]
+  let mNodes = map mkMiddle nodes
+  return (foldl (Compiler.Hoopl.<*>) emptyGraph mNodes)
+
+getBlockOC :: Get (Graph InstrPos O C)
+getBlockOC = do
+  g_middle <- getBlockOO
+  last <- get :: Get (InstrPos O C)
+  return ((Compiler.Hoopl.<*>) g_middle (mkLast last))
+
+getBlockCO :: Get (Graph InstrPos C O)
+getBlockCO = do
+  first <- get :: Get (InstrPos C O)
+  g_middle <- getBlockOO
+  return ((Compiler.Hoopl.<*>) (mkFirst first) g_middle)
+
+getBlockCC :: Get (Graph InstrPos C C)
+getBlockCC = do
+  first <- get :: Get (InstrPos C O)
+  g_rest <- getBlockOC
+  return ((Compiler.Hoopl.<*>) (mkFirst first) g_rest)
