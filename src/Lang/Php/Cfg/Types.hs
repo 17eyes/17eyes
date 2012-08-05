@@ -62,6 +62,11 @@ data Instr e x where
   ICopyVar :: Register -> Register -> Instr O O
   IDeclare :: Declarable -> Instr O O
 
+  -- IUnknown is used to represent an instruction that can have *any* effect.
+  -- Using it, we can generate the CFG somewhat robustly even in presence of
+  -- unimplemented constructions in the input code.
+  IUnknown :: Instr O O
+
 deriving instance Show (Instr e x)
 
 instance NonLocal InstrPos where

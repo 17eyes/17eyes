@@ -50,6 +50,7 @@ opILoadNum         = 3   :: Word8
 opILoadConst       = 4   :: Word8
 opICopyVar         = 5   :: Word8
 opIDeclare         = 6   :: Word8
+opIUnknown         = 7   :: Word8
 
 ------------------------------------------------------------------------------
 --                        Serialization of Instr                            --
@@ -100,6 +101,7 @@ instance Binary (Instr O O) where
   put (ILoadConst reg str) = putWord8 opILoadConst >> put reg >> put str
   put (ICopyVar reg1 reg2) = putWord8 opICopyVar >> put reg1 >> put reg2
   put (IDeclare decl) = putWord8 opIDeclare >> put decl
+  put IUnknown = putWord8 opIUnknown
 
   get = getWord8 >>= getOp
    where
@@ -111,6 +113,7 @@ instance Binary (Instr O O) where
       | x == opILoadConst  = ILoadConst <$> get <*> get
       | x == opICopyVar    = ICopyVar <$> get <*> get
       | x == opIDeclare    = IDeclare <$> get
+      | x == opIUnknown    = return IUnknown
 
 ------------------------------------------------------------------------------
 --                         Opcodes for callables                            --

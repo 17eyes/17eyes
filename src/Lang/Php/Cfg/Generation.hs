@@ -20,6 +20,35 @@ import Text.Parsec.Pos(newPos)
 import qualified Data.Map as Map
 import Data.Map(Map)
 
+-- Since the generation of the CFG is not fully implemented for all AST nodes
+-- and we will probably need an IUnknown instruction anyway, we might as well
+-- generate it for unimplemented constructs.
+--
+-- However, we'll use Debug.Trace to emit a warning message when such
+-- instruction is generated.
+import Debug.Trace(trace)
+
+class NotImplemented a where
+  notImplemented :: String -> a
+
+instance NotImplemented Cfg where
+  notImplemented feature = trace msg mkMiddle (IP Nothing IUnknown)
+    where msg = "WARNING: " ++ feature ++ " are not implemented"
+
+instance NotImplemented (Register, Cfg) where
+  notImplemented x = (RNull, notImplemented x)
+
+-- Some code in this module generates Exprs. There is no reasonable equivalent
+-- for IUnknown here so we signal an error.
+instance NotImplemented Expr where
+  notImplemented feature = error ("ERROR: " ++ feature ++ " are not implemented")
+
+instance NotImplemented a => NotImplemented (GMonad a) where
+  notImplemented = return . notImplemented
+
+instance NotImplemented a => NotImplemented (b -> a) where
+  notImplemented feature _ = notImplemented feature
+
 -- In top-level code, the order of function or class declarations is not
 -- significant.  This is implemented by storing IDeclare instructions in the
 -- state GS and prepending them at the beginning of the graph afterwards.
@@ -378,7 +407,7 @@ instance TacAbleR Expr where
     let g_c = mkMiddle $ sp2ip pos $ ICall r (CInclude ir on) r_e
     return (r, g_e <*> g_c)
 
-  toTacR _ pos = error "TacAbleR Expr not fully implmented"
+  toTacR _ pos = notImplemented "some kinds of expressions"
 
 instance TacAbleR RVal where
   toTacR (RValROnlyVal x) = toTacR x
@@ -389,7 +418,7 @@ instance TacAbleR ROnlyVal where
     var <- RTemp <$> freshUnique
     return (var, mkMiddle $ sp2ip pos $ ILoadConst var (wsCapMain w_name))
 
-  toTacR (ROnlyValConst _) pos = error "TODO: implement class member constants"
+  toTacR (ROnlyValConst _) pos = notImplemented "class memeber constants"
 
   -- Ordinary function call: function name is a constant, parameters are r-values.
   toTacR (ROnlyValFunc (Right const) _ ws_args) pos = do
@@ -411,19 +440,19 @@ instance TacAbleR ROnlyVal where
 
      asExpr :: Either Expr LVal -> Expr
      asExpr (Left x) = x
-     asExpr (Right lv) = error "l-values as function arguments are not implemented"
+     asExpr (Right lv) = notImplemented "l-values as function arguments"
 
   toTacR (ROnlyValFunc (Left _) _ _) pos =
-    error "complex expressions as functions in function calls are not implemented"
+    notImplemented "complex expressions as functions in function calls"
 
 -- Not that this translates an LRVal when used as an r-value. L-values are
 -- handled differently.
 instance TacAbleR LRVal where
   toTacR (LRValVar (DynConst [] wsc)) = case wsCapMain wsc of
-    (Left _) -> error "TODO: implement TacAbleR LRVal"
+    (Left _) -> notImplemented "TacAbleR LRVal"
     (Right x) -> toTacR x
 
-  toTacR _ = error "TODO: implement TacAbleR LRVal"
+  toTacR _ = notImplemented "TacAbleR LRVal"
 
 instance TacAbleR Var where
   toTacR (Var name []) pos = return (RVar name, emptyGraph)
@@ -438,8 +467,8 @@ instance TacAbleR Var where
       return (g_idx <*> g)
     return (r, g_init <*> (foldl (<*>) emptyGraph g_gets))
 
-  toTacR (VarDyn _ x) pos = error "TODO: implement VarDyn ($$x etc.)"
-  toTacR (VarDynExpr _ x) pos = error "TODO: implement VarDynExpr (${foo()} etc)"
+  toTacR (VarDyn _ x) pos = notImplemented "VarDyn ($$x etc.)"
+  toTacR (VarDynExpr _ x) pos = notImplemented "VarDynExpr (${foo()} etc)"
 
 instance TacAbleR StrLit where
   -- Basic case of a simple string without embedded expressions.
@@ -524,20 +553,20 @@ instance TacAbleL LOnlyVal where
         return $ g_idx_load <*> g_get <*> g_main
     return (foldl1 (<*>) graphs)
 
-  toTacL (LOnlyValInd lov _ ws_e) pos var = error "TODO: implement LOnlyValInd (e.g. $x[][5] = 5)"
-  toTacL (LOnlyValMemb lov _ memb) pos var = error "TODO: implement LOnlyValMemb (e.g. $x[]->a = 5)"
+  toTacL (LOnlyValInd lov _ ws_e) pos var = notImplemented "LOnlyValInd (e.g. $x[][5] = 5)"
+  toTacL (LOnlyValMemb lov _ memb) pos var = notImplemented "LOnlyValMemb (e.g. $x[]->a = 5)"
 
 instance TacAbleL DynConst where
   toTacL (DynConst [] wsc) = case wsCapMain wsc of
     Right var -> toTacL var
     _ -> error "inconsistent AST" -- should not happen
 
-  toTacL (DynConst xs x) = error "TODO: implement DynConst (A::$x = 5 etc.)"
+  toTacL (DynConst xs x) = notImplemented "DynConst (A::$x = 5 etc.)"
 
 instance TacAbleL LRVal where
   toTacL (LRValVar dc) = toTacL dc
-  toTacL (LRValInd rval _ ws_expr) = error "TODO: implement LRValInd (e.g. foo()[0] = 5)"
-  toTacL (LRValMemb rval _ memb) = error "TODO: implement LRValMemb (e.g. foo()->a = 5)"
+  toTacL (LRValInd rval _ ws_expr) = notImplemented "LRValInd (e.g. foo()[0] = 5)"
+  toTacL (LRValMemb rval _ memb) = notImplemented "LRValMemb (e.g. foo()->a = 5)"
 
 instance TacAbleL Var where
   toTacL (Var name []) pos var =
@@ -566,11 +595,11 @@ instance TacAbleL Var where
     let g_set = mkMiddle $ sp2ip pos $ ICall RNull CArraySet (r_arr, r_idx, var)
     return $ g_init <*> (foldl (<*>) emptyGraph g_gets) <*> g_idx <*> g_set
 
-  toTacL (VarDyn _ x) pos var = error "TODO: implement VarDyn ($$x etc.)"
-  toTacL (VarDynExpr _ x) pos var = error "TODO: implement VarDynExpr (${foo()} etc)"
+  toTacL (VarDyn _ x) pos var = notImplemented "VarDyn ($$x etc.)"
+  toTacL (VarDynExpr _ x) pos var = notImplemented "VarDynExpr (${foo()} etc)"
 
 instance TacAbleL Ref where
-  toTacL = error "TODO: implement references"
+  toTacL = notImplemented "references"
 
 ------------------------------------------------------------------------------
 --                              Statements                                  --
@@ -902,7 +931,7 @@ createFuncGraph pos func = do
    initGraph = fmap catGraphs $ forM params $ \(name, m_expr) ->
      case m_expr of
        Nothing -> return emptyGraph
-       Just expr -> error "TODO: default arguments are not implemented"
+       Just expr -> notImplemented "default functions arguments"
 
    -- list of all formal parameters (extracted for convenience)
    params :: [(String, Maybe Ast.Expr)]
@@ -910,7 +939,7 @@ createFuncGraph pos func = do
                    (wsCapMain (funcArgs func))
 
    procArg (FuncArg { funcArgVar = VarMbVal (Var name []) mb_wse }) = (name, fmap snd mb_wse)
-   procArg _ = error "TODO: crazy stuff as formal parameters is not implemented."
+   procArg _ = ("", Just $ notImplemented "crazy stuff as formal parameters")
 
 mods2vis :: [String] -> Visibility
 mods2vis ("public":_) = Public
