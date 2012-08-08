@@ -3,6 +3,8 @@ module Codebase(Codebase, scanCodebase, codebasePaths) where
 import Crypto.Hash.SHA1
 import qualified Data.ByteString as ByteString
 import qualified Data.ByteString.Lazy as ByteString.Lazy
+import qualified Data.ByteString.Base64 as ByteString.Base64
+import qualified Data.ByteString.Char8 as ByteString.Char8
 import Data.List
 import Database.HDBC
 import Database.HDBC.Sqlite3
@@ -14,6 +16,7 @@ import Common
 import Lang.Php.Ast
 import Lang.Php.Cfg.Generation
 import Lang.Php.Cfg.Serialization
+import Lang.Php.Cfg.Types
 import Text.Printf
 
 -- XXX: find better place to move this query
@@ -23,7 +26,7 @@ createCodebaseDatabaseQuery = [
   "     id   INTEGER PRIMARY KEY ASC AUTOINCREMENT," ++
   "     hash TEXT NOT NULL UNIQUE," ++
   "     utime INTEGER NOT NULL DEFAULT (strftime('%s','now'))," ++
-  "     cfg  BLOB" ++
+  "     cfg  TEXT" ++
   "  );",
   "  CREATE UNIQUE INDEX hash ON resource(hash);",
 
@@ -74,6 +77,26 @@ data Codebase' = Codebase' String FilePath Connection
 -- TODO: hashing, caching, etc.
 data Codebase = MkCodebase [FilePath] deriving Show
 
+-- XXX: najlepiej bedzie rozszerzyc tu o nazwę pliku
+
+resolveFunction (Codebase' projectName path conn) name = do
+  r <- quickQuery' conn "SELECT cfg FROM function WHERE name = ?" [toSql name]
+  return $ mapM (\[x] -> decode . ByteString.Lazy.fromChunks $
+    [ByteString.Base64.decodeLenient . ByteString.Char8.pack $
+    (fromSql x :: String)]) r
+
+resolveConstant (Codebase' projectName path conn) name = do
+  r <- quickQuery' conn "SELECT cfg FROM constant WHERE name = ?" [toSql name]
+  return $ mapM (\[x] -> decode . ByteString.Lazy.fromChunks $
+    [ByteString.Base64.decodeLenient . ByteString.Char8.pack $
+    (fromSql x :: String)]) r
+
+resolveMethod (Codebase' projectName path conn) name = do
+  r <- quickQuery' conn "SELECT cfg FROM method WHERE name = ?" [toSql name]
+  return $ mapM (\[x] -> decode . ByteString.Lazy.fromChunks $
+    [ByteString.Base64.decodeLenient . ByteString.Char8.pack $
+    (fromSql x :: String)]) r
+
 createCodebase :: FilePath -> String -> IO Codebase'
 createCodebase path projectName = do
   -- XXX: configuration
@@ -111,6 +134,9 @@ updateCodebase (Codebase' projectName path conn) = do
   toHex :: ByteString.ByteString -> String
   toHex bytes = ByteString.unpack bytes >>= printf "%02X"
 
+  toChar :: ByteString.ByteString -> String
+  toChar bytes = ByteString.unpack bytes >>= printf "%c"
+
   addFileToCodeBase filePath hash = do
     -- Parse file
     source <- readFile filePath
@@ -118,10 +144,10 @@ updateCodebase (Codebase' projectName path conn) = do
       (Right ast) -> return ast
       -- XXX: error handler
       (Left err)  -> undefined
-    -- CFG
-    -- cfg <- return $ concatMap show $ runGMonad $ ByteString.unpack .
-    -- ByteString.concat . ByteString.Lazy.toChunks . encode <$> (toCfg ast)
-    cfg <- return ""
+    -- CFG, the winner of the ugliest piece of code/hack in the project
+    cfg <- return $ runGMonad $ toChar . 
+      ByteString.Base64.encode . ByteString.concat .
+      ByteString.Lazy.toChunks . encode <$> (toCfg ast)
     id <- addResourceToDatabase hash filePath cfg
     addFileToDatabase filePath id
     -- add function / methods etc.
@@ -160,7 +186,7 @@ updateCodebase (Codebase' projectName path conn) = do
 
   existsFile file = do
     c <- quickQuery' conn
-      "SELECT 0 FROM file WHERE hash = ?;" [toSql file]
+      "SELECT 0 FROM file WHERE name = ?;" [toSql file]
     return $ not . null $ c
 
   removeDeadResources timestamp = do
