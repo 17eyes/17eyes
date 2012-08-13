@@ -52,7 +52,7 @@ instance NotImplemented a => NotImplemented (b -> a) where
 -- In top-level code, the order of function or class declarations is not
 -- significant.  This is implemented by storing IDeclare instructions in the
 -- state GS and prepending them at the beginning of the graph afterwards.
-data TLDecl = NotTopLevel | TLDecl [Graph InstrPos O O]
+data TLDecl = NotTopLevel | TLDecl [Declarable]
 
 data GS = GS {
     gsBreakTargets :: [Label],
@@ -68,8 +68,14 @@ initialGS = GS {
 
 type GMonad = StateT GS SimpleUniqueMonad
 
-runGMonad :: GMonad a -> a
-runGMonad = fst . runSimpleUniqueMonad . (\x -> runStateT x initialGS)
+-- runGMonad returns a list of declarations apart from the main value
+runGMonad :: GMonad a -> (a, [Declarable])
+runGMonad x = (result, decls)
+ where
+   (result, gs) = runSimpleUniqueMonad (runStateT x initialGS)
+   decls = case gsTopLevelDecls gs of
+     NotTopLevel -> []
+     TLDecl xs -> xs
 
 instance UniqueMonad GMonad where
   freshUnique = lift freshUnique
@@ -607,17 +613,15 @@ instance TacAbleL Ref where
 
 instance CfgAble Ast where
   toCfg (Ast file toplevel sl) = do
-    tlf <- gsTopLevelDecls <$> get
     modify (\x -> x { gsTopLevelDecls = TLDecl [] })
     let pos = newPos file 0 0
     (_, g_toplevel) <- toTacR toplevel pos
     g_main <- toCfg sl
     g_decls <- catGraphs <$> reverse <$> fromTLD <$> gsTopLevelDecls <$> get
     -- g_decls is a graph with declarations for all top-level functions
-    modify (\x -> x { gsTopLevelDecls = tlf }) -- revert to previous gsTopLevelDecls
     return (g_decls <*> g_toplevel <*> g_main)
    where
-     fromTLD (TLDecl xs) = xs
+     fromTLD (TLDecl xs) = map (mkMiddle . IP Nothing . IDeclare) xs
 
 instance CfgAble (StoredPos Stmt) where
   toCfg (StoredPos _ (StmtBlock b)) = toCfg b
@@ -856,7 +860,7 @@ instance CfgAble (StoredPos Stmt) where
     (func_lab, g_body) <- createFuncGraph pos func
     g_inj <- injectBlocks g_body
     let Just name = funcName func
-    g_decl <- declare (DFunction name func_lab)
+    g_decl <- declare (DFunction name func_lab g_body)
     return (g_decl <*> g_inj)
 
   toCfg (StoredPos pos (StmtClass cls)) = do
@@ -889,12 +893,11 @@ instance CfgAble (StoredPos Stmt) where
 
 declare :: Declarable -> GMonad Cfg
 declare dec = do
-  let dec_g = mkMiddle $ IP Nothing $ IDeclare dec
   tld <- gsTopLevelDecls <$> get
   case tld of
-    NotTopLevel -> return dec_g
+    NotTopLevel -> return (mkMiddle $ IP Nothing (IDeclare dec))
     TLDecl xs -> do
-      modify $ \x -> x { gsTopLevelDecls = TLDecl (dec_g:xs) }
+      modify $ \x -> x { gsTopLevelDecls = TLDecl (dec:xs) }
       return emptyGraph
 
 -- Add closed blocks to the CFG. Similar to addBlocks from Hoopl but addBlocks

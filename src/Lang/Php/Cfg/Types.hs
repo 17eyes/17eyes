@@ -1,4 +1,4 @@
-{-# LANGUAGE GADTs, StandaloneDeriving #-}
+{-# LANGUAGE GADTs, StandaloneDeriving, FlexibleInstances #-}
 
 module Lang.Php.Cfg.Types(
       Register(..)
@@ -25,7 +25,7 @@ instance Show Register where
 data Visibility = Public | Private | Protected deriving Show
 
 data Declarable =
-    DFunction String Label
+    DFunction String Label (Graph InstrPos C C)
   | DClass {
       -- FIXME: this obviously isn't everything that can live inside a PHP class
       dclsName :: String,
@@ -33,6 +33,16 @@ data Declarable =
       dclsFields :: [(Visibility, String)]
     }
   deriving Show
+
+-- We would like to derive Show Declarable automatically but there is no
+-- reasonable representation of graphs in textual from. For convenience we
+-- declare Show for graphs like this:
+
+instance Show (Graph InstrPos C C) where
+  show _ = "<Graph InstrPos C C>"
+
+instance Show (Graph InstrPos O O) where
+  show _ = "<Graph InstrPos O O>"
 
 data InstrPos e x = IP (Maybe (FilePath, Int)) (Instr e x) deriving Show
 

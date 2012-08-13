@@ -137,6 +137,11 @@ updateCodebase (Codebase' projectName path conn) = do
   toChar :: ByteString.ByteString -> String
   toChar bytes = ByteString.unpack bytes >>= printf "%c"
 
+  -- Ugly hack: encode the CFG in Base64
+  encode64 :: Binary a => a -> String
+  encode64 = toChar . ByteString.Base64.encode . ByteString.concat .
+              ByteString.Lazy.toChunks . encode
+
   addFileToCodeBase filePath hash = do
     -- Parse file
     source <- readFile filePath
@@ -144,13 +149,11 @@ updateCodebase (Codebase' projectName path conn) = do
       (Right ast) -> return ast
       -- XXX: error handler
       (Left err)  -> undefined
-    -- CFG, the winner of the ugliest piece of code/hack in the project
-    cfg <- return $ runGMonad $ toChar . 
-      ByteString.Base64.encode . ByteString.concat .
-      ByteString.Lazy.toChunks . encode <$> (toCfg ast)
-    id <- addResourceToDatabase hash filePath cfg
+    let (cfg, decls) = runGMonad (toCfg ast)
+    id <- addResourceToDatabase hash filePath (encode64 cfg)
     addFileToDatabase filePath id
     -- add function / methods etc.
+    mapM (addDeclarableToDatabase id) decls
     commit conn
     return ()
 
@@ -161,6 +164,12 @@ updateCodebase (Codebase' projectName path conn) = do
         [toSql filePath]
       else run conn "INSERT INTO file (resource_id, name) VALUES (?, ?);"
         [toSql id, toSql filePath]
+
+  addDeclarableToDatabase id (DFunction name lab cfg) =
+    run conn "INSERT INTO function (resource_id, name, cfg) VALUES (?, ?, ?)"
+        [toSql id, toSql name, toSql (encode64 cfg)]
+
+  addDeclarableToDatabase _ _ = error "not implemented" -- TODO: implement
 
   getTimestamp = do
     [[timestamp]] <- quickQuery' conn "SELECT strftime('%s','now');" []

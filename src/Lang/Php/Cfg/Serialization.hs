@@ -303,15 +303,24 @@ tagGNil  = 1 :: Word8
 tagGUnit = 2 :: Word8
 tagGMany = 3 :: Word8
 
+instance Binary (Graph InstrPos C C) where
+  put (GMany NothingO blockMap NothingO) = do
+    let blocks = mapElems blockMap
+    put (length blocks)
+    mapM putBlockCC blocks
+    return ()
+
+  get = do
+    n <- get :: Get Int
+    foldl (|*><*|) emptyClosedGraph <$> replicateM n getBlockCC
+
 instance Binary (Graph InstrPos O O) where
   put GNil = putWord8 tagGNil
   put (GUnit block) = putWord8 tagGUnit >> putBlockOO block
   put (GMany (JustO entry) blockMap (JustO exit)) = do
     putWord8 tagGMany
-    let blocks = mapElems blockMap
     putBlockOC entry
-    put (length blocks)
-    mapM putBlockCC blocks
+    put (GMany NothingO blockMap NothingO)
     putBlockCO exit
 
   get = get >>= getTag
@@ -322,7 +331,7 @@ instance Binary (Graph InstrPos O O) where
        | tag == tagGMany = do
            entry <- getBlockOC
            n <- get :: Get Int
-           middle <- foldl (|*><*|) emptyClosedGraph <$> replicateM n getBlockCC
+           middle <- get :: Get (Graph InstrPos C C)
            exit <- getBlockCO
            return (entry |*><*| middle |*><*| exit)
 

@@ -51,7 +51,7 @@ parseString name input = case runParser (parse <* eof) () name input of
 
 dumpCfg _ = do
     ast <- parseString "<stdin>" =<< getContents
-    let cfg = runGMonad (toCfg ast)
+    let (cfg, _) = runGMonad (toCfg ast)
     putStr (cfgToDot cfg)
 
 astAnalyses :: Options -> IO ()
