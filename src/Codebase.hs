@@ -48,6 +48,7 @@ createCodebaseDatabaseQuery = [
   -- XXX: interfaces are also kept in class table (with proper type)
   "  CREATE TABLE class (" ++
   -- XXX additional check when dictionary is ready
+  "      id INTEGER PRIMARY KEY ASC AUTOINCREMENT," ++
   "      type INTEGER NOT NULL," ++
   "      name TEXT," ++
   "      resource_id INTEGER REFERENCES resource(id) ON DELETE CASCADE" ++
@@ -71,7 +72,13 @@ createCodebaseDatabaseQuery = [
   "          ON UPDATE CASCADE" ++
   "  );",
   "  CREATE INDEX constant_name ON constant(name);"]
- 
+
+-- constants for `type' columns
+classNormal    = 0 :: Int
+classInterface = 1 :: Int
+methodNormal   = 0 :: Int
+methodStatic   = 1 :: Int
+
 data Codebase' = Codebase' String FilePath Connection
 
 -- TODO: hashing, caching, etc.
@@ -165,11 +172,19 @@ updateCodebase (Codebase' projectName path conn) = do
       else run conn "INSERT INTO file (resource_id, name) VALUES (?, ?);"
         [toSql id, toSql filePath]
 
-  addDeclarableToDatabase id (DFunction name lab cfg) =
+  addDeclarableToDatabase id (DFunction name lab cfg) = do
     run conn "INSERT INTO function (resource_id, name, cfg) VALUES (?, ?, ?)"
         [toSql id, toSql name, toSql (encode64 cfg)]
+    return ()
 
-  addDeclarableToDatabase _ _ = error "not implemented" -- TODO: implement
+  addDeclarableToDatabase id d@(DClass { dclsMethods = methods }) = do
+    run conn "INSERT INTO class (type, resource_id, name) VALUES (?, ?, ?)"
+        [toSql classNormal, toSql id, toSql (dclsName d)]
+    [[class_id]] <- quickQuery' conn "SELECT last_insert_rowid();" []
+    forM methods $ \x@(_, name, _, _) ->
+      run conn "INSERT INTO method (name, type, class_id, cfg) VALUES (?, ?, ?, ?)"
+        [toSql name, toSql methodNormal, class_id, toSql (encode64 d)]
+    return ()
 
   getTimestamp = do
     [[timestamp]] <- quickQuery' conn "SELECT strftime('%s','now');" []

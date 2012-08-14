@@ -868,9 +868,10 @@ instance CfgAble (StoredPos Stmt) where
     g_inj <- injectBlocks (foldl (|*><*|) emptyClosedGraph bodies)
     g_decl <- declare $ DClass {
       dclsName = wsCapMain (className cls),
-      dclsMethods = zip3 visibilities
+      dclsMethods = zip4 visibilities
                          (map (maybe "" id . funcName . snd) methods)
-                         labs,
+                         labs
+                         bodies,
       dclsFields = fields
     }
     return (g_decl <*> g_inj)
