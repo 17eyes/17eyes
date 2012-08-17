@@ -1,9 +1,10 @@
-{-# LANGUAGE RankNTypes, GADTs #-}
+{-# LANGUAGE RankNTypes, GADTs, TypeSynonymInstances, FlexibleInstances #-}
 
 module Lang.Php.Cfg.Utils(
     mapGraphM, mapBlockM, mapMaybeOM, mapMaybeCM,
     InitializedUniqueMonad, runIUM,
-    concatGraph, addBlocks'
+    concatGraph, addBlocks',
+    CaseOC(..)
  ) where
 
 import Data.Functor
@@ -12,6 +13,7 @@ import Control.Monad(liftM)
 import Control.Monad.State
 
 import Compiler.Hoopl
+import Compiler.Hoopl.GHC
 
 import Lang.Php.Cfg.Types
 
@@ -113,3 +115,83 @@ concatBlock block = case blockToNodeList block of
 
 addBlocks' :: (HooplNode n, UniqueMonad m) => Graph n e x -> Graph n C C -> m (Graph n e x)
 addBlocks' g closed = graphOfAGraph $ addBlocks (aGraphOfGraph g) (aGraphOfGraph closed)
+
+-------------------------------------------------------------------------------
+--                                CaseOC
+-------------------------------------------------------------------------------
+-- I find these functions necessary in many places during Hoopl graph manipu-
+-- -lation. I don't know why these aren't in Hoopl -- maybe the same thing
+-- can be achieved in some other way but I can't figure it out.
+--
+-- liftOC can be used to construct generalized functions working over all
+-- types of graphs/blocks/nodes (like the one required as an argument to
+-- foldGraphNodes). Other variants are just for convenience and can be left
+-- as defaults during implementation.
+
+class CaseOC thing where
+  liftOC :: (thing O O -> c)
+         -> (thing O C -> c)
+         -> (thing C O -> c)
+         -> (thing C C -> c)
+         -> thing e x -> c
+
+  -- Swapped-argument variant of liftOC that looks more like a `case'.
+  caseOC :: thing e x
+         -> (thing O O -> c)
+         -> (thing O C -> c)
+         -> (thing C O -> c)
+         -> (thing C C -> c)
+         -> c
+  caseOC x fOO fOC fCO fCC = liftOC fOO fOC fCO fCC x
+
+  onlyOO :: thing e x -> c -> (thing O O -> c) -> c
+  onlyOO x val f = liftOC f (const val) (const val) (const val) x
+
+  onlyOC :: thing e x -> c -> (thing O C -> c) -> c
+  onlyOC x val f = liftOC (const val) f (const val) (const val) x
+
+  onlyCO :: thing e x -> c -> (thing C O -> c) -> c
+  onlyCO x val f = liftOC (const val) (const val) f (const val) x
+
+  onlyCC :: thing e x -> c -> (thing C C -> c) -> c
+  onlyCC x val f = liftOC (const val) (const val) (const val) f x
+
+
+instance CaseOC (Block thing) where
+  liftOC fOO fOC fCO fCC x = case blockToNodeList x of
+    (NothingC, _, NothingC) -> fOO x
+    (NothingC, _, JustC _ ) -> fOC x
+    (JustC _ , _, NothingC) -> fCO x
+    (JustC _ , _, JustC _ ) -> fCC x
+
+instance CaseOC (Graph thing) where
+  liftOC fOO fOC fCO fCC x = impl x
+   where
+     impl GNil = fOO x
+     impl (GUnit _) = fOO x
+     impl (GMany (JustO _) _ (JustO _)) = fOO x
+     impl (GMany (JustO _) _ NothingO ) = fOC x
+     impl (GMany NothingO  _ (JustO _)) = fCO x
+     impl (GMany NothingO  _ NothingO ) = fCC x
+
+-- Instance declaration for InstrPos maybe belongs more in Types.hs but to
+-- avoid unnecessary dependency cycle it's given here. It feels kind of dumb
+-- to have to list all possible instructions here but I don't see any other
+-- way (aside from TH maybe).
+instance CaseOC InstrPos where
+  liftOC fOO fOC fCO fCC x@(IP _ instr) = impl instr
+   where
+     impl (ILabel _) = fCO x
+     impl (IFuncEntry _ _ _) = fCO x
+     impl (IJump _) = fOC x
+     impl (ICondJump _ _ _) = fOC x
+     impl (IReturn _) = fOC x
+     impl (ICall _ _ _) = fOO x
+     impl (ICatchException _ _ _) = fCO x
+     impl (IThrow _) = fOC x
+     impl (ILoadString _ _) = fOO x
+     impl (ILoadNum _ _) = fOO x
+     impl (ILoadConst _ _) = fOO x
+     impl (ICopyVar _ _) = fOO x
+     impl (IDeclare _) = fOO x
+     impl IUnknown = fOO x
