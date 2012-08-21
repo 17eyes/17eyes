@@ -1,4 +1,8 @@
-module Codebase(Codebase, scanCodebase, codebasePaths) where
+module Codebase(
+    Codebase, scanCodebase, codebasePaths, -- TODO: obsolete?
+    Codebase', createCodebase, updateCodebase,
+    resolveFile, resolveFunction, resolveConstant, resolveMethod
+  ) where
 
 import Crypto.Hash.SHA1
 import qualified Data.ByteString as ByteString
@@ -86,6 +90,31 @@ data Codebase = MkCodebase [FilePath] deriving Show
 
 -- XXX: najlepiej bedzie rozszerzyc tu o nazwę pliku
 
+toHex :: ByteString.ByteString -> String
+toHex bytes = ByteString.unpack bytes >>= printf "%02X"
+
+toChar :: ByteString.ByteString -> String
+toChar bytes = ByteString.unpack bytes >>= printf "%c"
+
+-- Ugly hack: encode the CFG in Base64
+encode64 :: Binary a => a -> String
+encode64 = toChar . ByteString.Base64.encode . ByteString.concat .
+           ByteString.Lazy.toChunks . encode
+
+decode64 :: Binary a => String -> a
+decode64 x = decode $ ByteString.Lazy.fromChunks $
+             [ByteString.Base64.decodeLenient $ ByteString.Char8.pack x]
+
+resolveFile :: Codebase' -> FilePath -> IO Cfg
+resolveFile (Codebase' _ _ conn) name = do
+  r <- quickQuery'
+         conn
+         "SELECT cfg FROM file JOIN resource ON (resource_id = resource.id) WHERE name = ?"
+         [toSql name]
+  return $ case r of
+    [[encoded_cfg]] -> decode64 (fromSql encoded_cfg)
+    _ -> error "TODO"
+
 resolveFunction (Codebase' projectName path conn) name = do
   r <- quickQuery' conn "SELECT cfg FROM function WHERE name = ?" [toSql name]
   return $ mapM (\[x] -> decode . ByteString.Lazy.fromChunks $
@@ -138,17 +167,6 @@ updateCodebase (Codebase' projectName path conn) = do
   return (Codebase' projectName path conn) 
 
  where
-  toHex :: ByteString.ByteString -> String
-  toHex bytes = ByteString.unpack bytes >>= printf "%02X"
-
-  toChar :: ByteString.ByteString -> String
-  toChar bytes = ByteString.unpack bytes >>= printf "%c"
-
-  -- Ugly hack: encode the CFG in Base64
-  encode64 :: Binary a => a -> String
-  encode64 = toChar . ByteString.Base64.encode . ByteString.concat .
-              ByteString.Lazy.toChunks . encode
-
   addFileToCodeBase filePath hash = do
     -- Parse file
     source <- readFile filePath
