@@ -23,7 +23,7 @@ import Lang.Php.Cfg.Types
 
 -- Similar to mapGraph but a monadic actions is mapped over the graph's nodes
 -- (instead of a pure function).
-mapGraphM :: Monad m => (forall e x. node e x -> m (node e x))
+mapGraphM :: (Monad m, NonLocal node) => (forall e x. node e x -> m (node e x))
              -> Graph node e x -> m (Graph node e x)
 
 mapGraphM f GNil = return GNil
@@ -31,9 +31,8 @@ mapGraphM f (GUnit block) = liftM GUnit (mapBlockM f block)
 mapGraphM f (GMany m_entry blockMap m_exit) = do
   m_entry' <- mapMaybeOM (mapBlockM f) m_entry
   blockMap' <- liftM mapFromList $ forM (mapToList blockMap) $ \(k, v) -> do
-    -- NOTE: This breaks if transformation f changes the entry label
     v' <- mapBlockM f v
-    return (k, v')
+    return (entryLabel v', v')
   m_exit' <- mapMaybeOM (mapBlockM f) m_exit
   return (GMany m_entry' blockMap' m_exit')
 
@@ -54,7 +53,8 @@ mapMaybeOM f (JustO x) = liftM JustO (f x)
 
 -- Monadic variant of fmap for MaybeC
 mapMaybeCM :: Monad m => (a -> m b) -> MaybeC ex a -> m (MaybeC ex b)
-mapMaybeCM = undefined
+mapMaybeCM f NothingC = return NothingC
+mapMaybeCM f (JustC x) = liftM JustC (f x)
 
 -------------------------------------------------------------------------------
 --                      InitializedUniqueMonad
