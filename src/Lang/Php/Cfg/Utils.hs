@@ -187,6 +187,7 @@ instance CaseOC InstrPos where
      impl (ICondJump _ _ _) = fOC x
      impl (IReturn _) = fOC x
      impl (ICall _ _ _) = fOO x
+     impl (ICallLabel _ _ _ _) = fOO x
      impl (ICatchException _ _ _) = fCO x
      impl (IThrow _) = fOC x
      impl (ILoadString _ _) = fOO x

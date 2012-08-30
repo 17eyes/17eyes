@@ -61,7 +61,9 @@ data Instr e x where
   IJump :: Label -> Instr O C
   ICondJump :: Register -> Label -> Label -> Instr O C
   IReturn :: Maybe Register -> Instr O C
+
   ICall :: Show a => Register -> Callable Register a -> a -> Instr O O
+  ICallLabel :: Show a => Register -> Callable Register a -> a -> [Label] -> Instr O O
 
   ICatchException :: Label -> Register -> String -> Instr C O
   IThrow :: Register -> Instr O C

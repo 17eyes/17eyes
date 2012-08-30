@@ -51,6 +51,7 @@ opILoadConst       = 4   :: Word8
 opICopyVar         = 5   :: Word8
 opIDeclare         = 6   :: Word8
 opIUnknown         = 7   :: Word8
+opICallLabel       = 8   :: Word8
 
 ------------------------------------------------------------------------------
 --                        Serialization of Instr                            --
@@ -96,6 +97,7 @@ instance Binary (Instr O C) where
 
 instance Binary (Instr O O) where
   put (ICall res callable args) = putWord8 opICall >> putCall res callable args
+  put (ICallLabel res callable args labels) = putWord8 opICallLabel >> putCall res callable args >> put labels
   put (ILoadString reg str) = putWord8 opILoadString >> put reg >> put str
   put (ILoadNum reg num) = putWord8 opILoadNum >> put reg >> put num
   put (ILoadConst reg str) = putWord8 opILoadConst >> put reg >> put str
@@ -114,6 +116,12 @@ instance Binary (Instr O O) where
       | x == opICopyVar    = ICopyVar <$> get <*> get
       | x == opIDeclare    = IDeclare <$> get
       | x == opIUnknown    = return IUnknown
+      | x == opICallLabel  = do
+          instr <- getCall
+          case instr of
+            (ICall res callable args) -> do
+              labels <- get
+              return (ICallLabel res callable args labels)
 
 ------------------------------------------------------------------------------
 --                         Opcodes for callables                            --
