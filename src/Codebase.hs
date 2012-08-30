@@ -1,7 +1,8 @@
 module Codebase(
     Codebase, scanCodebase, codebasePaths, -- TODO: obsolete?
     Codebase', createCodebase, updateCodebase,
-    resolveFile, resolveFunction, resolveConstant, resolveMethod
+    resolveFile, resolveFunction, resolveConstant, resolveMethod,
+    moduleFunctions
   ) where
 
 import Crypto.Hash.SHA1
@@ -22,6 +23,9 @@ import Lang.Php.Cfg.Generation
 import Lang.Php.Cfg.Serialization
 import Lang.Php.Cfg.Types
 import Text.Printf
+
+import qualified Compiler.Hoopl as Hoopl
+import Compiler.Hoopl(Graph,C)
 
 -- XXX: find better place to move this query
 createCodebaseDatabaseQuery :: [String]
@@ -59,7 +63,7 @@ createCodebaseDatabaseQuery = [
   "          ON UPDATE CASCADE  " ++
   "  );",
   "  CREATE INDEX class_name ON class(name);",
-  
+
   "  CREATE TABLE method (" ++
   "      name TEXT," ++
   -- XXX additional check when dictionary is ready
@@ -115,11 +119,22 @@ resolveFile (Codebase' _ _ conn) name = do
     [[encoded_cfg]] -> decode64 (fromSql encoded_cfg)
     _ -> error "TODO"
 
+moduleFunctions :: Codebase' -> String -> IO [(String, Hoopl.Label)]
+moduleFunctions (Codebase' _ _ conn) file_name = do
+  r <- quickQuery' conn
+       "SELECT function.name, cfg \
+       \ FROM file JOIN function ON function.resource_id = file.resource_id \
+       \ WHERE file.name = ?"
+       [toSql file_name]
+  forM r $ \[s_name, s_cfg] -> do
+    let (label, _) = decode64 $ fromSql s_cfg :: (Hoopl.Label, Graph InstrPos C C)
+    return (fromSql s_name, label)
+
+resolveFunction :: Codebase' -> String -> IO [(Hoopl.Label, Graph InstrPos C C)]
 resolveFunction (Codebase' projectName path conn) name = do
-  r <- quickQuery' conn "SELECT cfg FROM function WHERE name = ?" [toSql name]
-  return $ mapM (\[x] -> decode . ByteString.Lazy.fromChunks $
-    [ByteString.Base64.decodeLenient . ByteString.Char8.pack $
-    (fromSql x :: String)]) r
+  r <- quickQuery' conn "SELECT cfg FROM function WHERE name = ?"
+                   [toSql name]
+  return $ map (decode64 . fromSql . head) r
 
 resolveConstant (Codebase' projectName path conn) name = do
   r <- quickQuery' conn "SELECT cfg FROM constant WHERE name = ?" [toSql name]
@@ -192,7 +207,7 @@ updateCodebase (Codebase' projectName path conn) = do
 
   addDeclarableToDatabase id (DFunction name lab cfg) = do
     run conn "INSERT INTO function (resource_id, name, cfg) VALUES (?, ?, ?)"
-        [toSql id, toSql name, toSql (encode64 cfg)]
+        [toSql id, toSql name, toSql (encode64 (lab, cfg))]
     return ()
 
   addDeclarableToDatabase id d@(DClass { dclsMethods = methods }) = do
