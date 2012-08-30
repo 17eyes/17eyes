@@ -17,14 +17,52 @@ import Lang.Php.Cfg.Types
 import Lang.Php.Cfg.Utils
 import Codebase
 
-linkCfg :: Codebase' -> FilePath -> Cfg
-linkCfg = undefined
+data LinkerState = LS {
+    lsSafeUnique :: Int,
+    lsFunctions :: Map String [Label],
+    lsFragments :: [Graph InstrPos C C]
+ }
 
-firstSafeLabel :: (NonLocal n, CaseOC n) => Graph n e x -> Int
-firstSafeLabel graph = 1 + (foldGraphNodes op graph 0)
+type LinkerMonad = StateT LinkerState IO
+
+instance UniqueMonad LinkerMonad where
+  freshUnique = do
+    old_su <- lsSafeUnique <$> get
+    modify $ \x -> x { lsSafeUnique = old_su + 1 }
+    return (intToUnique old_su)
+
+linkCfg :: Codebase' -> FilePath -> IO Cfg
+linkCfg codebase filepath = do
+  (cfg, safe_unique) <- adjustUniques 0 <$> resolveFile codebase filepath
+  mod_functions <- moduleFunctions codebase filepath
+  let init_state = LS {
+     lsSafeUnique = safe_unique,
+     lsFunctions = Map.fromAscList $ map (\(x,y) -> (x,[y])) mod_functions,
+     lsFragments = []
+   }
+  fst <$> runStateT (workInsideLM cfg) init_state
  where
-   op node x = caseOC node (const x) (const x) (opCx x) (opCx x)
-   opCx x n = max x (uniqueToInt $ lblToUnique $ entryLabel n)
+   workInsideLM :: Cfg -> LinkerMonad Cfg
+   workInsideLM cfg = do
+     cfg_mapped <- mapGraphM procNode cfg
+     fragments <- lsFragments <$> get
+     let fun_cfgs = foldl (|*><*|) emptyClosedGraph fragments
+     addBlocks' cfg_mapped fun_cfgs
+
+   procNode :: InstrPos e x -> LinkerMonad (InstrPos e x)
+   procNode (IP pos (ICall r_res (CPhp name) args)) = do
+     m_label <- Map.lookup name <$> lsFunctions <$> get
+     labels <- case m_label of
+       Just labels -> return labels
+       Nothing -> do
+         -- retrieve CFGs of functions with this name from the database
+         (labels, cfgs) <- liftIO $ unzip <$> resolveFunction codebase name
+         -- add these CFGs to the current state
+         modify (\ls -> ls { lsFragments = cfgs ++ lsFragments ls })
+         return labels
+     return (IP pos $ ICallLabel r_res (CPhp name) args labels)
+
+   procNode x = return x
 
 -------------------------------------------------------------------------------
 --                           adjustUniques
