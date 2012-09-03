@@ -338,7 +338,6 @@ instance Binary (Graph InstrPos O O) where
        | tag == tagGUnit = getBlockOO
        | tag == tagGMany = do
            entry <- getBlockOC
-           n <- get :: Get Int
            middle <- get :: Get (Graph InstrPos C C)
            exit <- getBlockCO
            return (entry |*><*| middle |*><*| exit)
