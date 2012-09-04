@@ -4,6 +4,14 @@ module Lang.Php.Cfg.Serialization where
 
 import Control.Applicative
 import Control.Monad(replicateM)
+import Control.Arrow(second,first)
+
+import Control.Monad.State hiding (get,put)
+import qualified Control.Monad.State as State
+
+import qualified Data.Map as Map
+import qualified Data.Set as Set
+import Data.Map(Map)
 
 import Compiler.Hoopl hiding ((<*>)) -- conflicts with Control.Applicative
 import qualified Compiler.Hoopl -- to access (<*>) when we need it
@@ -14,6 +22,9 @@ import Compiler.Hoopl.GHC(uniqueToInt, uniqueToLbl, lblToUnique)
 import Data.DeriveTH(derive)
 import Data.Derive.Binary(makeBinary)
 import Data.Binary
+import Data.Binary.Put(PutM,runPut)
+import Data.Binary.Get(Get,runGet)
+import qualified Data.ByteString.Lazy as BS
 
 import Lang.Php.Cfg.Types
 
@@ -30,6 +41,104 @@ instance Binary Label where
 $(derive makeBinary ''Register)
 $(derive makeBinary ''Visibility)
 $(derive makeBinary ''Declarable)
+
+------------------------------------------------------------------------------
+--                       Serializable & caching
+------------------------------------------------------------------------------
+-- Serializable works just like Binary but uses additional state for the
+-- equivalents of PutM and Get monads. We need this to implement caching and
+-- avoid redundancy in the output.
+--
+-- This should be hidden from the outside of this module (standard interface
+-- just uses Data.Binary).
+
+type SGet = StateT (Map Word8 BS.ByteString) Get
+type SPutM = StateT (Map BS.ByteString Word8, Word8) PutM
+
+sGetInitial = Map.empty
+sPutMInitial = (Map.empty, tagFirstSafeIndex)
+
+tagNewEntry       = 1 :: Word8
+tagFirstSafeIndex = 2 :: Word8
+
+-- cachedPut inserts given data only if it is not already present earlier in
+-- the serialization output (tracked by the monadic state). For repeated
+-- data, only a single byte is appended -- an index that identifies a
+-- cache entry. This index is always greater than 2 -- value 0 is reserved
+-- and 1 is used to define new entries in the cache.
+cachedPut :: PutM () -> SPutM ()
+cachedPut putm = do
+  let bstring = runPut putm
+  (cache, safe_index) <- State.get
+  case Map.lookup bstring cache of
+    Just ident -> lift (putWord8 ident)
+    Nothing -> do
+      modify $ second incIndex -- increment the safe index
+      modify $ first $ Map.insert bstring safe_index -- cache the result
+      lift $ do
+        putWord8 tagNewEntry
+        putWord8 safe_index
+        put bstring
+ where
+   incIndex x
+     | x+1 == 0  = error "Cache index overflow during serialization"
+     | otherwise = x+1
+
+cachedGet :: Get a -> SGet a
+cachedGet getm = do
+  tag <- lift getWord8
+  if tag == tagNewEntry
+   then do
+     -- this is a new entry in the cache
+     index <- lift getWord8
+     bstring <- lift (get :: Get BS.ByteString)
+     modify (Map.insert index bstring)
+     return $ runGet getm bstring
+   else do
+     -- tag is just an identifier in the cache
+     cache <- State.get
+     case Map.lookup tag cache of
+       Nothing -> error "Malformed binary CFG representation"
+       Just bstring -> return $ runGet getm bstring
+
+class Serializable a where
+  serialize :: a -> SPutM ()
+  deserialize :: SGet a
+
+instance Serializable (Maybe (FilePath, Int)) where
+  serialize (Just (fp, pos)) = do
+    lift (putWord8 1)
+    cachedPut (put fp)
+    lift (put pos)
+
+  serialize Nothing = lift (putWord8 0)
+
+  deserialize = do
+    tag <- lift getWord8
+    if tag == 1
+     then do
+       fp <- cachedGet get
+       pos <- lift get
+       return $ Just (fp, pos)
+     else
+       return Nothing
+
+instance Serializable a => Serializable [a] where
+  serialize xs = do
+    lift $ put (length xs)
+    mapM_ serialize xs
+
+  deserialize = do
+    n <- lift (get :: Get Int)
+    replicateM n deserialize
+
+instance Binary (Graph InstrPos C C) where
+  put x = fst <$> runStateT (serialize x) sPutMInitial
+  get = fst <$> runStateT deserialize sGetInitial
+
+instance Binary (Graph InstrPos O O) where
+  put x = fst <$> runStateT (serialize x) sPutMInitial
+  get = fst <$> runStateT deserialize sGetInitial
 
 ------------------------------------------------------------------------------
 --                        Opcodes for instructions                          --
@@ -291,17 +400,17 @@ gGC callable = ICall <$> get <*> (return callable) <*> get
 -- Also a bit ugly and repetitive since we need to give separate definitions
 -- for different combinations of C/O parameters.
 
-instance Binary (InstrPos C O) where
-  put (IP m_pos instr) = put m_pos >> put instr
-  get = IP <$> get <*> get
+instance Serializable (InstrPos C O) where
+  serialize (IP m_pos instr) = serialize m_pos >> lift (put instr)
+  deserialize = IP <$> deserialize <*> lift get
 
-instance Binary (InstrPos O C) where
-  put (IP m_pos instr) = put m_pos >> put instr
-  get = IP <$> get <*> get
+instance Serializable (InstrPos O C) where
+  serialize (IP m_pos instr) = serialize m_pos >> lift (put instr)
+  deserialize = IP <$> deserialize <*> lift get
 
-instance Binary (InstrPos O O) where
-  put (IP m_pos instr) = put m_pos >> put instr
-  get = IP <$> get <*> get
+instance Serializable (InstrPos O O) where
+  serialize (IP m_pos instr) = serialize m_pos >> lift (put instr)
+  deserialize = IP <$> deserialize <*> lift get
 
 ------------------------------------------------------------------------------
 --               Serialization of whole Hoopl graphs
@@ -311,73 +420,85 @@ tagGNil  = 1 :: Word8
 tagGUnit = 2 :: Word8
 tagGMany = 3 :: Word8
 
-instance Binary (Graph InstrPos C C) where
-  put (GMany NothingO blockMap NothingO) = do
+instance Serializable (Graph InstrPos C C) where
+  serialize (GMany NothingO blockMap NothingO) = do
     let blocks = mapElems blockMap
-    put (length blocks)
-    mapM putBlockCC blocks
+    lift $ put (length blocks)
+    mapM serializeBlockCC blocks
     return ()
 
-  get = do
-    n <- get :: Get Int
-    foldl (|*><*|) emptyClosedGraph <$> replicateM n getBlockCC
+  deserialize = do
+    n <- lift (get :: Get Int)
+    foldl (|*><*|) emptyClosedGraph <$> replicateM n deserializeBlockCC
 
-instance Binary (Graph InstrPos O O) where
-  put GNil = putWord8 tagGNil
-  put (GUnit block) = putWord8 tagGUnit >> putBlockOO block
-  put (GMany (JustO entry) blockMap (JustO exit)) = do
-    putWord8 tagGMany
-    putBlockOC entry
-    put (GMany NothingO blockMap NothingO)
-    putBlockCO exit
 
-  get = get >>= getTag
+instance Serializable (Graph InstrPos O O) where
+  serialize GNil = lift $ putWord8 tagGNil
+
+  serialize (GUnit block) = do
+    lift $ putWord8 tagGUnit
+    serializeBlockOO block
+
+  serialize (GMany (JustO entry) blockMap (JustO exit)) = do
+    lift $ putWord8 tagGMany
+    serializeBlockOC entry
+    serialize (GMany NothingO blockMap NothingO)
+    serializeBlockCO exit
+
+  deserialize = lift get >>= withTag
    where
-     getTag tag
+     withTag tag
        | tag == tagGNil  = return GNil
-       | tag == tagGUnit = getBlockOO
+       | tag == tagGUnit = deserializeBlockOO
        | tag == tagGMany = do
-           entry <- getBlockOC
-           middle <- get :: Get (Graph InstrPos C C)
-           exit <- getBlockCO
+           entry <- deserializeBlockOC
+           middle <- deserialize :: SGet (Graph InstrPos C C)
+           exit <- deserializeBlockCO
            return (entry |*><*| middle |*><*| exit)
 
-putBlockOO :: Block InstrPos O O -> Put
-putBlockOO block = case blockToNodeList block of
-  (NothingC, nodes, NothingC) -> put nodes
+serializeBlockOO :: Block InstrPos O O -> SPutM ()
+serializeBlockOO block = case blockToNodeList block of
+  (NothingC, nodes, NothingC) -> serialize nodes
 
-putBlockOC :: Block InstrPos O C -> Put
-putBlockOC block = case blockToNodeList block of
-  (NothingC, nodes, JustC last) -> put nodes >> put last
+serializeBlockOC :: Block InstrPos O C -> SPutM ()
+serializeBlockOC block = case blockToNodeList block of
+  (NothingC, nodes, JustC last) -> do
+    serialize nodes
+    serialize last
 
-putBlockCO :: Block InstrPos C O -> Put
-putBlockCO block = case blockToNodeList block of
-  (JustC first, nodes, NothingC) -> put first >> put nodes
+serializeBlockCO :: Block InstrPos C O -> SPutM ()
+serializeBlockCO block = case blockToNodeList block of
+  (JustC first, nodes, NothingC) -> do
+    serialize first
+    serialize nodes
 
-putBlockCC :: Block InstrPos C C -> Put
-putBlockCC block = case blockToNodeList block of
-  (JustC first, middle, JustC last) -> put first >> put middle >> put last
+serializeBlockCC :: Block InstrPos C C -> SPutM ()
+serializeBlockCC block = case blockToNodeList block of
+  (JustC first, middle, JustC last) -> do
+    serialize first
+    serialize middle
+    serialize last
 
-getBlockOO :: Get (Graph InstrPos O O)
-getBlockOO = do
-  nodes <- get :: Get [InstrPos O O]
+deserializeBlockOO :: SGet (Graph InstrPos O O)
+deserializeBlockOO = do
+  nodes <- deserialize :: SGet [InstrPos O O]
   let mNodes = map mkMiddle nodes
   return (foldl (Compiler.Hoopl.<*>) emptyGraph mNodes)
 
-getBlockOC :: Get (Graph InstrPos O C)
-getBlockOC = do
-  g_middle <- getBlockOO
-  last <- get :: Get (InstrPos O C)
+deserializeBlockOC :: SGet (Graph InstrPos O C)
+deserializeBlockOC = do
+  g_middle <- deserializeBlockOO
+  last <- deserialize :: SGet (InstrPos O C)
   return ((Compiler.Hoopl.<*>) g_middle (mkLast last))
 
-getBlockCO :: Get (Graph InstrPos C O)
-getBlockCO = do
-  first <- get :: Get (InstrPos C O)
-  g_middle <- getBlockOO
+deserializeBlockCO :: SGet (Graph InstrPos C O)
+deserializeBlockCO = do
+  first <- deserialize :: SGet (InstrPos C O)
+  g_middle <- deserializeBlockOO
   return ((Compiler.Hoopl.<*>) (mkFirst first) g_middle)
 
-getBlockCC :: Get (Graph InstrPos C C)
-getBlockCC = do
-  first <- get :: Get (InstrPos C O)
-  g_rest <- getBlockOC
+deserializeBlockCC :: SGet (Graph InstrPos C C)
+deserializeBlockCC = do
+  first <- deserialize :: SGet (InstrPos C O)
+  g_rest <- deserializeBlockOC
   return ((Compiler.Hoopl.<*>) (mkFirst first) g_rest)
