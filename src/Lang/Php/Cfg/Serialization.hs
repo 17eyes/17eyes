@@ -27,6 +27,7 @@ import Data.Binary.Get(Get,runGet)
 import qualified Data.ByteString.Lazy as BS
 
 import Lang.Php.Cfg.Types
+import Lang.Php.Cfg.Utils(putIntCompact,getIntCompact)
 
 instance Binary Unique where
   put = put . uniqueToInt
@@ -38,7 +39,6 @@ instance Binary Label where
 
 -- Instances of Binary for some types can be derived automatically. Unfortu-
 -- -nately this doesn't work for GADTs.
-$(derive makeBinary ''Register)
 $(derive makeBinary ''Visibility)
 $(derive makeBinary ''Declarable)
 
@@ -139,6 +139,30 @@ instance Binary (Graph InstrPos C C) where
 instance Binary (Graph InstrPos O O) where
   put x = fst <$> runStateT (serialize x) sPutMInitial
   get = fst <$> runStateT deserialize sGetInitial
+
+
+------------------------------------------------------------------------------
+--                               Register
+------------------------------------------------------------------------------
+-- Binary instance for Register could be derived automatically but this yields
+-- a very verbose and inefficient representation. We do it manually using
+-- putIntCompact/getIntCompact from Utils to compress the output even further.
+
+opRNull = 78 :: Word8 -- letter 'N'
+opRTemp = 84 :: Word8 -- letter 'T'
+opRVar  = 86 :: Word8 -- letter 'V'
+
+instance Binary Register where
+  put RNull = putWord8 opRNull
+  put (RTemp uniq) = putWord8 opRTemp >> putIntCompact (uniqueToInt uniq)
+  put (RVar name) = putWord8 opRVar >> put name
+
+  get = getWord8 >>= opGet
+   where
+     opGet op
+       | op == opRNull = return RNull
+       | op == opRTemp = RTemp <$> intToUnique <$> getIntCompact
+       | op == opRVar  = RVar <$> get
 
 ------------------------------------------------------------------------------
 --                        Opcodes for instructions                          --
