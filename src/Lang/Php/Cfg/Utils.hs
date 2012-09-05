@@ -4,13 +4,20 @@ module Lang.Php.Cfg.Utils(
     mapGraphM, mapBlockM, mapMaybeOM, mapMaybeCM,
     InitializedUniqueMonad, runIUM,
     concatGraph, addBlocks',
-    CaseOC(..)
+    CaseOC(..),
+    putIntCompact, getIntCompact
  ) where
 
 import Data.Functor
 import Data.Functor.Identity
 import Control.Monad(liftM)
 import Control.Monad.State
+
+import Data.Bits((.|.),(.&.))
+import Data.Binary(putWord8,getWord8)
+import Data.Binary.Put(PutM)
+import Data.Binary.Get(Get)
+import Data.Word
 
 import Compiler.Hoopl
 import Compiler.Hoopl.GHC
@@ -196,3 +203,38 @@ instance CaseOC InstrPos where
      impl (ICopyVar _ _) = fOO x
      impl (IDeclare _) = fOO x
      impl IUnknown = fOO x
+
+
+-------------------------------------------------------------------------------
+--                  "Compact" integer serialization
+-------------------------------------------------------------------------------
+-- Many elements of the CFG are serialized as integers but rarely have values
+-- that would require 4 bytes to store. These functions operate on ints
+-- serialized as sequences of bytes, where only 7 bits are used. The remaining
+-- bit is used to signal the last byte in sequence (zeroed in last bit).
+
+putIntCompact :: Int -> PutM ()
+putIntCompact x_signed = putUIntCompact (fromIntegral x_signed)
+ where
+   putUIntCompact :: Word -> PutM ()
+   putUIntCompact x = do
+     let rest = x `div` 0x80
+     if rest == 0
+      then putWord8 (fromIntegral x)
+      else do
+        putWord8 ((fromIntegral $ x `mod` 0x80) .|. 0x80)
+        putUIntCompact rest
+
+getIntCompact :: Get Int
+getIntCompact = fromIntegral <$> getUIntCompact
+ where
+   getUIntCompact :: Get Word
+   getUIntCompact = do
+     x <- getWord8
+     if x .&. 0x80 == 0
+      then return (fromIntegral x)
+      else do
+        -- more bytes ahead
+        let x_nomark = x .&. 0x7f
+        rest <- getUIntCompact
+        return (rest * 0x80 + fromIntegral x_nomark)
