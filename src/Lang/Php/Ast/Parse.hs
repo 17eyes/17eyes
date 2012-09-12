@@ -393,27 +393,43 @@ backticksParser :: Parser StrLit
 backticksParser = char '`' >> StrLit <$> icGlue "`" <$> strLitRestParserExpr '`'
 
 instance Parse NewDoc where
-  parse = NewDoc <$> try (
-    do
-    ws <- tokNewDocP >> wsNoNLParser
-    s <- char '\'' >> genIdentifierParser <* char '\''
-    nl <- newline
-    rest <- hereDocRestParser s
-    return (ws ++ s ++ [nl] ++ rest)
-    )
+  parse = NewDoc <$> init <$> try mainP
+   where
+     mainP = do
+       tokNewDocP >> wsNoNLParser
+       eot_string <- char '\'' >> genIdentifierParser <* char '\''
+       newline
+       restP eot_string
+
+     restP :: String -> Parser String
+     restP s = try (endOfStringP s) <|> liftM2 (++) lineParser (restP s)
+
+     endOfStringP s = do
+       string s
+       notFollowedBy (satisfy (\ c -> c /= '\n' && c /= ';'))
+       return ""
+
 instance Parse HereDoc where
   parse = HereDoc <$> do
-    ws <- tokHereDocP >> wsNoNLParser
-    s <- genIdentifierParser <|> 
-      (char '"' >> genIdentifierParser <* char '"')
-    nl <- newline
-    rest <- hereDocRestParser s
-    return (ws ++ s ++ [nl] ++ rest)
+    tokHereDocP >> wsNoNLParser
+    eot_ident <- genIdentifierParser
+             <|> (char '"' >> genIdentifierParser <* char '"')
+    newline
+    hereDocRestParser eot_ident
 
-hereDocRestParser :: String -> Parser String
-hereDocRestParser s =
-  try (string s <* notFollowedBy (satisfy (\ c -> c /= '\n' && c /= ';'))) <|>
-  liftM2 (++) lineParser (hereDocRestParser s)
+hereDocRestParser :: String -> Parser (IC.Intercal String (StrLitExprStyle, RVal))
+hereDocRestParser s = try theEnd <|> singleLine
+ where
+   theEnd = do
+     string s <* notFollowedBy (satisfy (\ c -> c /= '\n' && c /= ';'))
+     return (IC.Interend "")
+
+   singleLine = icCat <$> strLitRestParserExpr '\n' <*> hereDocRestParser s
+
+   icCat :: IC.Intercal [a] b -> IC.Intercal [a] b -> IC.Intercal [a] b
+   icCat (IC.Interend xs) (IC.Interend ys) = IC.Interend (xs ++ ys)
+   icCat (IC.Interend xs) (IC.Intercal ys y ic) = IC.Intercal (xs ++ ys) y ic
+   icCat (IC.Intercal xs x ic) ic' = IC.Intercal xs x (icCat ic ic')
 
 instance Parse (Var, WS) where
   parse = tokDollarP >> (undyn <|> dyn) where

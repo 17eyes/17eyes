@@ -40,7 +40,7 @@ strLitAsSimple _ = Nothing
 data NewDoc = NewDoc String
   deriving (Eq, Show, Typeable, Data)
 
-data HereDoc = HereDoc String
+data HereDoc = HereDoc (IC.Intercal String (StrLitExprStyle, RVal))
   deriving (Eq, Show, Typeable, Data)
 
 data Val = ValLOnlyVal LOnlyVal | ValROnlyVal ROnlyVal | ValLRVal LRVal

@@ -304,7 +304,7 @@ instance Unparse NewDoc where
   unparse (NewDoc a) = tokHereDoc ++ a
 
 instance Unparse HereDoc where
-  unparse (HereDoc a) = tokHereDoc ++ a
+  unparse (HereDoc a) = tokHereDoc ++ show a
 
 -- Expr
 
