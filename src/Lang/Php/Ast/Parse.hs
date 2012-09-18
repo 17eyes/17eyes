@@ -365,12 +365,10 @@ icGlue g (IC.Intercal xs ys ic) = IC.Intercal (g ++ xs) ys ic
 -- structure of the program).
 strLitRestParserExpr :: Char -> Parser (IC.Intercal String (StrLitExprStyle, RVal))
 strLitRestParserExpr end = do
-    -- stupid hack: for '$' we don't want to consume the input
-    c <- lookAhead anyChar
-    if c /= '$' then anyChar >> return () else return ()
+    c <- anyChar
     case c of
         '\\' -> liftM2 (\x -> icGlue ['\\',x]) anyChar (strLitRestParserExpr end)
-        '$'  -> try parseNormal <|> (anyChar >> icGlue "$" <$> strLitRestParserExpr end)
+        '$'  -> parseNormal <|> (icGlue "$" <$> strLitRestParserExpr end)
         '{'  -> parseComplex
         c    -> if c == end
                   then return (IC.Interend [end])
@@ -385,9 +383,42 @@ strLitRestParserExpr end = do
             tokRBraceP
             IC.Intercal "" (SLEComplex, expr) <$> icGlue (unparse ws) <$> strLitRestParserExpr end
 
+    -- 'Normal' syntax for variables inside string literals is by no means
+    -- normalized or defined in any way. Zend seems to accept only these:
+    --    * $name
+    --    * $name[number literal]
+    --    * $name[$var]
+    --    * $name[string]
+    --    * $name->identifier
+    --
+    -- No whitespace is allowed before '[' or '->' or inside square brackets.
+    -- If something does not parse, Zend sometimes emits an error message and
+    -- fails but sometimes parses this string with an expression copied
+    -- verbatim. There's no consequence in that, e.g. "$x[" caused syntax error
+    -- but "$x->" is parsed as ($x . "->"). We try to be as compatible as
+    -- possible.
     parseNormal = do
-        (expr, ws) <- parse :: Parser (RVal, WS)
-        IC.Intercal "" (SLENormal, expr) <$> icGlue (unparse ws) <$> strLitRestParserExpr end
+      var_name <- try identifierParser
+      rval <- fieldSelectP var_name <|> arraySelectP var_name <|> justVariableP var_name
+      IC.Intercal "" (SLENormal, rval) <$> strLitRestParserExpr end
+
+    arraySelectP var_name = do
+      tokLBracketP
+      idx <- parse :: Parser NumLit
+      tokRBracketP
+      let var = Var var_name [([], (True, WSCap [] (ExprNumLit idx) []))]
+      let dyn_const = DynConst [] $ WSCap [] (Right var) []
+      return $ RValLRVal (LRValVar dyn_const)
+
+    fieldSelectP var_name = do
+      field <- try (tokArrowP >> identifierParser)
+      let dyn_const = DynConst [] $ WSCap [] (Right $ Var var_name []) []
+      let var_rval = RValLRVal $ LRValVar dyn_const
+      return $ RValLRVal $ LRValMemb var_rval ([],[]) (MembStr field)
+
+    justVariableP var_name = return (RValLRVal $ LRValVar dyn_const)
+     where
+       dyn_const = DynConst [] $ WSCap [] (Right $ Var var_name []) []
 
 backticksParser :: Parser StrLit
 backticksParser = char '`' >> StrLit <$> icGlue "`" <$> strLitRestParserExpr '`'
