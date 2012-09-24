@@ -201,7 +201,7 @@ updateCodebase (Codebase' projectName path conn) = do
     test <- existsFile filePath
     if test
       then run conn "UPDATE file SET resource_id = ? WHERE name = ?"
-        [toSql filePath]
+        [toSql id, toSql filePath]
       else run conn "INSERT INTO file (resource_id, name) VALUES (?, ?);"
         [toSql id, toSql filePath]
 
