@@ -1,18 +1,17 @@
 module Codebase(
-    Codebase, scanCodebase, codebasePaths, -- TODO: obsolete?
-    Codebase', createCodebase, updateCodebase,
+    Codebase, createCodebase, updateCodebase,
     resolveFile, resolveFunction, resolveConstant, resolveMethod,
     moduleFunctions
   ) where
 
 import Crypto.Hash.SHA1
+import qualified Data.Text as Text
 import qualified Data.ByteString as ByteString
 import qualified Data.ByteString.Lazy as ByteString.Lazy
 import qualified Data.ByteString.Base64 as ByteString.Base64
 import qualified Data.ByteString.Char8 as ByteString.Char8
 import Data.List
-import Database.HDBC
-import Database.HDBC.Sqlite3
+import qualified Database.SQLite3 as SQLite3
 import System.Directory
 import System.FilePath
 import Control.Applicative((<$>))
@@ -27,7 +26,6 @@ import Text.Printf
 import qualified Compiler.Hoopl as Hoopl
 import Compiler.Hoopl(Graph,C)
 
--- XXX: find better place to move this query
 createCodebaseDatabaseQuery :: [String]
 createCodebaseDatabaseQuery = [
   " CREATE TABLE resource ( " ++
@@ -53,11 +51,10 @@ createCodebaseDatabaseQuery = [
   "  );",
   "  CREATE INDEX function_name ON function(name);",
 
-  -- XXX: interfaces are also kept in class table (with proper type)
   "  CREATE TABLE class (" ++
-  -- XXX additional check when dictionary is ready
   "      id INTEGER PRIMARY KEY ASC AUTOINCREMENT," ++
-  "      type INTEGER NOT NULL," ++
+  "      type INTEGER NOT NULL CHECK (type IN ("++
+         (show classNormal)++","++(show classInterface)++"))," ++
   "      name TEXT," ++
   "      resource_id INTEGER REFERENCES resource(id) ON DELETE CASCADE" ++
   "          ON UPDATE CASCADE  " ++
@@ -66,8 +63,8 @@ createCodebaseDatabaseQuery = [
 
   "  CREATE TABLE method (" ++
   "      name TEXT," ++
-  -- XXX additional check when dictionary is ready
-  "      type INTEGER NOT NULL," ++
+  "      type INTEGER NOT NULL CHECK (type IN ("++
+        (show methodNormal)++","++(show methodStatic) ++")),"++
   "      class_id INTEGER REFERENCES class(id) ON DELETE CASCADE" ++
   "          ON UPDATE CASCADE," ++
   "      cfg  BLOB" ++
@@ -87,10 +84,34 @@ classInterface = 1 :: Int
 methodNormal   = 0 :: Int
 methodStatic   = 1 :: Int
 
-data Codebase' = Codebase' String FilePath Connection
+data Codebase = Codebase String FilePath Connection
 
 -- TODO: hashing, caching, etc.
-data Codebase = MkCodebase [FilePath] deriving Show
+data CodebasePath = MkCodebase [FilePath] deriving Show
+
+-- XXX: poprzednie bindingi
+
+type Connection = SQLite3.Database
+
+run conn query param = do
+  q <- SQLite3.prepare conn (Text.pack query)
+  SQLite3.bind q param
+  SQLite3.step q
+  return ()
+
+quickQuery' conn query param = do
+  q <- SQLite3.prepare conn (Text.pack query)
+  SQLite3.bind q param
+  SQLite3.step q
+  -- XXX: dodac, zeby sciagalo wszystkie wyniki
+  return $ [SQLite3.columns q]
+
+-- XXX: dodac, zeby konwertowalo
+fromSql = id
+toSql = id
+
+commit conn = SQLite3.exec conn (Text.pack "COMMIT;")
+
 
 -- XXX: najlepiej bedzie rozszerzyc tu o nazwę pliku
 
@@ -109,59 +130,63 @@ decode64 :: Binary a => String -> a
 decode64 x = decode $ ByteString.Lazy.fromChunks $
              [ByteString.Base64.decodeLenient $ ByteString.Char8.pack x]
 
-resolveFile :: Codebase' -> FilePath -> IO Cfg
-resolveFile (Codebase' _ _ conn) name = do
+resolveFile :: Codebase -> FilePath -> IO Cfg
+resolveFile (Codebase _ _ conn) name = do
   r <- quickQuery'
          conn
          "SELECT cfg FROM file JOIN resource ON (resource_id = resource.id) WHERE name = ?"
-         [toSql name]
+         [name]
   return $ case r of
     [[encoded_cfg]] -> decode64 (fromSql encoded_cfg)
     _ -> error "TODO"
 
-moduleFunctions :: Codebase' -> String -> IO [(String, Hoopl.Label)]
-moduleFunctions (Codebase' _ _ conn) file_name = do
+moduleFunctions :: Codebase -> String -> IO [(String, Hoopl.Label)]
+moduleFunctions (Codebase _ _ conn) file_name = do
   r <- quickQuery' conn
        "SELECT function.name, cfg \
        \ FROM file JOIN function ON function.resource_id = file.resource_id \
        \ WHERE file.name = ?"
-       [toSql file_name]
+       [file_name]
   forM r $ \[s_name, s_cfg] -> do
     let (label, _) = decode64 $ fromSql s_cfg :: (Hoopl.Label, Graph InstrPos C C)
     return (fromSql s_name, label)
 
-resolveFunction :: Codebase' -> String -> IO [(Hoopl.Label, Graph InstrPos C C)]
-resolveFunction (Codebase' projectName path conn) name = do
+resolveFunction :: Codebase -> String -> IO [(Hoopl.Label, Graph InstrPos C C)]
+resolveFunction (Codebase projectName path conn) name = do
   r <- quickQuery' conn "SELECT cfg FROM function WHERE name = ?"
-                   [toSql name]
+                   [name]
   return $ map (decode64 . fromSql . head) r
 
-resolveConstant (Codebase' projectName path conn) name = do
-  r <- quickQuery' conn "SELECT cfg FROM constant WHERE name = ?" [toSql name]
+resolveConstant (Codebase projectName path conn) name = do
+  r <- quickQuery' conn "SELECT cfg FROM constant WHERE name = ?" [name]
   return $ mapM (\[x] -> decode . ByteString.Lazy.fromChunks $
     [ByteString.Base64.decodeLenient . ByteString.Char8.pack $
     (fromSql x :: String)]) r
 
-resolveMethod (Codebase' projectName path conn) name = do
-  r <- quickQuery' conn "SELECT cfg FROM method WHERE name = ?" [toSql name]
+resolveMethod (Codebase projectName path conn) name = do
+  r <- quickQuery' conn "SELECT cfg FROM method WHERE name = ?" [name]
   return $ mapM (\[x] -> decode . ByteString.Lazy.fromChunks $
     [ByteString.Base64.decodeLenient . ByteString.Char8.pack $
     (fromSql x :: String)]) r
 
-createCodebase :: FilePath -> String -> IO Codebase'
+createCodebase :: FilePath -> String -> IO Codebase
 createCodebase path projectName = do
   -- XXX: configuration
   let dbFile = "." ++ projectName ++ ".17b"
-  conn <- connectSqlite3 dbFile
-  runRaw conn "PRAGMA foreign_keys = ON;"
-  tables <- getTables conn
-  if null tables
-    then mapM (\x -> run conn x []) createCodebaseDatabaseQuery
-    else return []
-  commit conn
-  return $ Codebase' projectName path conn
+  conn <- SQLite3.open dbFile
+  SQLite3.exec conn "PRAGMA foreign_keys = ON;"
 
-updateCodebase (Codebase' projectName path conn) = do
+-- XXX: getTables is missing in direct-sqlite
+--  tables <- getTables conn
+--  if null tables
+--    then mapM (\x -> run conn x []) createCodebaseDatabaseQuery
+--    else return []
+  mapM (\x -> SQLite3.exec conn x) createCodebaseDatabaseQuery
+
+  commit conn
+  return $ Codebase projectName path conn
+
+updateCodebase (Codebase projectName path conn) = do
   -- get files from the project's directory
   files <- codebasePaths <$> scanCodebase path
   timestamp <- getTimestamp
@@ -179,7 +204,7 @@ updateCodebase (Codebase' projectName path conn) = do
   -- remove dead resources
   removeDeadResources (timestamp-1)
   commit conn
-  return (Codebase' projectName path conn) 
+  return (Codebase projectName path conn) 
 
  where
   addFileToCodeBase filePath hash = do
@@ -201,22 +226,22 @@ updateCodebase (Codebase' projectName path conn) = do
     test <- existsFile filePath
     if test
       then run conn "UPDATE file SET resource_id = ? WHERE name = ?"
-        [toSql id, toSql filePath]
+        [id, filePath]
       else run conn "INSERT INTO file (resource_id, name) VALUES (?, ?);"
-        [toSql id, toSql filePath]
+        [id, filePath]
 
   addDeclarableToDatabase id (DFunction name lab cfg) = do
     run conn "INSERT INTO function (resource_id, name, cfg) VALUES (?, ?, ?)"
-        [toSql id, toSql name, toSql (encode64 (lab, cfg))]
+        [id, name, (encode64 (lab, cfg))]
     return ()
 
   addDeclarableToDatabase id d@(DClass { dclsMethods = methods }) = do
     run conn "INSERT INTO class (type, resource_id, name) VALUES (?, ?, ?)"
-        [toSql classNormal, toSql id, toSql (dclsName d)]
+        [classNormal, id, (dclsName d)]
     [[class_id]] <- quickQuery' conn "SELECT last_insert_rowid();" []
     forM methods $ \x@(_, name, _, _) ->
       run conn "INSERT INTO method (name, type, class_id, cfg) VALUES (?, ?, ?, ?)"
-        [toSql name, toSql methodNormal, class_id, toSql (encode64 d)]
+        [name, methodNormal, class_id, (encode64 d)]
     return ()
 
   getTimestamp = do
@@ -226,29 +251,29 @@ updateCodebase (Codebase' projectName path conn) = do
   addResourceToDatabase hash filePath cfg = do
     putStrLn filePath >> return ()
     c <- run conn "INSERT INTO resource (hash, cfg) VALUES (?, ?);"
-      [toSql hash, toSql cfg]
+      [hash, cfg]
     [[id]] <- quickQuery' conn "SELECT last_insert_rowid();" []
     return (fromSql id) :: IO Integer
  
   updateResource hash = 
     run conn
       "UPDATE resource SET utime = strftime('%s','now') WHERE hash = ?;"
-        [toSql hash]
+        [hash]
       >> return ()
 
   existsResource hash = do
     c <- quickQuery' conn
-      "SELECT 0 FROM resource WHERE hash = ?;" [toSql hash]
+      "SELECT 0 FROM resource WHERE hash = ?;" [hash]
     return $ not . null $ c
 
   existsFile file = do
     c <- quickQuery' conn
-      "SELECT 0 FROM file WHERE name = ?;" [toSql file]
+      "SELECT 0 FROM file WHERE name = ?;" [file]
     return $ not . null $ c
 
   removeDeadResources timestamp = do
     run conn
-      "DELETE FROM resource WHERE utime <= ?;" [toSql timestamp]
+      "DELETE FROM resource WHERE utime <= ?;" [timestamp]
 
   removeDeadFiles files = do
     dbFiles <- quickQuery' conn "SELECT name FROM file" []
@@ -257,7 +282,7 @@ updateCodebase (Codebase' projectName path conn) = do
         then return ()
         else run conn "DELETE FROM file WHERE name = ?" x >> return ())
 
-scanCodebase :: FilePath -> IO Codebase
+scanCodebase :: FilePath -> IO CodebasePath
 scanCodebase path = do
   wd <- getCurrentDirectory
   let path' = normalise (wd </> path)
@@ -266,10 +291,9 @@ scanCodebase path = do
   f x = (takeExtension x) `elem` exts
   exts = [".php", ".php5"]
 
-codebasePaths :: Codebase -> [FilePath]
+codebasePaths :: CodebasePath -> [FilePath]
 codebasePaths (MkCodebase xs) = xs
 
--- FIXME: ugly
 findFiles :: (FilePath -> Bool) -> FilePath -> IO [FilePath]
 findFiles f path = do
   xs <- getDirectoryContents path
