@@ -1,3 +1,8 @@
+--
+-- Copyright (c) 2012 by Tomasz Dudziak, Mateusz Kocielski
+-- www.17eyes.com, hello@17eyes.com
+--
+
 {-# LANGUAGE ExistentialQuantification #-}
 
 -- | This is the module that defines Issue and friends. It's usually used to

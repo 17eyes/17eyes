@@ -1,3 +1,8 @@
+--
+-- Copyright (c) 2012 by Tomasz Dudziak, Mateusz Kocielski
+-- www.17eyes.com, hello@17eyes.com
+--
+
 {-# LANGUAGE GeneralizedNewtypeDeriving, FlexibleInstances, MultiParamTypeClasses, RankNTypes, ExistentialQuantification #-}
 
 module Lang.Php.Ast.Traversal (

@@ -1,3 +1,8 @@
+--
+-- Copyright (c) 2012 by Tomasz Dudziak, Mateusz Kocielski
+-- www.17eyes.com, hello@17eyes.com
+--
+
 -- | This module implements character-level "analyses", like checking proper
 -- indentation, column width, etc.
 module CharAnalysis(runAnalyses) where

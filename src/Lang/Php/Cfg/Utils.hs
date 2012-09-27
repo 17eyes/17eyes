@@ -1,3 +1,8 @@
+--
+-- Copyright (c) 2012 by Tomasz Dudziak, Mateusz Kocielski
+-- www.17eyes.com, hello@17eyes.com
+--
+
 {-# LANGUAGE RankNTypes, GADTs, TypeSynonymInstances, FlexibleInstances #-}
 
 module Lang.Php.Cfg.Utils(

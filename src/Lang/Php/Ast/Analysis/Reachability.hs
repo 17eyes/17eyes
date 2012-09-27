@@ -1,3 +1,8 @@
+--
+-- Copyright (c) 2012 by Tomasz Dudziak, Mateusz Kocielski
+-- www.17eyes.com, hello@17eyes.com
+--
+
 -- | This module implements a very simple reachability analysis, performed by
 -- a simple walk over the AST. For each statement (or block) in the program,
 -- we assign a minimal "break level", which is an indicator of the possible

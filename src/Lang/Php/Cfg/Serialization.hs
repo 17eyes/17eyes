@@ -1,3 +1,8 @@
+--
+-- Copyright (c) 2012 by Tomasz Dudziak, Mateusz Kocielski
+-- www.17eyes.com, hello@17eyes.com
+--
+
 {-# LANGUAGE GADTs, TemplateHaskell, FlexibleInstances #-}
 
 module Lang.Php.Cfg.Serialization where

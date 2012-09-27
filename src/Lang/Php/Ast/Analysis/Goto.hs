@@ -1,3 +1,8 @@
+--
+-- Copyright (c) 2012 by Tomasz Dudziak, Mateusz Kocielski
+-- www.17eyes.com, hello@17eyes.com
+--
+
 {-# LANGUAGE FlexibleInstances #-}
 
 module Lang.Php.Ast.Analysis.Goto(allAnalyses) where

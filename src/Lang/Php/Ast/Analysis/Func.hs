@@ -1,3 +1,8 @@
+--
+-- Copyright (c) 2012 by Tomasz Dudziak, Mateusz Kocielski
+-- www.17eyes.com, hello@17eyes.com
+--
+
 module Lang.Php.Ast.Analysis.Func(allAnalyses) where
 
 import Lang.Php.Ast

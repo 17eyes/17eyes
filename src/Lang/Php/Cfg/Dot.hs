@@ -1,3 +1,8 @@
+--
+-- Copyright (c) 2012 by Tomasz Dudziak, Mateusz Kocielski
+-- www.17eyes.com, hello@17eyes.com
+--
+
 {-# LANGUAGE MultiParamTypeClasses, GADTs #-}
 
 -- | Dump control flow graph in the Graphviz Dot format.

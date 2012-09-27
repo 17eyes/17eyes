@@ -1,3 +1,8 @@
+--
+-- Copyright (c) 2012 by Tomasz Dudziak, Mateusz Kocielski
+-- www.17eyes.com, hello@17eyes.com
+--
+
 -- | This module specifies an overall information flow of the analyzer. All
 -- analyses have to be invoked somewhere here, if they are to be executed.
 module Pipeline(analyzeFile) where
