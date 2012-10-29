@@ -36,7 +36,7 @@ instance UniqueMonad LinkerMonad where
     modify $ \x -> x { lsSafeUnique = old_su + 1 }
     return (intToUnique old_su)
 
-linkCfg :: Codebase' -> FilePath -> IO Cfg
+linkCfg :: Codebase -> FilePath -> IO Cfg
 linkCfg codebase filepath = do
   (cfg, safe_unique) <- adjustUniques 0 <$> resolveFile codebase filepath
   mod_functions <- moduleFunctions codebase filepath

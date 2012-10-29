@@ -6,6 +6,7 @@
 import System.Environment(getArgs)
 import System.IO
 import System.Console.GetOpt
+import Data.String.Utils(replace)
 import Compiler.Hoopl(showGraph)
 
 import Lang.Php.Ast
@@ -40,6 +41,8 @@ options = [
            "just parse from standard input and dump the AST",
     Option [] ["unparse"]  (NoArg $ \x -> x { optAction = parseUnparse })
            "parse from the standard input and reconstruct the source code",
+    Option [] ["resolve"] (ReqArg (\d x -> x { optAction = codebaseResolve d }) "NAME")
+           "try to find a function, class, method or constant by name",
     Option "d" ["codebase"] (ReqArg (\d x -> x { optCodebaseDir = d })
                                     "DIR")
            ("set the codebase directory (instead of the default " ++
@@ -70,6 +73,19 @@ astAnalyses opts = do
         putStrLn (take 78 $ repeat '-')
         putStrLn (Issue.issueMessage is)
         putStrLn ""
+
+codebaseResolve :: String -> Options -> IO ()
+codebaseResolve name opts = do
+    let dir = optCodebaseDir opts
+    let cb_name = replace "/" "" dir -- FIXME
+    cb <- createCodebase dir cb_name
+    updateCodebase cb
+    msgs <- concat <$> sequence [findFunctions cb] -- TODO: resolve classes, methods, etc.
+    putStr (intercalate ((take 78 $ repeat '=') ++ "\n") msgs)
+ where
+   findFunctions cb =
+     map (\(lbl, graph) -> "Found function (entry point " ++ show lbl ++ "):\n" ++ cfgToDot graph ++ "\n")
+         <$> resolveFunction cb name
 
 main :: IO ()
 main = do
