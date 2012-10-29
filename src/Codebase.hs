@@ -9,28 +9,26 @@ module Codebase(
     moduleFunctions
   ) where
 
+import Data.List
+import Control.Monad
+import System.FilePath
+import System.Directory
 import Crypto.Hash.SHA1
+import Text.Printf
+import Control.Applicative((<$>))
+
 import qualified Data.Text as Text
 import qualified Data.ByteString as ByteString
-import qualified Data.ByteString.Lazy as ByteString.Lazy
-import qualified Data.ByteString.Base64 as ByteString.Base64
-import qualified Data.ByteString.Char8 as ByteString.Char8
-import Data.List
 import qualified Database.SQLite3 as SQLite3
-import System.Directory
-import System.FilePath
-import Control.Applicative((<$>))
-import Control.Monad
+import qualified Compiler.Hoopl as Hoopl
+import Compiler.Hoopl(Graph,C)
+
 import Common
 import SQLUtils
 import Lang.Php.Ast
 import Lang.Php.Cfg.Generation
 import Lang.Php.Cfg.Serialization
 import Lang.Php.Cfg.Types
-import Text.Printf
-
-import qualified Compiler.Hoopl as Hoopl
-import Compiler.Hoopl(Graph,C)
 
 createCodebaseDatabaseQuery :: [String]
 createCodebaseDatabaseQuery = [
@@ -142,15 +140,6 @@ toHex bytes = ByteString.unpack bytes >>= printf "%02X"
 toChar :: ByteString.ByteString -> String
 toChar bytes = ByteString.unpack bytes >>= printf "%c"
 
--- Ugly hack: encode the CFG in Base64
-encode64 :: Binary a => a -> String
-encode64 = toChar . ByteString.Base64.encode . ByteString.concat .
-           ByteString.Lazy.toChunks . encode
-
-decode64 :: Binary a => String -> a
-decode64 x = decode $ ByteString.Lazy.fromChunks $
-             [ByteString.Base64.decodeLenient $ ByteString.Char8.pack x]
-
 resolveFile :: Codebase -> FilePath -> IO Cfg
 resolveFile (Codebase _ _ conn) name = do
   r <- quickQuery'
@@ -171,28 +160,23 @@ moduleFunctions (Codebase _ _ conn) file_name = do
        \ WHERE file.name = ?"
        [toSql file_name]
   forM r $ \[s_name, s_cfg] -> do
-    let (label, _) = decode64 $ fromSql s_cfg :: (Hoopl.Label, Graph InstrPos C C)
+    let (label, _) = decode $ fromSql s_cfg :: (Hoopl.Label, Graph InstrPos C C)
     return (fromSql s_name, label)
 
 resolveFunction :: Codebase -> String -> IO [(Hoopl.Label, Graph InstrPos C C)]
 resolveFunction (Codebase projectName path conn) name = do
   r <- quickQuery' conn "SELECT cfg FROM function WHERE name = ?"
                    [toSql name]
-  return $ map (decode64 . fromSql . head) r
+  return $ map (decode . fromSql . head) r
 
 resolveConstant (Codebase projectName path conn) name = do
   r <- quickQuery' conn "SELECT cfg FROM constant WHERE name = ?" [name]
-  return $ mapM (\[x] -> decode . ByteString.Lazy.fromChunks $
-    [ByteString.Base64.decodeLenient . ByteString.Char8.pack $
-    (fromSql x :: String)]) r
+  return $ map (decode . fromSql . head) r
 
 resolveMethod :: Codebase -> String -> IO [Graph InstrPos C C]
 resolveMethod (Codebase projectName path conn) name = do
   r <- quickQuery' conn "SELECT cfg FROM method WHERE name = ?" [toSql name]
-  return $ map (decode64 . fromSql . head) r
-  {- return $ mapM (\[x] -> decode . ByteString.Lazy.fromChunks $
-    [ByteString.Base64.decodeLenient . ByteString.Char8.pack $
-    (fromSql x :: String)]) r -}
+  return $ map (decode . fromSql . head) r
 
 createCodebase :: FilePath -> String -> IO Codebase
 createCodebase path projectName = do
@@ -239,7 +223,7 @@ updateCodebase (Codebase projectName path conn) = do
       -- XXX: error handler
       (Left err)  -> undefined
     let (cfg, decls) = runGMonad (toCfg ast)
-    id <- addResourceToDatabase hash filePath (encode64 cfg)
+    id <- addResourceToDatabase hash filePath cfg
     addFileToDatabase filePath id
     -- add function / methods etc.
     mapM (addDeclarableToDatabase id) decls
@@ -255,7 +239,7 @@ updateCodebase (Codebase projectName path conn) = do
 
   addDeclarableToDatabase id (DFunction name lab cfg) = do
     run conn "INSERT INTO function (resource_id, name, cfg) VALUES (?, ?, ?)"
-        [toSql id, toSql name, toSql (encode64 (lab, cfg))]
+        [toSql id, toSql name, toSql (encode (lab, cfg))]
     return ()
 
   addDeclarableToDatabase id d@(DClass { dclsMethods = methods }) = do
@@ -264,7 +248,7 @@ updateCodebase (Codebase projectName path conn) = do
     [[class_id]] <- quickQuery' conn "SELECT last_insert_rowid();" []
     forM methods $ \x@(_, name, _, _) ->
       run conn "INSERT INTO method (name, type, class_id, cfg) VALUES (?, ?, ?, ?)"
-        [toSql name, toSql methodNormal, class_id, toSql (encode64 d)]
+        [toSql name, toSql methodNormal, class_id, toSql (encode d)]
     return ()
 
   getTimestamp = do
@@ -274,7 +258,7 @@ updateCodebase (Codebase projectName path conn) = do
   addResourceToDatabase hash filePath cfg = do
     putStrLn filePath >> return ()
     c <- run conn "INSERT INTO resource (hash, cfg) VALUES (?, ?);"
-      [toSql hash, toSql cfg]
+      [toSql hash, toSql (encode cfg)]
     [[id]] <- quickQuery' conn "SELECT last_insert_rowid();" []
     return (fromSql id) :: IO Integer
 

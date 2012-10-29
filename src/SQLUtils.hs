@@ -9,6 +9,8 @@ module SQLUtils where
 
 import Database.SQLite3
 import qualified Data.Text as Text
+import qualified Data.ByteString as BS
+import qualified Data.ByteString.Lazy as BSL
 
 sqlDataToNum :: Num a => SQLData -> a
 sqlDataToNum (SQLInteger x) = fromIntegral x
@@ -42,3 +44,14 @@ instance SQLDataConv a => SQLDataConv (Maybe a) where
 
   fromSql (SQLNull) = Nothing
   fromSql x = Just (fromSql x)
+
+instance SQLDataConv BS.ByteString where
+  toSql = SQLBlob
+
+  fromSql (SQLBlob bs) = bs
+  fromSql _ = error "Incompatible SQLData"
+
+instance SQLDataConv BSL.ByteString where
+  toSql = toSql . BS.concat . BSL.toChunks
+
+  fromSql x = BSL.fromChunks [fromSql x]
