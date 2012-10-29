@@ -186,11 +186,13 @@ resolveConstant (Codebase projectName path conn) name = do
     [ByteString.Base64.decodeLenient . ByteString.Char8.pack $
     (fromSql x :: String)]) r
 
+resolveMethod :: Codebase -> String -> IO [Graph InstrPos C C]
 resolveMethod (Codebase projectName path conn) name = do
-  r <- quickQuery' conn "SELECT cfg FROM method WHERE name = ?" [name]
-  return $ mapM (\[x] -> decode . ByteString.Lazy.fromChunks $
+  r <- quickQuery' conn "SELECT cfg FROM method WHERE name = ?" [toSql name]
+  return $ map (decode64 . fromSql . head) r
+  {- return $ mapM (\[x] -> decode . ByteString.Lazy.fromChunks $
     [ByteString.Base64.decodeLenient . ByteString.Char8.pack $
-    (fromSql x :: String)]) r
+    (fromSql x :: String)]) r -}
 
 createCodebase :: FilePath -> String -> IO Codebase
 createCodebase path projectName = do
