@@ -96,16 +96,13 @@ toHex bytes = ByteString.unpack bytes >>= printf "%02X"
 toChar :: ByteString.ByteString -> String
 toChar bytes = ByteString.unpack bytes >>= printf "%c"
 
-resolveFile :: Codebase -> FilePath -> IO Cfg
+resolveFile :: Codebase -> FilePath -> IO [(String, Cfg)]
 resolveFile (Codebase _ _ conn) name = do
   r <- quickQuery
          conn
-         "SELECT cfg FROM file JOIN resource ON (resource_id = resource.id) WHERE name = ?"
-         [toSql name]
-  undefined
-  return $ case r of
-    [sqlData] -> error (show sqlData) -- TODO: decode64 (fromSql encoded_cfg)
-    _ -> error "TODO"
+         "SELECT name, cfg FROM file JOIN resource ON (resource_id = resource.id) WHERE name LIKE ? OR name = ?"
+         [toSql ("%/" ++ name), toSql name]
+  return $ map (\[sname, scfg] -> (fromSql sname, decode $ fromSql scfg)) r
 
 moduleFunctions :: Codebase -> String -> IO [(String, Hoopl.Label)]
 moduleFunctions (Codebase _ _ conn) file_name = do

@@ -80,7 +80,7 @@ codebaseResolve name opts = do
     let cb_name = replace "/" "" dir -- FIXME
     cb <- createCodebase dir cb_name
     updateCodebase cb
-    msgs <- concat <$> sequence [findFunctions cb, findMethods cb] -- TODO: resolve classes etc.
+    msgs <- concat <$> sequence [findFunctions cb, findMethods cb, findFiles cb] -- TODO: resolve classes etc.
     putStr (intercalate ((take 78 $ repeat '=') ++ "\n") msgs)
  where
    findFunctions cb =
@@ -90,6 +90,10 @@ codebaseResolve name opts = do
    findMethods cb =
      map (\graph -> "Found method:\n" ++ cfgToDot graph ++ "\n")
          <$> resolveMethod cb name
+
+   findFiles cb = do
+     map (\(name, graph) -> "Found file " ++ name ++ ":\n" ++ cfgToDot graph ++ "\n")
+         <$> resolveFile cb name
 
 main :: IO ()
 main = do
