@@ -74,7 +74,7 @@ createCodebaseDatabaseQuery = [
   "      cfg  BLOB" ++
   "  );",
   "  CREATE INDEX method_name ON method(name);",
-  
+
   "  CREATE TABLE constant (" ++
   "      name TEXT," ++
   "      resource_id INTEGER REFERENCES resource(id) ON DELETE CASCADE" ++
@@ -88,51 +88,7 @@ classInterface = 1 :: Int
 methodNormal   = 0 :: Int
 methodStatic   = 1 :: Int
 
-data Codebase = Codebase String FilePath Connection
-
--- TODO: hashing, caching, etc.
-data CodebasePath = MkCodebase [FilePath] deriving Show
-
--- XXX: poprzednie bindingi
-
-type Connection = SQLite3.Database
-
-run :: SQLite3.Database -> String -> [SQLite3.SQLData] -> IO ()
-run db query param = do
-  q <- SQLite3.prepare db query
-  SQLite3.bind q param
-  SQLite3.step q
-  SQLite3.finalize q
-
-quickQuery' :: SQLite3.Database -> String -> [SQLite3.SQLData] -> IO [[SQLite3.SQLData]]
-quickQuery' db query param = do
-  q <- SQLite3.prepare db query
-  SQLite3.bind q param
-  results <- fetchResults q
-  SQLite3.finalize q
-  return results
- where
-   fetchResults q = do
-     sr <- SQLite3.step q
-     case sr of
-       SQLite3.Done -> return []
-       SQLite3.Row -> do
-         cols <- SQLite3.columns q
-         rest <- fetchResults q
-         return (cols:rest)
-
-execAndFinalize :: SQLite3.Statement -> IO ()
-execAndFinalize stmt = do
-  fetchAll
-  SQLite3.finalize stmt
- where
-   fetchAll = do
-     sr <- SQLite3.step stmt
-     case sr of
-       SQLite3.Row -> fetchAll
-       SQLite3.Done -> return ()
-
--- XXX: najlepiej bedzie rozszerzyc tu o nazwę pliku
+data Codebase = Codebase String FilePath SQLite3.Database
 
 toHex :: ByteString.ByteString -> String
 toHex bytes = ByteString.unpack bytes >>= printf "%02X"
@@ -142,7 +98,7 @@ toChar bytes = ByteString.unpack bytes >>= printf "%c"
 
 resolveFile :: Codebase -> FilePath -> IO Cfg
 resolveFile (Codebase _ _ conn) name = do
-  r <- quickQuery'
+  r <- quickQuery
          conn
          "SELECT cfg FROM file JOIN resource ON (resource_id = resource.id) WHERE name = ?"
          [toSql name]
@@ -151,10 +107,9 @@ resolveFile (Codebase _ _ conn) name = do
     [sqlData] -> error (show sqlData) -- TODO: decode64 (fromSql encoded_cfg)
     _ -> error "TODO"
 
-
 moduleFunctions :: Codebase -> String -> IO [(String, Hoopl.Label)]
 moduleFunctions (Codebase _ _ conn) file_name = do
-  r <- quickQuery' conn
+  r <- quickQuery conn
        "SELECT function.name, cfg \
        \ FROM file JOIN function ON function.resource_id = file.resource_id \
        \ WHERE file.name = ?"
@@ -165,17 +120,17 @@ moduleFunctions (Codebase _ _ conn) file_name = do
 
 resolveFunction :: Codebase -> String -> IO [(Hoopl.Label, Graph InstrPos C C)]
 resolveFunction (Codebase projectName path conn) name = do
-  r <- quickQuery' conn "SELECT cfg FROM function WHERE name = ?"
+  r <- quickQuery conn "SELECT cfg FROM function WHERE name = ?"
                    [toSql name]
   return $ map (decode . fromSql . head) r
 
 resolveConstant (Codebase projectName path conn) name = do
-  r <- quickQuery' conn "SELECT cfg FROM constant WHERE name = ?" [name]
+  r <- quickQuery conn "SELECT cfg FROM constant WHERE name = ?" [name]
   return $ map (decode . fromSql . head) r
 
 resolveMethod :: Codebase -> String -> IO [Graph InstrPos C C]
 resolveMethod (Codebase projectName path conn) name = do
-  r <- quickQuery' conn "SELECT cfg FROM method WHERE name = ?" [toSql name]
+  r <- quickQuery conn "SELECT cfg FROM method WHERE name = ?" [toSql name]
   return $ map (decode . fromSql . head) r
 
 createCodebase :: FilePath -> String -> IO Codebase
@@ -197,7 +152,7 @@ createCodebase path projectName = do
 
 updateCodebase (Codebase projectName path conn) = do
   -- get files from the project's directory
-  files <- codebasePaths <$> scanCodebase path
+  files <- scanCodebase path
   timestamp <- getTimestamp
   -- remove not existing files
   removeDeadFiles files
@@ -245,21 +200,21 @@ updateCodebase (Codebase projectName path conn) = do
   addDeclarableToDatabase id d@(DClass { dclsMethods = methods }) = do
     run conn "INSERT INTO class (type, resource_id, name) VALUES (?, ?, ?)"
         [toSql classNormal, toSql id, toSql (dclsName d)]
-    [[class_id]] <- quickQuery' conn "SELECT last_insert_rowid();" []
+    [[class_id]] <- quickQuery conn "SELECT last_insert_rowid();" []
     forM methods $ \x@(_, name, _, _) ->
       run conn "INSERT INTO method (name, type, class_id, cfg) VALUES (?, ?, ?, ?)"
         [toSql name, toSql methodNormal, class_id, toSql (encode d)]
     return ()
 
   getTimestamp = do
-    [[timestamp]] <- quickQuery' conn "SELECT strftime('%s','now');" []
+    [[timestamp]] <- quickQuery conn "SELECT strftime('%s','now');" []
     return (fromSql timestamp) :: IO Integer
 
   addResourceToDatabase hash filePath cfg = do
     putStrLn filePath >> return ()
     c <- run conn "INSERT INTO resource (hash, cfg) VALUES (?, ?);"
       [toSql hash, toSql (encode cfg)]
-    [[id]] <- quickQuery' conn "SELECT last_insert_rowid();" []
+    [[id]] <- quickQuery conn "SELECT last_insert_rowid();" []
     return (fromSql id) :: IO Integer
 
   updateResource hash =
@@ -269,12 +224,12 @@ updateCodebase (Codebase projectName path conn) = do
       >> return ()
 
   existsResource hash = do
-    c <- quickQuery' conn
+    c <- quickQuery conn
       "SELECT 0 FROM resource WHERE hash = ?;" [toSql hash]
     return $ not . null $ c
 
   existsFile file = do
-    c <- quickQuery' conn
+    c <- quickQuery conn
       "SELECT 0 FROM file WHERE name = ?;" [toSql file]
     return $ not . null $ c
 
@@ -283,23 +238,20 @@ updateCodebase (Codebase projectName path conn) = do
       "DELETE FROM resource WHERE utime <= ?;" [toSql timestamp]
 
   removeDeadFiles files = do
-    dbFiles <- quickQuery' conn "SELECT name FROM file" []
+    dbFiles <- quickQuery conn "SELECT name FROM file" []
     forM_ dbFiles (\[x] ->
       if fromSql x `elem` files
         then return ()
         else run conn "DELETE FROM file WHERE name = ?" [x] >> return ())
 
-scanCodebase :: FilePath -> IO CodebasePath
+scanCodebase :: FilePath -> IO [FilePath]
 scanCodebase path = do
   wd <- getCurrentDirectory
   let path' = normalise (wd </> path)
-  MkCodebase <$> (findFiles f path')
+  findFiles f path'
  where
   f x = (takeExtension x) `elem` exts
   exts = [".php", ".php5"]
-
-codebasePaths :: CodebasePath -> [FilePath]
-codebasePaths (MkCodebase xs) = xs
 
 findFiles :: (FilePath -> Bool) -> FilePath -> IO [FilePath]
 findFiles f path = do

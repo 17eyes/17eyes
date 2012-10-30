@@ -55,3 +55,38 @@ instance SQLDataConv BSL.ByteString where
   toSql = toSql . BS.concat . BSL.toChunks
 
   fromSql x = BSL.fromChunks [fromSql x]
+
+run :: Database -> String -> [SQLData] -> IO ()
+run db query param = do
+  q <- prepare db query
+  bind q param
+  step q
+  finalize q
+
+quickQuery :: Database -> String -> [SQLData] -> IO [[SQLData]]
+quickQuery db query param = do
+  q <- prepare db query
+  bind q param
+  results <- fetchResults q
+  finalize q
+  return results
+ where
+   fetchResults q = do
+     sr <- step q
+     case sr of
+       Done -> return []
+       Row -> do
+         cols <- columns q
+         rest <- fetchResults q
+         return (cols:rest)
+
+execAndFinalize :: Statement -> IO ()
+execAndFinalize stmt = do
+  fetchAll
+  finalize stmt
+ where
+   fetchAll = do
+     sr <- step stmt
+     case sr of
+       Row -> fetchAll
+       Done -> return ()
