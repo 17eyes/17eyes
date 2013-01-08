@@ -134,16 +134,16 @@ createCodebase :: FilePath -> String -> IO Codebase
 createCodebase path projectName = do
   -- XXX: configuration
   let dbFile = "." ++ projectName ++ ".17b"
-  db <- SQLite3.open dbFile
-  SQLite3.prepare db "PRAGMA foreign_keys = ON;" >>= execAndFinalize
+  db <- SQLite3.open $ Text.pack dbFile
+  SQLite3.prepare db (Text.pack "PRAGMA foreign_keys = ON;") >>= execAndFinalize
 
   -- count tables to check whether createCodebaseDatabaseQuery is needed
-  stmt <- SQLite3.prepare db "SELECT COUNT(name) FROM sqlite_master;"
+  stmt <- SQLite3.prepare db (Text.pack "SELECT COUNT(name) FROM sqlite_master;")
   SQLite3.Row <- SQLite3.step stmt
   (SQLite3.SQLInteger count) <- SQLite3.column stmt 0
   SQLite3.finalize stmt
   when (count == 0) $ forM_ createCodebaseDatabaseQuery $ \x ->
-    SQLite3.prepare db x >>= execAndFinalize
+    SQLite3.prepare db (Text.pack x) >>= execAndFinalize
 
   return (Codebase projectName path db)
 

@@ -58,14 +58,14 @@ instance SQLDataConv BSL.ByteString where
 
 run :: Database -> String -> [SQLData] -> IO ()
 run db query param = do
-  q <- prepare db query
+  q <- prepare db $ Text.pack query
   bind q param
   step q
   finalize q
 
 quickQuery :: Database -> String -> [SQLData] -> IO [[SQLData]]
 quickQuery db query param = do
-  q <- prepare db query
+  q <- prepare db $ Text.pack query
   bind q param
   results <- fetchResults q
   finalize q
