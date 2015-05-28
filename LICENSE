@@ -1,4 +1,5 @@
-{-
+Most of this software is released under ISC license:
+
 Copyright (c) 2015 17eyes.com
 
 Permission to use, copy, modify, and/or distribute this software for any
@@ -12,8 +13,12 @@ INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
 LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
 OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
--}
-{-
+
+---
+
+We were using lex-pass (https://github.com/facebookarchive/lex-pass) as a base
+for our PHP lexer/parser. It was released under 3 clause BSD license.
+
 Copyright (c) 2009, Dan Corson, Sasha Rush, Facebook, inc.
 All rights reserved.
 
@@ -40,40 +45,4 @@ DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
 SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
--}
-
-{-# LANGUAGE DeriveDataTypeable, TemplateHaskell #-}
-
-module Lang.Php.Ast (
-  module Lang.Php.Ast.Common,
-  module Lang.Php.Ast.Expr,
-  module Lang.Php.Ast.Lex,
-  module Lang.Php.Ast.Types,
-  Ast(..)
-  ) where
-
-import Common
-import Control.Applicative hiding ((<|>), many)
-import Control.Arrow
-import Control.Monad
-import Data.Char
-import Lang.Php.Ast.Common
-import Lang.Php.Ast.Expr
-import Lang.Php.Ast.Lex
-import Lang.Php.Ast.Types
-import qualified Data.ByteString as BS
-import qualified Data.Intercal as IC
-
-data Ast = Ast FilePath TopLevel StmtList
-  deriving (Eq, Show, Typeable, Data)
-
-instance Unparse Ast where
-  unparse (Ast _ t s) = unparse t ++ unparse s
-
-instance Parse Ast where
-  parse = liftM3 Ast fname parse stmtListParser
-   where fname = sourceName <$> getPosition
-
-$(derive makeBinary ''Ast)
-
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
