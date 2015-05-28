@@ -8,7 +8,7 @@ executable 17eyes
   main-is:        Main.hs
   build-depends:  HSH >= 2, MissingH, base >= 4, binary, bytestring,
                   containers, derive, directory, filepath, mtl, parsec == 3.*,
-                  process, syb, hoopl, direct-sqlite >= 2.3, cryptohash, text,
+                  process, syb, hoopl==3.8.*, direct-sqlite >= 2.3, cryptohash, text,
                   base64-bytestring, transformers
   ghc-options:    -threaded -O2 -fspec-constr-count=32 -rtsopts
                   -with-rtsopts=-K64M 
