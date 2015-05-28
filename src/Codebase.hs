@@ -245,7 +245,7 @@ scanCodebase :: FilePath -> IO [FilePath]
 scanCodebase path = do
   wd <- getCurrentDirectory
   let path' = normalise (wd </> path)
-  findFiles f path'
+  Codebase.findFiles f path'
  where
   f x = (takeExtension x) `elem` exts
   exts = [".php", ".php5"]
@@ -257,5 +257,5 @@ findFiles f path = do
   fs' <- filterM doesFileExist fs
   let fs'' = filter f fs
   ds <- filterM doesDirectoryExist fs
-  subdir_result <- mapM (findFiles f) ds
+  subdir_result <- mapM (Codebase.findFiles f) ds
   return (fs'' ++ concat subdir_result)
