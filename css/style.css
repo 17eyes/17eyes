@@ -1,0 +1,52 @@
+@charset "utf-8";
+
+* { 
+    margin:0;
+    padding:0;
+    border:0;
+}
+
+img {
+    border:none;
+}
+
+a {
+    outline:none;
+    text-decoration:none;
+    color:#fe0545;
+}
+
+p {
+    font-size:20px;
+    color:#6a6a6a; 
+    line-height:22px;
+}
+
+h1{
+    font-size:28px;
+    color:#545454;
+    font-weight:normal;
+}
+
+body {
+    font-family:"Abel", Arial, Helvetica, sans-serif;
+    background-size: cover;
+    height: 100%;
+}
+
+.header_main {
+  background-image: url('images/bg.jpg');
+  background-size: cover;
+  color: #fff;
+  padding-bottom: 5rem;
+}
+
+
+
+
+.footer {
+    font-size: 15px;
+    text-align: center;
+    color: #6a6a6a;
+}
+

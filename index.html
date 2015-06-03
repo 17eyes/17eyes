@@ -1,0 +1,192 @@
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>17eyes - open source static analysis tool for the PHP language</title>
+        <meta name="keywords" content="static analysis, php static analysis, php quality, php quality assurance, quality assurance, php scanner, php security, php bugs tool, php tool">
+        <meta name="description" content="Best PHP static analysis wannabe tool in the world">
+    	<meta name="robots" content="index,follow">
+        <meta charset="utf-8">
+        <link rel="shortcut icon" href="favicon.ico">
+  	    <link rel="stylesheet" href="css/normalize.css">
+  	    <link rel="stylesheet" href="css/lightbox.css">
+	    <link rel="stylesheet" href="css/skeleton.css">
+        <link rel="stylesheet" type="text/css" href="css/style.css">
+        <link href='http://fonts.googleapis.com/css?family=Abel' rel='stylesheet' type='text/css'>
+    </head>
+
+    <body>
+    <div class="container">
+        <div class="row">
+                <img src="images/logo.png">
+        </div>
+    </div>
+    <br>
+   <div class="container">
+        <div class="row">
+                <p>
+                <b>menu: <a href="#intro">What is it?</a> | <a href="#docs">Documentation</a> | <a href="#donate">Donate</a> | <a href="#team">Team</a> | <a href="#contact">Contact us</a></b>
+                </p>
+                <a name="intro"></a>
+                <h1>What is it?</h1>
+                <p>
+                <a href="http://17eyes.com/">17eyes</a> is a <b>static code analysis tool for the PHP programming language</b>, aiming
+                at improving both quality and security of your code. Over the years, PHP evolved
+                to be a complex language with many pitfalls. We believe that many
+                potential problems can be detected automatically by a source code quality
+                checking tool. Our aim is to create such tool and make PHP development more
+                pleasant and efficient.
+                </p>
+                <p>
+                We wrote that code in the PHP 5.4 and 5.5 era to rule the planet... We took over the
+                planet in a different way, so we decided to release our work under permissive free
+                software license (<a href="https://en.wikipedia.org/wiki/ISC_license">ISC license</a> which is BSD compatible).
+                Feel free to fork it, send us patches, love it, ignore it or do with it whatever you want. <a href="http://html5zombo.com/">"Your only limit is yourself"</a>.
+                </p>
+                <p>
+                Currently we've implemented PHP language parser, unparser, AST analysis, some skeleton
+                of CFG analysis framework. There is still <a href="#donate">a lot of work to do</a> in
+                order to make this tool usable. However there are potential projects that may reuse
+                existing code (including PHP code instrumentation tools etc.). Let us know if you
+                do something interesting on top of the 17eyes.
+                </p>
+                <p>
+                If you have any questions, feel free to <a href="#contact">contact us</a>. If you're a billionaire, consider <a href="#donate">hiring us</a> to finish this project.
+                </p>
+                <p>
+                Tags: #haskell #staticanalysis #php #parser #unparser #codeanalysis <b>#hipsterstuff</b>
+                </p>
+        </div>
+        <a name="docs"></a>
+        <div class="row">
+            <h1>Documentation</h1>
+            <p>
+            So far we've implemented PHP language parser and unparser based on <a href="https://github.com/facebookarchive/lex-pass">lex-pass</a>
+            which was maintained at <a href="https://web.archive.org/web/20051125102622/http://www.facebook.com/">facebook</a>. AST analysis is built on
+            top of abstract syntax tree which is produced by our parser. CFG analysis relies
+            heavily on <a href="http://hackage.haskell.org/package/hoopl">Hoopl library</a>, you can read a paper about this library at: <a href="http://research.microsoft.com/en-us/um/people/simonpj/papers/c--/hoopl-haskell10.pdf">http://research.microsoft.com/en-us/um/people/simonpj/papers/c--/hoopl-haskell10.pdf</a>.
+            Below you'll find only some kind of survival kit, we'll try our best to extend that section though.
+            </p>
+            <h5>Getting source code</h5>
+            <p>
+            You can grab our source code from <a href="https://github.com/17eyes/17eyes">github</a> repository. To get sources simply clone it:
+            <pre><code><b>$ git clone https://github.com/17eyes/17eyes.git</b></code></pre>
+            <h5>Building</h5>
+            <p>
+            In order to build the code, you'll need <a href="https://www.haskell.org/ghc/">GHC</a> and <a href="https://www.haskell.org/cabal/">cabal</a> utility. All you have to do is to run <i>cabal install</i>.
+            <pre><code><b>$ cabal install -j5</b>
+Resolving dependencies...
+Configuring 17eyes-0.1...
+Building 17eyes-0.1...
+Installed 17eyes-0.1</code></pre>
+            <p>
+            And voilà. Now you should have 17eyes installed under you cabal's bin path. We've successfully built this code on Linux and FreeBSD boxes using GHC 7.8.
+            Code relies on older version of Hoopl package (3.8.x). Someday we'll release binary versions.
+            </p>
+            <h5>Using 17eyes</h5>
+            <p>
+            At present 17eyes uses only a limited set of analyses, you can perform a PHP file scan simply by running <i>17eyes [file]</i> command.
+<pre><code><b>tests/undefined $ 17eyes good_method.php</b>
+good_method.php:6 line too long
+------------------------------------------------------------------------------
+Almost all lines in this file are shorter than 78 characters, but this one is
+longer. It is often desirable to maintain a consistent line length convention.
+
+good_method.php:10 class and function declarations should have their opening brace on a new line
+------------------------------------------------------------------------------
+By convention the opening brace after class and function declarations is usually
+in the next line. This serves as a visual aid to distinguish these declarations
+from statements like "if" or "switch".</code></pre>
+<p>
+To get help run <i>17eyes --we-dont-have-help-yet</i>:<pre><code><b>$ 17eyes --we-dont-have-help-yet</b>
+17eyes: user error (unrecognized option `--we-dont-have-help-yet'
+Usage: 17eyes [OPTION...] FILES...
+          --dot           parse from the standard input and output CFG representation consumable by Graphviz's `dot'.
+          --dump-ast      just parse from standard input and dump the AST
+          --unparse       parse from the standard input and reconstruct the source code
+          --resolve=NAME  try to find a function, class, method or constant by name
+  -d DIR  --codebase=DIR  set the codebase directory (instead of the default www)
+)</code></pre>
+<p>
+To get AST use <i>--dump-ast</i> switch:
+<pre><code><b>src/cakephp/lib/Cake $ cat bootstrap.php | 17eyes --dump-ast</b>
+Ast "<stdin>" (TopLevel "" (Just (Right "php"))) (Intercal [WS "\n",Comment [...] </code></pre>
+<p>
+You can also dump CFG graph in dot format in order to produce fancy images:
+<pre><code><b>tests/parser $ cat foreach.phpt | 17eyes --dot | dot -Tpng > graph.png</b>
+WARNING: references are not implemented</code></pre>
+<p>
+You'll get following picture:</p>
+<img src="images/graph.png" width="900">
+            <h5>Running tests</h5>
+            <p>
+            Our test code is a simple GNU Makefile which has defined few targets:
+
+            <pre><code><b>tests $ make help</b>
+test
+test_parser_only
+test_hunit_only
+test_unparser_only
+clean
+failed
+summary            
+<b>tests $ make test_parser_only</b>
+ID: TESTID=20150529103756
+Test cases: 11003
+OK: 10857
+Failed: 146</code></pre>
+            <p>
+            Please make sure to use <i>gmake</i> on BSD systems. We've been using these tests mostly internally for CI purposes, you can find further details under the <i>tests/</i> directory.
+
+            <h5>Issues</h5>
+            <p>
+            Please use <a href="https://github.com/17eyes/17eyes/issues">github issues</a> to report an issue. We'd appreciate patches, pull requests and any suggestions. If you want speak us privately, take a look at <a href="#contact">contact section</a>.
+            <h5>Similar projects</h5>
+            <p>
+            <a href="https://github.com/facebook/pfff">pfff</a><br>
+            <a href="http://www.icosaedro.it/phplint/">PHPLint</a><br>
+            <a href="http://www.program-transformation.org/PHP/PhpSat">PHP-sat</a><br>
+            <a href="https://github.com/oliverklee/pixy">Pixy</a><br>
+            <a href="http://rips-scanner.sourceforge.net/">Rips Scanner</a>
+            <h5>Reading material</h5>
+            <p>
+            <a href="http://mark-story.com/posts/view/static-analysis-tools-for-php">Static Analysis tools for PHP</a> - general article about PHP static analysis tools.<br>
+            <a href="http://www.slideshare.net/nickgsuperstar/static-analysis-for-php">Static Analysis for PHP</a> - Slides from PHPDay Italy 2012<br>
+            <a href="http://www.slideshare.net/logicaltrust/owasp-analiza-statyczna-jzyka-php">I want to believe in static analysis</a> - slides from OWASP Kraków meeting held in 2012. [PL]
+        </div>
+        <a name="donate"></a>
+        <div class="row">
+            <h1>Donate</h1>
+            <p> If you would like to see some particular feature implemented, you
+                might consider donating to the project. <a href="#contact">Contact</a> us for further
+                information.
+            </p>
+            <p>
+                <b>During initial phase we were sponsored by <a href="https://logicaltrust.net/">LogicalTrust</a> and <a href="http://digitalsun.pl/">DigitalSun</a>.</b>
+            </p>
+        </div>
+        <a name="team"></a>
+        <div class="row">
+            <h1>Team</h1>
+            <p>
+                <a href="http://www.tdudziak.com/about/">Tomasz Dudziak</a><br>
+                <a href="https://www.linkedin.com/in/kocielski">Mateusz Kocielski</a><br>
+            </p>
+            <p>
+                If you want to help us somehow, feel free to <a href="#contact">drop us a line</a>.
+            </p>
+        </div>
+        <a name="contact"></a>
+        <div class="row">
+            <h1>Contact us</h1>
+            <p>
+                If you have any questions or any other reason to talk to us,
+                please do not hesitate to contact us. There are several ways to reach
+                us: by e-mail <a href="mailto:dev@17eyes.com">dev@17eyes.com</a>, via IRC:
+                <a href="irc://irc.freenode.org/17eyes">#17eyes</a> @ <a href="http://www.freenode.org/">Freenode</a>.
+            </p>
+
+        </div>
+                    <div class="footer"><a href="https://en.wikipedia.org/wiki/ISC_license">ISC Licensed</a>, 2012-2015 by <a href="http://17eyes.com/">17eyes project</a>.</div>
+      </div>
+    </body>
+</html>
