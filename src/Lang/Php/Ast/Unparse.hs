@@ -375,6 +375,7 @@ instance Unparse Expr where
       unparse w2 ++ unparse e2
     ExprCast (WSCap w1 t w2) w e -> tokLParen ++ unparse w1 ++ t ++
       unparse w2 ++ tokRParen ++ unparse w ++ unparse e
+    ExprClosure a -> unparse a
     ExprEmpty w e -> tokEmpty ++ unparse w ++ tokLParen ++ unparse e ++
       tokRParen
     ExprEval w e -> tokEval ++ unparse w ++ tokLParen ++ unparse e ++
