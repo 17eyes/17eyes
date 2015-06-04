@@ -76,10 +76,10 @@ instance Unparse Stmt where
     StmtFuncDef a -> unparse a
     StmtGlobal a end -> tokGlobal ++
       intercalate tokComma (map unparse a) ++ unparse end
-    StmtGoto a end -> unparse a ++ unparse end
+    StmtGoto a end -> tokGoto ++ unparse a ++ unparse end
     StmtIf a -> unparse a
     StmtInterface a -> unparse a
-    StmtLabel a -> unparse a
+    StmtLabel a -> unparse a ++ tokColon
     StmtNothing end -> unparse end
     StmtReturn rMb w end -> tokReturn ++ unparse rMb ++ unparse w ++
       unparse end
