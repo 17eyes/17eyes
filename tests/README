@@ -1,12 +1,43 @@
-To jest testospecyfikacja określająca co chcemy wykrywać i w jakim stopniu
-szczegółowości. Całość jest podzielona tematycznie na katalogi:
+General Information
+===================
 
-bare_strings: niezadeklarowane stałe (które domyślnie są traktowane jako napisy)
-control_flow: odpowiednie wykrywanie przepływu sterowania (funkcje, include, ...)
-eof_junk: śmieci po "?>" (proste)
-lossy_coercion: niejawne stratne konwersje typów (np. "7 days" --> 7)
-stdlib: sprawdzanie wywołań funkcji bibliotecznych (niebezpieczne funkcje, liczba parametrów, ...)
-undefined: niezdefinowane zmienne, funkcje, metody
+Our test code is a simple GNU Makefile which has defined few targets:
 
-Pliki warn_*.php powinny spowodować wyemitowanie ostrzeżenia. Pliki good_*.php
-są OK i nie powinnny raczej powodować fałszywych pozytywów.
+tests $ make help
+
+test
+test_parser_only
+test_hunit_only
+test_unparser_only
+clean
+failed
+summary            
+
+tests $ make test_parser_only
+
+ID: TESTID=20150529103756
+Test cases: 11003
+OK: 10857
+Failed: 146
+
+Please make sure to use gmake(1) on BSD systems. We used that tests as a
+specification what we want to implement (and how sensitive 17eyes should be).
+Targets defined in Makefile should be self-descriptive. You can use -j switch
+for tests parallelization.
+
+Name conventions
+================
+
+Filenames starts with warn_*.php should emit issues. good_*.php are correct
+and SHOULD not return false positives.
+
+Contents of selected directories:
+=================================
+
+bare_strings: undeclared constants (which are treat as strings by default)
+control_flow: control flow analysis (functions, includes, ...)
+eof_junk: junk after "?>"
+lossy_coercion: implict lossy type coercion (i.e. "7 days" (string) --> 7 (int))
+parser: bunch of tests from the PHP project ripped to test our parser/unparser
+stdlib: PHP standard library calls (unsafe functions, parameters count, ...)
+undefined: undefined variables, functions, methods
