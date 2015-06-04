@@ -186,7 +186,7 @@ instance Unparse Foreach where
 
 instance Unparse Func where
   unparse (Func w1 ref name (WSCap w2 args w3) useVars block) = concat [tokFunction,
-    unparse w1, maybe [] ((tokAmp ++) . unparse) ref, show name, unparse w2,
+    unparse w1, maybe [] ((tokAmp ++) . unparse) ref, unparse name, unparse w2,
     tokLParen, argsUnparser args,
     maybe "" (\(WSCap _ args _) -> tokUse ++ argsUnparser args) useVars,
     tokRParen, unparse w3, unparse block]
