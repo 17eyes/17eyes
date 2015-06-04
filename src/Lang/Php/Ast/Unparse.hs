@@ -81,6 +81,7 @@ instance Unparse Stmt where
     StmtInterface a -> unparse a
     StmtLabel a -> unparse a ++ tokColon
     StmtNothing end -> unparse end
+    StmtNamespace namespace -> tokNamespace ++ unparse namespace
     StmtReturn rMb w end -> tokReturn ++ unparse rMb ++ unparse w ++
       unparse end
     StmtStatic a end -> tokStatic ++ intercalate tokComma (map unparse a) ++
@@ -91,6 +92,7 @@ instance Unparse Stmt where
     StmtUnset (WSCap w1 a w2) end -> tokUnset ++ unparse w1 ++ tokLParen ++
       intercalate tokComma (map unparse a) ++ tokRParen ++ unparse w2 ++
       unparse end
+    StmtUse a b c -> tokUse ++ unparse a ++ unparse b ++ unparse c
     StmtWhile a -> unparse a
 
 instance Unparse StmtEnd where
@@ -276,6 +278,9 @@ instance Unparse StrLit where
     (start, xs) = IC.breakStart ic
     f ((SLEComplex, e), str) = "{" ++ unparse e ++ "}" ++ str
     f ((SLENormal, e), str) = unparse e ++ str
+
+instance Unparse Namespace where
+    unparse (Namespace a b) = unparse a ++ unparse b
 
 ---
 --- EXPRESSIONS
