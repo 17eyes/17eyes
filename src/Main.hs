@@ -34,13 +34,17 @@ import qualified Issue
 data Options = Options {
     optCodebaseDir :: String,
     optInputFile   :: String,
-    optAction      :: Options -> IO ()
+    optAction      :: Options -> IO (),
+    optMinSeverity :: Issue.Severity, -- minimal severity
+    optMinConfidence :: Issue.Confidence -- minimal confidence
  }
 
 defaultOptions = Options {
     optCodebaseDir = "www",
     optInputFile   = "www/index.php",
-    optAction      = astAnalyses
+    optAction      = astAnalyses,
+    optMinSeverity = Issue.Style,
+    optMinConfidence = Issue.Unlikely
 }
 
 options :: [OptDescr (Options -> Options)]
@@ -54,10 +58,15 @@ options = [
            "parse from the standard input and reconstruct the source code",
     Option [] ["resolve"] (ReqArg (\d x -> x { optAction = codebaseResolve d }) "NAME")
            "try to find a function, class, method or constant by name",
-    Option "d" ["codebase"] (ReqArg (\d x -> x { optCodebaseDir = d })
-                                    "DIR")
+    Option "d" ["codebase"] (ReqArg (\d x -> x { optCodebaseDir = d }) "DIR")
            ("set the codebase directory (instead of the default " ++
-            (optCodebaseDir defaultOptions) ++ ")")
+            (optCodebaseDir defaultOptions) ++ ")"),
+    -- XXX: handle errors here - get rid of read
+    --      add an information about available severity/confidence levels
+    Option [] ["severity"] (ReqArg (\d x -> x { optMinSeverity = read d }) "SEVERITY")
+           "ignore issues with severity lower than specified (default: Style)",
+    Option [] ["confidence"] (ReqArg (\d x -> x { optMinConfidence = read d }) "CONFIDENCE")
+           "ignore issues with confidence lower than specified (default: Unlikely)"
  ]
 
 parseString :: String -> String -> IO Ast
@@ -76,7 +85,9 @@ dumpCfg _ = do
 astAnalyses :: Options -> IO ()
 astAnalyses opts = do
     let fn = optInputFile opts
-    issues <- analyzeFile fn <$> readFile fn
+    issues <- filter (\x -> optMinConfidence opts <= Issue.issueConfidence x
+              && optMinSeverity opts <= Issue.issueSeverity x) <$> analyzeFile fn
+              <$> readFile fn
     forM_ issues $ \is -> do
         let loc = (maybe "?" id $ Issue.issueFileName is) ++ ":" ++
                   (maybe "?" show $ Issue.issueLineNumber is) ++ " "

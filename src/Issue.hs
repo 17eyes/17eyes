@@ -22,7 +22,8 @@ PERFORMANCE OF THIS SOFTWARE.
 
 module Issue(
     ModuleName, KindId, Severity(..), Confidence(..), Kind(..), Issue(..),
-    issueKindId, match, newKind, newKind_, issueMessage, issueTitle
+    issueKindId, match, newKind, newKind_, issueMessage, issueTitle,
+    issueConfidence, issueSeverity
 ) where
 
 import Data.Typeable
@@ -33,12 +34,14 @@ type KindId = String
 
 -- | Severity represents how harmful the potential problem is. Do not confuse
 -- this with Confidence.
-data Severity = Critical | MayHarm | Nitpicking | Style deriving (Show, Eq)
+data Severity = Style | MayHarm | Nitpicking | Critical
+  deriving (Show, Eq, Ord, Read)
 
 -- | Confidence value represents how much the analysis is convinced that the
 -- issue is correctly diagnosed. `Sure' should be used only when there is
 -- absolutely no possibility of false positives.
-data Confidence = Sure | Likely | Possible | Unlikely deriving (Show, Eq)
+data Confidence = Unlikely | Possible | Likely | Sure
+  deriving (Show, Eq, Ord, Read)
 
 -- | Represents a class of issues created by the same analysis and representing
 -- the same kind of problem with the code. All such values should be declared
@@ -111,3 +114,9 @@ issueMessage (Issue kind _ _ _ pload) = kindMessage kind pload
 -- existential type in `Issue'.
 issueTitle :: Issue -> String
 issueTitle (Issue kind _ _ _ _) = kindTitle kind
+
+issueSeverity :: Issue -> Severity
+issueSeverity (Issue kind _ _ _ _) = kindSeverity kind
+
+issueConfidence :: Issue -> Confidence
+issueConfidence (Issue kind _ _ _ _) = kindConfidence kind
