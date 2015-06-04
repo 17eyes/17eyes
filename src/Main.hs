@@ -65,8 +65,8 @@ parseString name input = case runParser (parse <* eof) () name input of
     (Left err)  -> error (show err ++ "\n")
     (Right ast) -> return ast
 
-(dumpAst, parseUnparse) = (work show, work unparse)
- where work f _ = getContents >>= parseString "<stdin>" >>= putStrLn . f
+(dumpAst, parseUnparse) = (work putStrLn show, work putStr unparse)
+ where work printFn f _ = getContents >>= parseString "<stdin>" >>= printFn . f
 
 dumpCfg _ = do
     ast <- parseString "<stdin>" =<< getContents
