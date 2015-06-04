@@ -10,6 +10,10 @@ img {
     border:none;
 }
 
+.graph {
+    width: 100%;
+}
+
 a {
     outline:none;
     text-decoration:none;

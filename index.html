@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -17,7 +18,7 @@
     <body>
     <div class="container">
         <div class="row">
-                <img src="images/logo.png">
+                <img src="images/logo.png" alt="17eyes logo">
         </div>
     </div>
     <br>
@@ -26,7 +27,7 @@
                 <p>
                 <b>menu: <a href="#intro">What is it?</a> | <a href="#docs">Documentation</a> | <a href="#donate">Donate</a> | <a href="#team">Team</a> | <a href="#contact">Contact us</a></b>
                 </p>
-                <a name="intro"></a>
+                <a id="intro"></a>
                 <h1>What is it?</h1>
                 <p>
                 <a href="http://17eyes.com/">17eyes</a> is a <b>static code analysis tool for the PHP programming language</b>, aiming
@@ -56,7 +57,7 @@
                 Tags: #haskell #staticanalysis #php #parser #unparser #codeanalysis <b>#hipsterstuff</b>
                 </p>
         </div>
-        <a name="docs"></a>
+        <a id="docs"></a>
         <div class="row">
             <h1>Documentation</h1>
             <p>
@@ -109,14 +110,14 @@ Usage: 17eyes [OPTION...] FILES...
 <p>
 To get AST use <i>--dump-ast</i> switch:
 <pre><code><b>src/cakephp/lib/Cake $ cat bootstrap.php | 17eyes --dump-ast</b>
-Ast "<stdin>" (TopLevel "" (Just (Right "php"))) (Intercal [WS "\n",Comment [...] </code></pre>
+Ast "&lt;stdin&gt;" (TopLevel "" (Just (Right "php"))) (Intercal [WS "\n",Comment [...] </code></pre>
 <p>
 You can also dump CFG graph in dot format in order to produce fancy images:
 <pre><code><b>tests/parser $ cat foreach.phpt | 17eyes --dot | dot -Tpng > graph.png</b>
 WARNING: references are not implemented</code></pre>
 <p>
 You'll get following picture:</p>
-<img src="images/graph.png" width="900">
+<img src="images/graph.png" class="graph" alt="CFG graph">
             <h5>Running tests</h5>
             <p>
             Our test code is a simple GNU Makefile which has defined few targets:
@@ -153,7 +154,7 @@ Failed: 146</code></pre>
             <a href="http://www.slideshare.net/nickgsuperstar/static-analysis-for-php">Static Analysis for PHP</a> - Slides from PHPDay Italy 2012<br>
             <a href="http://www.slideshare.net/logicaltrust/owasp-analiza-statyczna-jzyka-php">I want to believe in static analysis</a> - slides from OWASP Kraków meeting held in 2012. [PL]
         </div>
-        <a name="donate"></a>
+        <a id="donate"></a>
         <div class="row">
             <h1>Donate</h1>
             <p> If you would like to see some particular feature implemented, you
@@ -164,7 +165,7 @@ Failed: 146</code></pre>
                 <b>During initial phase we were sponsored by <a href="https://logicaltrust.net/">LogicalTrust</a> and <a href="http://digitalsun.pl/">DigitalSun</a>.</b>
             </p>
         </div>
-        <a name="team"></a>
+        <a id="team"></a>
         <div class="row">
             <h1>Team</h1>
             <p>
@@ -175,7 +176,7 @@ Failed: 146</code></pre>
                 If you want to help us somehow, feel free to <a href="#contact">drop us a line</a>.
             </p>
         </div>
-        <a name="contact"></a>
+        <a id="contact"></a>
         <div class="row">
             <h1>Contact us</h1>
             <p>
