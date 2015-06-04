@@ -108,7 +108,7 @@ codebaseResolve name opts = do
 
 main :: IO ()
 main = do
-    hSetEncoding stdin latin1
+    hSetEncoding stdin utf8
     args <- getArgs
     (opts, files) <- case getOpt RequireOrder options args of
         (o,n,[]  ) -> return (foldl (flip id) defaultOptions o, n)
