@@ -92,7 +92,11 @@ instance Unparse Stmt where
     StmtUnset (WSCap w1 a w2) end -> tokUnset ++ unparse w1 ++ tokLParen ++
       intercalate tokComma (map unparse a) ++ tokRParen ++ unparse w2 ++
       unparse end
-    StmtUse a b c -> tokUse ++ unparse a ++ unparse b ++ unparse c
+    StmtUse a b c -> tokUse ++ unparse a ++ unparse b ++
+      case c of
+        Just ((ws1,ws2),name) -> unparse ws1 ++ tokAs ++ unparse ws2 ++
+          unparse name
+        otherwise -> ""
     StmtWhile a -> unparse a
 
 instance Unparse StmtEnd where
