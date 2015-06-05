@@ -77,6 +77,8 @@ instance Unparse Stmt where
     StmtGlobal a end -> tokGlobal ++
       intercalate tokComma (map unparse a) ++ unparse end
     StmtGoto a end -> tokGoto ++ unparse a ++ unparse end
+    StmtHaltCompiler a b c -> tokHaltCompiler ++ unparse a ++ "()" ++
+        unparse b ++ unparse c
     StmtIf a -> unparse a
     StmtInterface a -> unparse a
     StmtLabel a -> unparse a ++ tokColon

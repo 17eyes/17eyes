@@ -71,6 +71,7 @@ instance Parse (Stmt, WS) where
 
 simpleStmtParser :: Parser Stmt
 simpleStmtParser =
+  liftM3 StmtHaltCompiler (tokHaltCompilerP >> parse <* tokLParenP <* tokRParenP) parse (many anyChar) <|>
   try (StmtLabel <$> parse <* tokColonP) <|>
   StmtBlock <$> parse <|>
   breaklikeParser StmtBreak tokBreakP <|>
@@ -362,6 +363,8 @@ instance Parse (While, WS) where
      )
 
 instance Parse (a, WS) => Parse (Block a) where
+  --- XXX: using __halt_compiler is invalid in PHP, we should handler such
+  ---      cases.
   parse = tokLBraceP >> Block <$> liftM2 IC.unbreakStart parse parse <*
     tokRBraceP
 

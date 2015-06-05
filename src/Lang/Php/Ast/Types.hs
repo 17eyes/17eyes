@@ -232,6 +232,9 @@ data Stmt =
   -- this list must have at least one element.. should i make a type for that?
   StmtGlobal    [WSCap Var] StmtEnd             |
   StmtGoto      (WSCap Label) StmtEnd           |
+  -- We keep rest of script in StmtHaltCompiler (it's pretty weird construct)
+  -- http://php.net/manual/en/function.halt-compiler.php
+  StmtHaltCompiler WS StmtEnd String            |
   StmtIf        If                              |
   StmtInterface Interface                       |
   StmtLabel     (WSCap Label)                   |
