@@ -245,7 +245,10 @@ data Stmt =
   StmtStatic    [WSCap VarMbVal] StmtEnd        |
   StmtSwitch    Switch                          |
   StmtThrow     (WSCap Expr) StmtEnd            |
-  StmtTry       (WSCap (Block Stmt)) (IC.Intercal Catch WS) |
+  StmtTry       (WSCap (Block Stmt)) -- try block
+                  (IC.Intercal Catch WS) -- [catch] blocks
+                  (Maybe (WS2, (Block Stmt))) -- finally block
+                                                |
   StmtUnset     (WSCap [WSCap LRVal]) StmtEnd   |
   StmtUse       WS String (Maybe (WS2, String)) |
   StmtWhile     While                           |

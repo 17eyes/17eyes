@@ -187,6 +187,7 @@ instance Binary Register where
 opILabel           = 101 :: Word8
 opIFuncEntry       = 102 :: Word8
 opICatchException  = 103 :: Word8
+opIFinally         = 104 :: Word8
 
 opIJump            = 201 :: Word8
 opICondJump        = 202 :: Word8

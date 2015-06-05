@@ -90,7 +90,11 @@ instance Unparse Stmt where
       unparse end
     StmtSwitch a -> unparse a
     StmtThrow a end -> tokThrow ++ unparse a ++ unparse end
-    StmtTry a cs -> tokTry ++ unparse a ++ unparse cs
+    StmtTry a cs fs -> tokTry ++ unparse a ++ unparse cs ++
+      (case fs of
+        Just ((w1,w2), x) -> unparse w1 ++ tokFinally ++ unparse w2 ++
+                             unparse x
+        Nothing -> "")
     StmtUnset (WSCap w1 a w2) end -> tokUnset ++ unparse w1 ++ tokLParen ++
       intercalate tokComma (map unparse a) ++ tokRParen ++ unparse w2 ++
       unparse end

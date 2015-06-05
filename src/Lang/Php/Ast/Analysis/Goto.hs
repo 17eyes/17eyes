@@ -136,7 +136,7 @@ instance EntryExtractable (StoredPos Stmt) where
     extract (StoredPos _ (StmtBlock (Block x))) = extract x
     extract (StoredPos _ (StmtIf x)) = extract x
     extract (StoredPos _ (StmtSwitch s)) = extract s
-    extract (StoredPos _ (StmtTry wbl catches)) = extract wbl ++ extract catches
+    extract (StoredPos _ (StmtTry wbl catches (Just (_, Block finally)))) = extract wbl ++ extract catches ++ extract finally
     extract (StoredPos _ (StmtNamespace n)) = extract n
     extract (StoredPos _ (StmtDoWhile x)) = extract x
     extract (StoredPos _ (StmtFor x)) = extract x

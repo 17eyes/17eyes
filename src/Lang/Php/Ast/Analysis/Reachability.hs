@@ -125,10 +125,13 @@ minBreakLevel (StmtDoWhile (DoWhile wsbs _ _)) = handleLoop wsbs
 minBreakLevel (StmtFor (For _ bs _)) = handleLoop bs
 minBreakLevel (StmtForeach (Foreach _ bs _)) = handleLoop bs
 
-minBreakLevel (StmtTry ws_block ic) = do
+minBreakLevel (StmtTry ws_block ic finally_block) = do
     xs <- mapM (minBreakLevelIC . block2ic . catchBlock) (IC.toList1 ic)
     x <- minBreakLevelIC (block2ic $ wsCapMain ws_block)
-    return (foldl1 min (x:xs))
+    x' <- case finally_block of
+            Just (_, f) -> minBreakLevelIC (block2ic f)
+            Nothing -> return 0
+    return (foldl1 min (x:x':xs))
  where
     block2ic (Block ic) = ic
 

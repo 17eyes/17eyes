@@ -850,13 +850,15 @@ instance CfgAble (StoredPos Stmt) where
   -- coming to the catch block is handled by 'special' label-like instruction
   -- ICatchException. I guess we'll see how convenient this will turn out to
   -- be.
-  toCfg (StoredPos pos (StmtTry ws_block ic_catch)) = do
+  -- XXX: ADD FINALLY
+  toCfg (StoredPos pos (StmtTry ws_block ic_catch finally)) = do
     lab_end <- freshLabel
     catches <- mapM (mkCatchBlock lab_end) (IC.toList1 ic_catch)
     g_block <- toCfg (wsCapMain ws_block)
+    f_block <- toCfg (finally)
     return $ (g_block <*> mkBranch lab_end)
       |*><*| (foldl (|*><*|) emptyClosedGraph catches)
-      |*><*| (mkLabel lab_end)
+      |*><*| (mkLabel lab_end <*> f_block)
    where
      mkCatchBlock lab_end (Catch ws_hdr _ block) = do
        let exception_type = case (wsCapMain $ fst $ wsCapMain ws_hdr) of

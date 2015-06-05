@@ -139,7 +139,14 @@ instance Parse (If, WS) where
 tryParser :: Parser (Stmt, WS)
 tryParser = tokTryP >> do
   block <- parse
-  first (StmtTry block) <$> intercalParserW parse
+  (catch, wsc) <- intercalParserW parse
+  finally <- optionMaybe $ liftM2 (,) 
+    (liftM2 (,) (return wsc) (tokFinallyP *> parse))
+    parse
+  case finally of
+    Just x -> do ws <- parse 
+                 return $ (StmtTry block catch finally, ws)
+    Nothing -> return $ (StmtTry block catch Nothing, wsc)
 
 intercalParserW :: Parser a -> Parser (IC.Intercal a WS, WS)
 intercalParserW a =

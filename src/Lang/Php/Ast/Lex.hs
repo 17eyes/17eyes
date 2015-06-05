@@ -354,6 +354,7 @@ tokExit = "exit"
 tokExtends = "extends"
 tokFinal = "final"
 tokFor = "for"
+tokFinally = "finally"
 tokForeach = "foreach"
 tokFunction = "function"
 tokGlobal = "global"
@@ -420,6 +421,7 @@ reservedWords = Set.fromList [
   tokExtends,
   tokFinal,
   tokFor,
+  tokFinally,
   tokForeach,
   tokFunction,
   tokGlobal,
@@ -492,6 +494,7 @@ tokEvalP = identCI tokEval
 tokExitP = identCI tokExit
 tokExtendsP = identCI tokExtends
 tokFinalP = identCI tokFinal
+tokFinallyP = identCI tokFinally
 tokForP = identCI tokFor
 tokForeachP = identCI tokForeach
 tokFunctionP = identCI tokFunction
