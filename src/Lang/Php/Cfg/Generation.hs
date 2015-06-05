@@ -195,6 +195,7 @@ instance TacAbleR Expr where
   toTacR (ExprBinOp (BByable BConcat) e1 _ e2) pos = simpleBinop CConcat e1 e2 pos
   toTacR (ExprBinOp (BByable BDiv) e1 _ e2) pos = simpleBinop CDiv e1 e2 pos
   toTacR (ExprBinOp (BByable BMod) e1 _ e2) pos = simpleBinop CMod e1 e2 pos
+  toTacR (ExprBinOp (BByable BPow) e1 _ e2) pos = simpleBinop CPow e1 e2 pos
   toTacR (ExprBinOp (BByable BMul) e1 _ e2) pos = simpleBinop CMul e1 e2 pos
   toTacR (ExprBinOp (BByable BPlus) e1 _ e2) pos = simpleBinop CAdd e1 e2 pos
   toTacR (ExprBinOp (BByable BShiftL) e1 _ e2) pos = simpleBinop CShiftL e1 e2 pos

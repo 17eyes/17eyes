@@ -417,6 +417,7 @@ instance Unparse BinOpBy where
     BMod -> tokMod
     BMul -> tokMul
     BPlus -> tokPlus
+    BPow -> tokPow
     BShiftL -> tokShiftL
     BShiftR -> tokShiftR
     BXor -> tokXor

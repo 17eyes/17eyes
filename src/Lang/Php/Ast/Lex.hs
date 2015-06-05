@@ -225,6 +225,10 @@ tokLParen = "("
 tokLParenP = s tokLParen
 tokRParen = ")"
 tokRParenP = s tokRParen
+tokPow = "**"
+tokPowP = try $ s tokPow
+tokPowBy = "**="
+tokPowByP = try $ s tokPowBy
 tokMul = "*"
 tokMulP = nc tokMul "=/"
 tokMulBy = "*="

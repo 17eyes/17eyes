@@ -300,6 +300,7 @@ opCMul    = 109 :: Word8
 opCAdd    = 110 :: Word8
 opCShiftL = 111 :: Word8
 opCShiftR = 112 :: Word8
+opCPow    = 113 :: Word8
 
 opCItrGet     = 51 :: Word8
 opCItrCurrent = 52 :: Word8
@@ -342,6 +343,7 @@ putCall res CBitAnd args = gPC opCBitAnd res args
 putCall res CConcat args = gPC opCConcat res args
 putCall res CDiv args    = gPC opCDiv res args
 putCall res CMod args    = gPC opCMod res args
+putCall res CPow args    = gPC opCPow res args
 putCall res CMul args    = gPC opCMul res args
 putCall res CAdd args    = gPC opCAdd res args
 putCall res CShiftL args = gPC opCShiftL res args
@@ -392,6 +394,7 @@ getCall = getWord8 >>= getOp
      | x == opCConcat = gGC CConcat
      | x == opCDiv    = gGC CDiv
      | x == opCMod    = gGC CMod
+     | x == opCPow    = gGC CPow
      | x == opCMul    = gGC CMul
      | x == opCAdd    = gGC CAdd
      | x == opCShiftL = gGC CShiftL

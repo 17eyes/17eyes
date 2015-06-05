@@ -220,6 +220,7 @@ instance Adjustable (Callable Register a, a) where
   adjust x@(CConcat, _) = adjustC x
   adjust x@(CDiv, _) = adjustC x
   adjust x@(CMod, _) = adjustC x
+  adjust x@(CPow, _) = adjustC x
   adjust x@(CMul, _) = adjustC x
   adjust x@(CAdd, _) = adjustC x
   adjust x@(CShiftL, _) = adjustC x

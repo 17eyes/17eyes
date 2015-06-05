@@ -182,8 +182,8 @@ data BinOp = BAnd | BAndWd | BEQ | BGE | BGT | BID | BLE | BLT | BNE |
   BNEOld | BNI | BOr | BOrWd | BXorWd | BByable BinOpBy
   deriving (Eq, Show, Typeable, Data)
 
-data BinOpBy = BBitAnd | BBitOr | BConcat | BDiv | BMinus | BMod | BMul |
-  BPlus | BShiftL | BShiftR | BXor
+data BinOpBy = BBitAnd | BBitOr | BConcat | BDiv | BMinus | BMod | BPow |
+  BMul | BPlus | BShiftL | BShiftR | BXor
   deriving (Eq, Show, Typeable, Data)
 
 data PreOp = PrPrint | PrAt | PrBitNot | PrClone | PrNegate | PrNot | PrPos |

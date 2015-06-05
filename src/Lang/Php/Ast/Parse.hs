@@ -740,6 +740,7 @@ assignCont l w1 = do
     (tokPlusByP   >> return BPlus) <|>
     (tokMinusByP  >> return BMinus) <|>
     (tokMulByP    >> return BMul) <|>
+    (tokPowByP    >> return BPow) <|>
     (tokDivByP    >> return BDiv) <|>
     (tokConcatByP >> return BConcat) <|>
     (tokModByP    >> return BMod) <|>
@@ -784,6 +785,7 @@ funclike1Parser :: (Parse (a, WS)) => (WS -> WSCap a -> b) -> Parser c ->
 funclike1Parser constr tokP = liftM2 constr (tokP >> parse)
   (tokLParenP >> parse <* tokRParenP)
 
+-- http://php.net/manual/en/language.operators.precedence.php
 exprParserTable :: [[Oper (Expr, WS)]]
 exprParserTable = [
   [Postfix eptIndex],
@@ -793,6 +795,7 @@ exprParserTable = [
   [Postfix eptInstOf],
   [Prefix . preRep $ eptNot <|> eptBitNot <|> eptNegate <|> eptPos <|>
     eptSuppress],
+  iar [eptPow],
   ial [eptMul, eptDiv, eptMod],
   ial [eptPlus, eptMinus, eptConcat],
   ial [eptShiftL, eptShiftR],
@@ -815,6 +818,7 @@ postRep p = (p >>= \ f -> (. f) <$> postRep p) <|> return id
 
 ial :: [Parser (a -> a -> a)] -> [Oper a]
 ial = map $ flip Infix AssocLeft
+iar = map $ flip Infix AssocRight
 ian = map $ flip Infix AssocNone
 
 eptClone = preOp PrClone tokCloneP
@@ -851,6 +855,7 @@ eptInstOf = do
 
 eptNot = preOp PrNot tokNotP
 
+eptPow = binOp (BByable BPow) tokPowP
 eptMul = binOp (BByable BMul) tokMulP
 eptDiv = binOp (BByable BDiv) tokDivP
 eptMod = binOp (BByable BMod) tokModP

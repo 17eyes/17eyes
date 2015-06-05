@@ -160,6 +160,7 @@ data Callable tArg aSpec where
   CConcat :: Callable t (t,t)
   CDiv :: Callable t (t,t)
   -- BMinus is translated into negated CAdd
+  CPow :: Callable t (t,t)
   CMod :: Callable t (t,t)
   CMul :: Callable t (t,t)
   CAdd :: Callable t (t,t)
