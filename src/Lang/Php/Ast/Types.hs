@@ -148,7 +148,7 @@ data Expr =
   -- we're lazy so just String here instead of like PhpType
   ExprCast      (WSCap String) WS Expr |
   ExprClosure   Func |
-  ExprEmpty     WS (WSCap LRVal) |
+  ExprEmpty     WS (WSCap Expr) |
   ExprEval      WS (WSCap Expr) |
   ExprExit      Bool (Maybe (WS, Either WS (WSCap Expr))) |
   ExprHereDoc   HereDoc |
