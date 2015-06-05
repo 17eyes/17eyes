@@ -86,6 +86,7 @@ simpleStmtParser =
   StmtInterface <$> parse <|>
   StmtNothing <$> parse <|>
   liftM3 StmtReturn (tokReturnP >> parse) (optionMaybe parse) parse <|>
+  liftM3 StmtYield (tokYieldP >> parse) (optionMaybe parse) parse <|>
   liftM2 StmtGoto (tokGotoP >> parse) parse <|>
   StmtNamespace <$> parse <|>
   (StmtUse <$>

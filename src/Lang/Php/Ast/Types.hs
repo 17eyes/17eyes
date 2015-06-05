@@ -245,7 +245,11 @@ data Stmt =
   StmtTry       (WSCap (Block Stmt)) (IC.Intercal Catch WS) |
   StmtUnset     (WSCap [WSCap LRVal]) StmtEnd   |
   StmtUse       WS String (Maybe (WS2, String)) |
-  StmtWhile     While
+  StmtWhile     While                           |
+  -- XXX: Yield imlementation is obviously broken (it should support yield in
+  --      sub-expressions i.e.: $i = (yield $j), now Yield implementation is
+  --      handled same way as return
+  StmtYield     WS (Maybe (Expr, WS)) StmtEnd 
   deriving (Eq, Show, Typeable, Data)
 
 -- a block has {}'s, so one-liner's are not considered blocks

@@ -381,6 +381,7 @@ tokUse = "use"
 tokVar = "var"
 tokWhile = "while"
 tokXorWd = "xor"
+tokYield = "yield"
 
 reservedWords :: Set.Set String
 reservedWords = Set.fromList [
@@ -444,7 +445,8 @@ reservedWords = Set.fromList [
   tokUse,
   tokVar,
   tokWhile,
-  tokXorWd]
+  tokXorWd,
+  tokYield]
 
 identCI w = try $ do
   i <- genIdentifierParser
@@ -513,6 +515,7 @@ tokUseP = identCI tokUse
 tokVarP = identCI tokVar
 tokWhileP = identCI tokWhile
 tokXorWdP = identCI tokXorWd
+tokYieldP = identCI tokYield
 
 tokCategory = "category"
 tokCategoryP = identCI tokCategory

@@ -98,7 +98,9 @@ instance Unparse Stmt where
           unparse name
         otherwise -> ""
     StmtWhile a -> unparse a
-
+    StmtYield rMb w end -> tokYield ++ unparse rMb ++ unparse w ++
+      unparse end
+ 
 instance Unparse StmtEnd where
   unparse StmtEndSemi = tokSemi
   unparse (StmtEndClose a) = tokClosePhp ++ unparse a
