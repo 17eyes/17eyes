@@ -430,9 +430,9 @@ instance TacAbleR Expr where
     let g_c = mkMiddle $ sp2ip pos $ ICall r (CInclude ir on) r_e
     return (r, g_e <*> g_c)
 
-  toTacR (ExprNewDoc (NewDoc str)) pos = toTacR (StrLit (IC.Interend ("'" ++ str ++ "'"))) pos
+  toTacR (ExprNewDoc (NewDoc str _)) pos = toTacR (StrLit (IC.Interend ("'" ++ str ++ "'"))) pos
 
-  toTacR (ExprHereDoc (HereDoc ic)) pos = toTacR lit pos
+  toTacR (ExprHereDoc (HereDoc (StrLit ic) _)) pos = toTacR lit pos
    where
      -- We need to add double quotes for compatibility with other StrLits.
      lit = StrLit (icPrepend $ icAppend ic)

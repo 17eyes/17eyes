@@ -363,10 +363,20 @@ instance Unparse RVal where
   unparse (RValLRVal a) = unparse a
 
 instance Unparse NewDoc where
-  unparse (NewDoc a) = tokHereDoc ++ a
+  unparse (NewDoc a doc) = tokHereDoc ++ newdoc doc ++ newline ++ unparse a
+    ++ doc
+    where newdoc x = "'" ++ x ++ "'"
+          newline = "\n"
 
 instance Unparse HereDoc where
-  unparse (HereDoc a) = tokHereDoc ++ show a
+  unparse (HereDoc a doc) = tokHereDoc ++ unparse doc ++ newline ++ unparse a
+    ++ stripQM doc
+    -- if doc string starts with quotation mark, then we can be sure that
+    -- it ends with quotation mark too (otherwise it cannot be parsed in that
+    -- context.)
+    where stripQM ('"':xs) = init xs
+          stripQM x = x
+          newline = "\n"
 
 -- Expr
 
@@ -401,6 +411,7 @@ instance Unparse Expr where
     ExprNew w a argsMb -> tokNew ++ unparse w ++ unparse a ++ maybe ""
       (\ (wPre, args) -> unparse wPre ++ tokLParen ++ either unparse
         (intercalate tokComma . map unparse) args ++ tokRParen) argsMb
+    ExprNewDoc a -> unparse a
     ExprNumLit a -> unparse a
     ExprParen a -> tokLParen ++ unparse a ++ tokRParen
     ExprPostOp o e w -> unparse e ++ unparse w ++ unparse o
@@ -412,6 +423,8 @@ instance Unparse Expr where
 
 instance Unparse Ref where
   unparse (Ref w v) = tokAmp ++ unparse w ++ unparse v
+
+instance Unparse (StrLitExprStyle, RVal)
 
 instance Unparse BinOpBy where
   unparse binOp = case binOp of

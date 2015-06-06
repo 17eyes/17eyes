@@ -82,10 +82,10 @@ strLitAsSimple :: StrLit -> Maybe String
 strLitAsSimple (StrLit (IC.Interend x)) = Just x
 strLitAsSimple _ = Nothing
 
-data NewDoc = NewDoc String
+data NewDoc = NewDoc String String
   deriving (Eq, Show, Typeable, Data)
 
-data HereDoc = HereDoc (IC.Intercal String (StrLitExprStyle, RVal))
+data HereDoc = HereDoc StrLit String
   deriving (Eq, Show, Typeable, Data)
 
 data Val = ValLOnlyVal LOnlyVal | ValROnlyVal ROnlyVal | ValLRVal LRVal

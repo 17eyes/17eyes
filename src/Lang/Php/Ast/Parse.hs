@@ -480,13 +480,16 @@ backticksParser :: Parser StrLit
 backticksParser = char '`' >> StrLit <$> icGlue "`" <$> strLitRestParserExpr '`'
 
 instance Parse NewDoc where
-  parse = NewDoc <$> init <$> try mainP
+  parse = do
+   (body, doc) <- try mainP
+   return $ NewDoc body doc
    where
      mainP = do
        tokNewDocP >> wsNoNLParser
        eot_string <- char '\'' >> genIdentifierParser <* char '\''
        newline
-       restP eot_string
+       body <- restP eot_string
+       return (body, eot_string)
 
      restP :: String -> Parser String
      restP s = try (endOfStringP s) <|> liftM2 (++) lineParser (restP s)
@@ -497,12 +500,17 @@ instance Parse NewDoc where
        return ""
 
 instance Parse HereDoc where
-  parse = HereDoc <$> do
+  parse = do
     tokHereDocP >> wsNoNLParser
-    eot_ident <- genIdentifierParser
-             <|> (char '"' >> genIdentifierParser <* char '"')
+    (eot_ident, qm) <- liftM2 (,) genIdentifierParser (return False) <|>
+      liftM2 (,) (char '"' >> genIdentifierParser <* char '"') (return True)
     newline
-    hereDocRestParser eot_ident
+    body <- liftM StrLit $ hereDocRestParser eot_ident
+    return $ HereDoc body (addQM qm eot_ident)
+    where addQM True x = "\"" ++ x ++ "\""
+          addQM False x = x
+
+
 
 hereDocRestParser :: String -> Parser (IC.Intercal String (StrLitExprStyle, RVal))
 hereDocRestParser s = try theEnd <|> singleLine
