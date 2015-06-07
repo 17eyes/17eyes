@@ -733,15 +733,13 @@ ambigCastParser ws1 = try $ do
   first (ExprCast (WSCap ws1 i ws2) ws3) <$> parse
 
 castOrParenParser :: WS -> Parser (Expr, WS)
-castOrParenParser ws1 = do
-  iMb <- optionMaybe $ identsCI ["int", "integer", "bool", "boolean",
+castOrParenParser ws1 = (try $ do
+  i <- identsCI ["int", "integer", "bool", "boolean",
     "float", "double", "real", "string", "binary", "object"]
-  case iMb of
-    Just i -> do
-      ws2 <- parse
-      ws3 <- tokRParenP >> parse
-      first (ExprCast (WSCap ws1 i ws2) ws3) <$> parse
-    _ -> liftM2 (,) (ExprParen . capify ws1 <$> parse <* tokRParenP) parse
+  ws2 <- parse
+  ws3 <- tokRParenP >> parse
+  first (ExprCast (WSCap ws1 i ws2) ws3) <$> parse)
+  <|> liftM2 (,) (ExprParen . capify ws1 <$> parse <* tokRParenP) parse
 
 assignOrRValParser :: Parser (Expr, WS)
 assignOrRValParser = do
