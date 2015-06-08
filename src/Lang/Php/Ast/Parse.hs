@@ -79,6 +79,7 @@ simpleStmtParser =
   breaklikeParser StmtContinue tokContinueP <|>
   StmtDeclare <$> parse <|>
   StmtDoWhile <$> parse <|>
+  liftM2 StmtConst (tokConstP >> parse) parse <|>
   liftM2 StmtEcho (tokEchoP >> sepBy1 parse tokCommaP) parse <|>
   try (StmtFuncDef <$> parse) <|>
   try (liftM2 StmtStatic (tokStaticP >> sepBy1 parse tokCommaP) parse) <|>

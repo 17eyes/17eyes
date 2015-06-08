@@ -220,6 +220,7 @@ data Stmt =
   StmtBlock     (Block Stmt)                  |
   StmtBreak     (Maybe (WS, Expr)) WS StmtEnd |
   StmtClass     Class                         |
+  StmtConst     (WSCap (VarEqVal Const)) StmtEnd|
   StmtContinue  (Maybe (WS, Expr)) WS StmtEnd |
   StmtDeclare   Declare                       |
   StmtDoWhile   DoWhile                       |

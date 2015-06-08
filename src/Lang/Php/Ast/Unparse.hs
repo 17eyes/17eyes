@@ -64,6 +64,7 @@ instance Unparse Stmt where
     StmtBlock a -> unparse a
     StmtBreak iMb w end -> tokBreak ++ unparse iMb ++ unparse w ++ unparse end
     StmtClass a -> unparse a
+    StmtConst a b -> tokConst ++ unparse a ++ unparse b
     StmtContinue iMb w end -> tokContinue ++ unparse iMb ++ unparse w ++
       unparse end
     StmtDeclare a -> unparse a
