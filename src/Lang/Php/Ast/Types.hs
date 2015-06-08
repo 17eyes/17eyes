@@ -169,7 +169,8 @@ data Expr =
   ExprRef       Ref | 
   ExprRVal      RVal |
   ExprStrLit    StrLit |
-  ExprTernaryIf TernaryIf
+  ExprTernaryIf TernaryIf |
+  ExprYield     WS (Maybe (Expr, WS))
   deriving (Eq, Show, Typeable, Data)
 
 data Ref = Ref {
@@ -252,11 +253,7 @@ data Stmt =
                                                 |
   StmtUnset     (WSCap [WSCap LRVal]) StmtEnd   |
   StmtUse       WS String (Maybe (WS2, String)) |
-  StmtWhile     While                           |
-  -- XXX: Yield imlementation is obviously broken (it should support yield in
-  --      sub-expressions i.e.: $i = (yield $j), now Yield implementation is
-  --      handled same way as return
-  StmtYield     WS (Maybe (Expr, WS)) StmtEnd 
+  StmtWhile     While
   deriving (Eq, Show, Typeable, Data)
 
 -- a block has {}'s, so one-liner's are not considered blocks

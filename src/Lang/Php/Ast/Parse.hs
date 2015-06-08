@@ -88,7 +88,6 @@ simpleStmtParser =
   StmtInterface <$> parse <|>
   StmtNothing <$> parse <|>
   liftM3 StmtReturn (tokReturnP >> parse) (optionMaybe parse) parse <|>
-  liftM3 StmtYield (tokYieldP >> parse) (optionMaybe parse) parse <|>
   liftM2 StmtGoto (tokGotoP >> parse) parse <|>
   StmtNamespace <$> parse <|>
   (StmtUse <$>
@@ -681,6 +680,8 @@ simpleExprParser =
     try (liftM2 (,) (ExprNewDoc <$> parse) parse)
   <|>
     try (liftM2 (,) (ExprHereDoc <$> parse) parse)
+  <|>
+    liftM2 (,) (liftM2 ExprYield (tokYieldP >> parse) (optionMaybe parse)) parse
   <|>
     assignOrRValParser
   <|> do
