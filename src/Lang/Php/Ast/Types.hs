@@ -252,7 +252,8 @@ data Stmt =
                   (Maybe (WS2, (Block Stmt))) -- finally block
                                                 |
   StmtUnset     (WSCap [WSCap LRVal]) StmtEnd   |
-  StmtUse       WS String (Maybe (WS2, String)) |
+  StmtUse       WS (Maybe (String, WS)) String
+                  (Maybe (WS2, String))         |
   StmtWhile     While
   deriving (Eq, Show, Typeable, Data)
 

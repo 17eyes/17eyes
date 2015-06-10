@@ -92,6 +92,11 @@ simpleStmtParser =
   StmtNamespace <$> parse <|>
   (StmtUse <$>
     (tokUseP >> parse) <*>
+    (
+      (Just <$> (liftM2 (,) tokFunctionP parse) <|>
+       Just <$> (liftM2 (,) tokConstP parse) <|>
+       return Nothing)
+    ) <*>
     namespaceParser <*>
     (try $ Just <$> liftM2 (,) (liftM2 (,) parse (tokAsP >> parse))
       namespaceParser <|> return Nothing)) <|>
