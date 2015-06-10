@@ -424,8 +424,6 @@ instance Unparse Expr where
 instance Unparse Ref where
   unparse (Ref w v) = tokAmp ++ unparse w ++ unparse v
 
-instance Unparse (StrLitExprStyle, RVal)
-
 instance Unparse BinOpBy where
   unparse binOp = case binOp of
     BBitAnd -> tokAmp
