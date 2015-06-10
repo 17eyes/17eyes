@@ -37,7 +37,7 @@ test_unparser_only: clean stamp $(UNPARSERTESTFILESS)
 %.hutesttest:
 	@echo "====== $@" >> $(HUNIT_LOG)
 	@../tools/hutest2hs "$(@:.hutesttest=)"
-	@(ghc -i../src:../tools -fobject-code -e "runTests tests" "$(@:.hutesttest=.hs)" >> $(HUNIT_LOG) 2>> $(HUNIT_LOG) && echo "$@ : OK" || echo "$@ : FAIL") >> $(OUTLOG)
+	@(ghc -i../src:../tools -fobject-code -e "TestHelper.runTests tests" "$(@:.hutesttest=.hs)" >> $(HUNIT_LOG) 2>> $(HUNIT_LOG) && echo "$@ : OK" || echo "$@ : FAIL") >> $(OUTLOG)
 	@rm "$(@:.hutesttest=.hs)"
 
 stamp:
